@@ -1,12 +1,9 @@
-
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
-
 import 'package:provider/provider.dart';
 
 import '../providers/profile_provider.dart';
 import '../providers/user_provider.dart';
-
 
 class StudentProfilePage extends StatefulWidget {
   @override
@@ -19,7 +16,8 @@ class _StudentProfilePageState extends State<StudentProfilePage> {
   @override
   void initState() {
     super.initState();
-    final profileProvider = Provider.of<ProfileProvider>(context, listen: false);
+    final profileProvider =
+    Provider.of<ProfileProvider>(context, listen: false);
     final userProvider = Provider.of<UserProvider>(context, listen: false);
     final token = userProvider.token;
 
@@ -50,14 +48,6 @@ class _StudentProfilePageState extends State<StudentProfilePage> {
     return Scaffold(
       appBar: AppBar(
         title: Text('Profile'),
-        actions: [
-          IconButton(
-            icon: Icon(Icons.edit, color: Colors.red),
-            onPressed: () {
-              // Navigate to update profile page or show update dialog
-            },
-          ),
-        ],
       ),
       body: _isLoading
           ? Center(child: CircularProgressIndicator())
@@ -65,32 +55,116 @@ class _StudentProfilePageState extends State<StudentProfilePage> {
           ? SingleChildScrollView(
         padding: const EdgeInsets.all(16.0),
         child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
+          crossAxisAlignment: CrossAxisAlignment.center,
           children: [
-            Row(
+            Column(
+              mainAxisAlignment: MainAxisAlignment.center,
               children: [
                 CircleAvatar(
-                  radius: 50,
+                  radius: 70,
                   backgroundImage: profile.profileImageUrl != null
                       ? NetworkImage(profile.profileImageUrl!)
                       : AssetImage('assets/default_profile.png')
                   as ImageProvider,
                 ),
-                SizedBox(width: 20),
-                Expanded(
+                SizedBox(height: 20),
+                Text(
+                  profile.nickname ?? 'N/A',
+                  style: TextStyle(
+                    fontSize: 30,
+                    fontWeight: FontWeight.bold,
+                  ),
+                  textAlign: TextAlign.center,
+                ),
+                SizedBox(height: 20),
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    // Edit Profile Button
+                    OutlinedButton(
+                      style: OutlinedButton.styleFrom(
+                        side: BorderSide(color: Colors.black),
+                        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+                        padding: EdgeInsets.symmetric(
+                            vertical: 12, horizontal: 24),
+                      ),
+                      onPressed: () {
+                        // Navigate to update profile page
+                      },
+                      child: Row(
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          Icon(Icons.edit, color: Colors.black),
+                          SizedBox(width: 8),
+                          Text(
+                            'Edit Profile',
+                            style: TextStyle(
+                                color: Colors.black, fontSize: 14),
+                          ),
+                        ],
+                      ),
+                    ),
+                    SizedBox(width: 20),
+
+                    // Share Profile Button
+                    OutlinedButton(
+                      style: OutlinedButton.styleFrom(
+                        side: BorderSide(color: Colors.black),
+                        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+                        padding: EdgeInsets.symmetric(
+                            vertical: 12, horizontal: 24),
+                      ),
+                      onPressed: () {
+                        // Implement share profile functionality
+                        _shareProfile();
+                      },
+                      child: Row(
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          Icon(Icons.share, color: Colors.black),
+                          SizedBox(width: 8),
+                          Text(
+                            'Share Profile',
+                            style: TextStyle(
+                                color: Colors.black, fontSize: 14),
+                          ),
+                        ],
+                      ),
+                    ),
+                  ],
+                ),
+              ],
+            ),
+            SizedBox(height: 20),
+            Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Align(
+                  alignment: Alignment.centerLeft,
                   child: Text(
-                    profile.nickname ?? 'N/A',
+                    'Personal Details',
                     style: TextStyle(
-                      fontSize: 24,
+                      fontSize: 23,
                       fontWeight: FontWeight.bold,
+                      color: Colors.black87,
+                    ),
+                  ),
+                ),
+                SizedBox(height: 10), // Adds some space between the titles
+                Align(
+                  alignment: Alignment.centerLeft,
+                  child: Text(
+                    'Personal Information',
+                    style: TextStyle(
+                      fontSize: 18,
+                      color: Colors.black54,
                     ),
                   ),
                 ),
               ],
             ),
-            SizedBox(height: 20),
-            Divider(color: Colors.grey),
-            SizedBox(height: 20),
+
+
             ProfileDetailRow(
               icon: FontAwesomeIcons.calendarAlt,
               label: 'Date of Birth',
@@ -121,6 +195,29 @@ class _StudentProfilePageState extends State<StudentProfilePage> {
         ),
       )
           : Center(child: Text('Profile not found')),
+    );
+  }
+
+  // Function to implement share profile functionality
+  void _shareProfile() {
+    // You can use a package like 'share' to share the profile data.
+    // For simplicity, let's just show a dialog or message for now.
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: Text("Share Profile"),
+          content: Text("Profile shared successfully!"),
+          actions: [
+            TextButton(
+              child: Text('OK'),
+              onPressed: () {
+                Navigator.of(context).pop();
+              },
+            ),
+          ],
+        );
+      },
     );
   }
 }
