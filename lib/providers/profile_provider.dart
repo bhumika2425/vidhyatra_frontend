@@ -43,6 +43,7 @@ class ProfileProvider with ChangeNotifier {
       throw Exception(message);
     }
   }
+
   // Add this method to set the profile data
   void setProfile(Profile profile) {
     _profile = profile;

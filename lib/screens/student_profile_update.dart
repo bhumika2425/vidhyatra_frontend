@@ -3,20 +3,21 @@ import 'dart:io';
 
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
-import 'package:provider/provider.dart';
-
 import 'package:http/http.dart' as http;
+import 'package:provider/provider.dart';
 
 import '../models/profile.dart';
 import '../providers/profile_provider.dart';
 import '../providers/user_provider.dart';
 
-class ProfileCreationPage extends StatefulWidget {
+class StudentProfileUpdate extends StatefulWidget {
+  const StudentProfileUpdate({super.key});
+
   @override
-  _ProfileCreationPageState createState() => _ProfileCreationPageState();
+  State<StudentProfileUpdate> createState() => _StudentProfileUpdateState();
 }
 
-class _ProfileCreationPageState extends State<ProfileCreationPage> {
+class _StudentProfileUpdateState extends State<StudentProfileUpdate> {
   final _formKey = GlobalKey<FormState>();
   String? _fullname;
   String? _location;
@@ -27,6 +28,57 @@ class _ProfileCreationPageState extends State<ProfileCreationPage> {
 
   final ImagePicker _picker = ImagePicker();
   final TextEditingController _dateOfBirthController = TextEditingController();
+
+  bool _isLoading = true;
+
+  @override
+  void initState() {
+    super.initState();
+
+    final profileProvider = Provider.of<ProfileProvider>(context, listen: false);
+    final userProvider = Provider.of<UserProvider>(context, listen: false);
+    final token = userProvider.token;
+
+    if (token != null) {
+      profileProvider.fetchProfileData(token).then((_) {
+        // After fetching profile data, populate the text fields
+        _populateProfileFields(profileProvider.profile);
+        setState(() {
+          _isLoading = false;
+        });
+      }).catchError((error) {
+        print('Error fetching profile: $error');
+        setState(() {
+          _isLoading = false;
+        });
+      });
+    } else {
+      print('Token is null, unable to fetch profile data.');
+      setState(() {
+        _isLoading = false;
+      });
+    }
+  }
+
+  // Method to populate the text fields with fetched profile data
+  void _populateProfileFields(Profile? profile) {
+    if (profile != null) {
+      setState(() {
+        _fullname = profile.fullname;
+        _location = profile.location;
+        _department = profile.department;
+        _year = profile.year;
+        _semester = profile.semester;
+        _dateOfBirthController.text = profile.dateOfBirth.toLocal().toString().split(' ')[0]; // Format date
+      });
+    }
+  }
+
+  void _removeImage() {
+    setState(() {
+      _profileImage = null;
+    });
+  }
 
   @override
   void dispose() {
@@ -43,6 +95,10 @@ class _ProfileCreationPageState extends State<ProfileCreationPage> {
     }
   }
 
+  Future<void> _submitForm() async {
+
+  }
+
   Future<void> _selectDate(BuildContext context) async {
     final DateTime? pickedDate = await showDatePicker(
       context: context,
@@ -57,99 +113,31 @@ class _ProfileCreationPageState extends State<ProfileCreationPage> {
     }
   }
 
-  Future<void> _submitForm() async {
-    if (_formKey.currentState!.validate()) {
-      _formKey.currentState!.save();
-
-      final userProvider = Provider.of<UserProvider>(context, listen: false);
-      final token = userProvider.token;
-
-      if (token == null) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Unable to save profile: Missing token')),
-        );
-        return;
-      }
-
-      final uri = Uri.parse('http://10.0.2.2:3001/api/profile/create');
-      final request = http.MultipartRequest('POST', uri)
-        ..headers['Authorization'] = 'Bearer $token'
-        ..fields['full_name'] = _fullname ?? ''
-        ..fields['date_of_birth'] = _dateOfBirthController.text
-        ..fields['location'] = _location ?? ''
-        ..fields['department'] = _department ?? ''
-        ..fields['year'] = _year ?? ''
-        ..fields['semester'] = _semester ?? '';
-
-      if (_profileImage != null) {
-        request.files.add(
-          await http.MultipartFile.fromPath(
-            'profileImage',
-            _profileImage!.path,
-          ),
-        );
-      }
-
-      try {
-        final response = await request.send();
-
-        if (response.statusCode == 201) {
-          final responseData = await response.stream.bytesToString();
-          final responseJson = json.decode(responseData);
-          final profile = Profile.fromJson(responseJson['data']);
-
-          Provider.of<ProfileProvider>(context, listen: false).setProfile(profile);
-
-          ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(content: Text('Profile created successfully')),
-          );
-
-          Navigator.pop(context);
-        } else {
-          final responseData = await response.stream.bytesToString();
-          final errorData = json.decode(responseData);
-          final errorMessage = errorData['message'] ?? 'Profile creation failed';
-
-          ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(content: Text(errorMessage)),
-          );
-        }
-      } catch (error) {
-        print('Error creating profile: $error');
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Error creating profile: $error')),
-        );
-      }
-    }
-  }
-
-  void _removeImage() {
-    setState(() {
-      _profileImage = null;
-    });
-  }
-
   @override
   Widget build(BuildContext context) {
     final user = Provider.of<UserProvider>(context).user;
+    final profile = Provider.of<ProfileProvider>(context).profile;
+
     return Scaffold(
       appBar: AppBar(
         backgroundColor: Color(0xFF118AD4),
         title: Text(
-          'Create Profile, ${user?.name}',
+          'Update Profile, ${user?.name}',
           style: TextStyle(color: Colors.white),
         ),
       ),
-      body: Container(
+      body: _isLoading
+          ? Center(child: CircularProgressIndicator())
+          : Container(
         decoration: BoxDecoration(
           gradient: LinearGradient(
             colors: [
-              Color(0xFF118AD4), // Blue for the top half
-              Colors.white, // White for the bottom half
+              Color(0xFF118AD4),
+              Colors.white,
             ],
             begin: Alignment.topCenter,
             end: Alignment.bottomCenter,
-            stops: [0.3, 0.7], // Defines the split point for the gradient
+            stops: [0.3, 0.7],
           ),
         ),
         child: Padding(
@@ -169,9 +157,10 @@ class _ProfileCreationPageState extends State<ProfileCreationPage> {
                             radius: 70,
                             backgroundImage: _profileImage != null
                                 ? FileImage(File(_profileImage!.path))
-                                : AssetImage('assets/default_profile.png')
-                            as ImageProvider,
-                            child: _profileImage == null
+                                : (profile?.profileImageUrl != null
+                                ? NetworkImage(profile!.profileImageUrl!)
+                                : AssetImage('assets/default_profile.png')) as ImageProvider,
+                            child: _profileImage == null && profile?.profileImageUrl == null
                                 ? Icon(
                               Icons.camera_alt,
                               size: 50,
@@ -206,87 +195,64 @@ class _ProfileCreationPageState extends State<ProfileCreationPage> {
                         children: [
                           Text(
                             "Personal Details",
-                            style: TextStyle(
-                                fontWeight: FontWeight.bold, fontSize: 25),
+                            style: TextStyle(fontWeight: FontWeight.bold, fontSize: 25),
                           ),
                           SizedBox(height: 30),
                           _buildTextFormField(
                             label: 'Full name',
                             icon: Icons.person,
+                            initialValue: _fullname,
                             onSaved: (value) => _fullname = value,
-                            validator: (value) {
-                              if (value == null || value.isEmpty) {
-                                return 'Please enter your full name';
-                              }
-                              return null;
-                            },
+                            validator: (value) => value!.isEmpty ? 'Please enter full name' : null,
                           ),
-                          SizedBox(height: 16),
+                          SizedBox(height: 15),
                           GestureDetector(
                             onTap: () => _selectDate(context),
                             child: AbsorbPointer(
-                              child: _buildTextFormField(
-                                label: 'Date of Birth',
-                                icon: Icons.calendar_today,
+                              child: TextFormField(
                                 controller: _dateOfBirthController,
-                                validator: (value) {
-                                  if (value == null || value.isEmpty) {
-                                    return 'Please enter your date of birth';
-                                  }
-                                  return null;
-                                },
+                                decoration: InputDecoration(
+                                  labelText: "Date of Birth",
+                                  prefixIcon: Icon(Icons.calendar_today),
+                                ),
+                                validator: (value) => value!.isEmpty ? 'Please select a date' : null,
                               ),
                             ),
                           ),
-                          SizedBox(height: 16),
+                          SizedBox(height: 15),
                           _buildTextFormField(
                             label: 'Location',
-                            icon: Icons.location_on,
+                            icon: Icons.location_city,
+                            initialValue: _location,
                             onSaved: (value) => _location = value,
-                            validator: (value) {
-                              if (value == null || value.isEmpty) {
-                                return 'Please enter your location';
-                              }
-                              return null;
-                            },
+                            validator: (value) => value!.isEmpty ? 'Please enter location' : null,
                           ),
-                          SizedBox(height: 16),
+                          SizedBox(height: 15),
                           _buildTextFormField(
                             label: 'Department',
-                            icon: Icons.school,
+                            icon: Icons.work,
+                            initialValue: _department,
                             onSaved: (value) => _department = value,
-                            validator: (value) {
-                              if (value == null || value.isEmpty) {
-                                return 'Please enter your department';
-                              }
-                              return null;
-                            },
+                            validator: (value) => value!.isEmpty ? 'Please enter department' : null,
                           ),
-                          SizedBox(height: 16),
+                          SizedBox(height: 15),
                           _buildTextFormField(
                             label: 'Year',
-                            icon: Icons.timeline,
+                            icon: Icons.calendar_today,
+                            initialValue: _year,
                             onSaved: (value) => _year = value,
-                            validator: (value) {
-                              if (value == null || value.isEmpty) {
-                                return 'Please enter your year';
-                              }
-                              return null;
-                            },
+                            validator: (value) => value!.isEmpty ? 'Please enter year' : null,
                           ),
-                          SizedBox(height: 16),
+                          SizedBox(height: 15),
                           _buildTextFormField(
                             label: 'Semester',
-                            icon: Icons.grade,
+                            icon: Icons.date_range,
+                            initialValue: _semester,
                             onSaved: (value) => _semester = value,
-                            validator: (value) {
-                              if (value == null || value.isEmpty) {
-                                return 'Please enter your semester';
-                              }
-                              return null;
-                            },
+                            validator: (value) => value!.isEmpty ? 'Please enter semester' : null,
                           ),
-                          SizedBox(height: 20),
+
+                          SizedBox(height: 30),
                           Container(
                             width: MediaQuery.of(context).size.width / 2,
                             child: ElevatedButton(
@@ -300,8 +266,7 @@ class _ProfileCreationPageState extends State<ProfileCreationPage> {
                               ),
                               child: Text(
                                 'Save Profile',
-                                style: TextStyle(
-                                    fontSize: 16, color: Colors.white),
+                                style: TextStyle(fontSize: 16, color: Colors.white),
                               ),
                             ),
                           ),
@@ -318,28 +283,24 @@ class _ProfileCreationPageState extends State<ProfileCreationPage> {
     );
   }
 
-  Widget _buildTextFormField({
+  TextFormField _buildTextFormField({
     required String label,
     required IconData icon,
+    String? initialValue,
+    required FormFieldSetter<String> onSaved,
     String? Function(String?)? validator,
-    Function(String?)? onSaved,
-    TextEditingController? controller,
   }) {
     return TextFormField(
-      controller: controller,
+      initialValue: initialValue,
       decoration: InputDecoration(
         labelText: label,
-        prefixIcon: Icon(icon, color: Colors.blueGrey),
-        border: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(15),  // This makes the border curved
-          borderSide: BorderSide.none, // Removes the border color
-        ),
-        filled: true,
-        fillColor: Colors.white,
-        labelStyle: TextStyle(color: Colors.blueGrey),
+        prefixIcon: Icon(icon),
       ),
-      validator: validator,
       onSaved: onSaved,
+      validator: validator,
     );
   }
 }
+
+
+

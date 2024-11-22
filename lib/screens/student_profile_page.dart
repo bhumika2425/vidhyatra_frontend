@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:provider/provider.dart';
+import 'package:vidhyatra_flutter/screens/student_profile_update.dart';
 
 import '../providers/profile_provider.dart';
 import '../providers/user_provider.dart';
@@ -17,7 +18,7 @@ class _StudentProfilePageState extends State<StudentProfilePage> {
   void initState() {
     super.initState();
     final profileProvider =
-    Provider.of<ProfileProvider>(context, listen: false);
+        Provider.of<ProfileProvider>(context, listen: false);
     final userProvider = Provider.of<UserProvider>(context, listen: false);
     final token = userProvider.token;
 
@@ -40,6 +41,8 @@ class _StudentProfilePageState extends State<StudentProfilePage> {
     }
   }
 
+
+
   @override
   Widget build(BuildContext context) {
     final profileProvider = Provider.of<ProfileProvider>(context);
@@ -52,149 +55,162 @@ class _StudentProfilePageState extends State<StudentProfilePage> {
       body: _isLoading
           ? Center(child: CircularProgressIndicator())
           : profile != null
-          ? SingleChildScrollView(
-        padding: const EdgeInsets.all(16.0),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.center,
-          children: [
-            Column(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                CircleAvatar(
-                  radius: 70,
-                  backgroundImage: profile.profileImageUrl != null
-                      ? NetworkImage(profile.profileImageUrl!)
-                      : AssetImage('assets/default_profile.png')
-                  as ImageProvider,
-                ),
-                SizedBox(height: 20),
-                Text(
-                  profile.nickname ?? 'N/A',
-                  style: TextStyle(
-                    fontSize: 30,
-                    fontWeight: FontWeight.bold,
-                  ),
-                  textAlign: TextAlign.center,
-                ),
-                SizedBox(height: 20),
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.center,
+              ? SingleChildScrollView(
+                padding: const EdgeInsets.all(16.0),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.center,
                   children: [
-                    // Edit Profile Button
-                    OutlinedButton(
-                      style: OutlinedButton.styleFrom(
-                        side: BorderSide(color: Colors.black),
-                        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
-                        padding: EdgeInsets.symmetric(
-                            vertical: 12, horizontal: 24),
-                      ),
-                      onPressed: () {
-                        // Navigate to update profile page
-                      },
-                      child: Row(
-                        mainAxisSize: MainAxisSize.min,
-                        children: [
-                          Icon(Icons.edit, color: Colors.black),
-                          SizedBox(width: 8),
-                          Text(
-                            'Edit Profile',
-                            style: TextStyle(
-                                color: Colors.black, fontSize: 14),
+                    Column(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        CircleAvatar(
+                          radius: 70,
+                          backgroundImage: profile.profileImageUrl != null
+                              ? NetworkImage(profile.profileImageUrl!)
+                              : AssetImage('assets/default_profile.png')
+                                  as ImageProvider,
+                        ),
+                        SizedBox(height: 20),
+                        Text(
+                          profile.fullname ?? 'N/A',
+                          style: TextStyle(
+                            fontSize: 30,
+                            fontWeight: FontWeight.bold,
                           ),
-                        ],
-                      ),
-                    ),
-                    SizedBox(width: 20),
+                          textAlign: TextAlign.center,
+                        ),
+                        SizedBox(height: 20),
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            // Edit Profile Button
+                            OutlinedButton(
+                              style: OutlinedButton.styleFrom(
+                                side: BorderSide(color: Colors.black),
+                                shape: RoundedRectangleBorder(
+                                    borderRadius:
+                                        BorderRadius.circular(12)),
+                                padding: EdgeInsets.symmetric(
+                                    vertical: 12, horizontal: 24),
+                              ),
+                              onPressed: () {
+                                // Navigate to update profile page
+                                Navigator.push(
+                                  context,
+                                  MaterialPageRoute(builder: (context) => StudentProfileUpdate()),
+                                );
+                              },
+                              child: Row(
+                                mainAxisSize: MainAxisSize.min,
+                                children: [
+                                  Icon(Icons.edit, color: Colors.black),
+                                  SizedBox(width: 8),
+                                  Text(
+                                    'Edit Profile',
+                                    style: TextStyle(
+                                        color: Colors.black, fontSize: 14),
+                                  ),
+                                ],
+                              ),
+                            ),
+                            SizedBox(width: 20),
 
-                    // Share Profile Button
-                    OutlinedButton(
-                      style: OutlinedButton.styleFrom(
-                        side: BorderSide(color: Colors.black),
-                        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
-                        padding: EdgeInsets.symmetric(
-                            vertical: 12, horizontal: 24),
+                            // Share Profile Button
+                            OutlinedButton(
+                              style: OutlinedButton.styleFrom(
+                                side: BorderSide(color: Colors.black),
+                                shape: RoundedRectangleBorder(
+                                    borderRadius:
+                                        BorderRadius.circular(12)),
+                                padding: EdgeInsets.symmetric(
+                                    vertical: 12, horizontal: 24),
+                              ),
+                              onPressed: () {
+                                // Implement share profile functionality
+                                _shareProfile();
+                              },
+                              child: Row(
+                                mainAxisSize: MainAxisSize.min,
+                                children: [
+                                  Icon(Icons.share, color: Colors.black),
+                                  SizedBox(width: 8),
+                                  Text(
+                                    'Share Profile',
+                                    style: TextStyle(
+                                        color: Colors.black, fontSize: 14),
+                                  ),
+                                ],
+                              ),
+                            ),
+                          ],
+                        ),
+                      ],
+                    ),
+                    SizedBox(height: 20),
+                    Card(
+                      elevation: 4,
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(12),
                       ),
-                      onPressed: () {
-                        // Implement share profile functionality
-                        _shareProfile();
-                      },
-                      child: Row(
-                        mainAxisSize: MainAxisSize.min,
-                        children: [
-                          Icon(Icons.share, color: Colors.black),
-                          SizedBox(width: 8),
-                          Text(
-                            'Share Profile',
-                            style: TextStyle(
-                                color: Colors.black, fontSize: 14),
-                          ),
-                        ],
+                      margin: const EdgeInsets.symmetric(vertical: 10),
+                      child: Padding(
+                        padding: const EdgeInsets.all(16.0),
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Align(
+                              alignment: Alignment.centerLeft,
+                              child: Text(
+                                'Personal Details',
+                                style: TextStyle(
+                                  fontSize: 23,
+                                  fontWeight: FontWeight.bold,
+                                  color: Colors.black87,
+                                ),
+                              ),
+                            ),
+                            SizedBox(
+                                height:
+                                    10), // Adds some space between the titles
+                            ProfileDetailRow(
+                              icon: FontAwesomeIcons.calendarAlt,
+                              label: 'Date of Birth',
+                              value: profile.dateOfBirth != null
+                                  ? profile.dateOfBirth!
+                                      .toLocal()
+                                      .toString()
+                                      .split(' ')[0]
+                                  : 'N/A',
+                            ),
+                            ProfileDetailRow(
+                              icon: FontAwesomeIcons.mapMarkerAlt,
+                              label: 'Location',
+                              value: profile.location ?? 'N/A',
+                            ),
+                            ProfileDetailRow(
+                              icon: FontAwesomeIcons.graduationCap,
+                              label: 'Department',
+                              value: profile.department ?? 'N/A',
+                            ),
+                            ProfileDetailRow(
+                              icon: FontAwesomeIcons.timeline,
+                              label: 'Year',
+                              value: profile.year ?? 'N/A',
+                            ),
+                            ProfileDetailRow(
+                              icon: FontAwesomeIcons.graduationCap,
+                              label: 'Semester',
+                              value: profile.semester ?? 'N/A',
+                            ),
+                          ],
+                        ),
                       ),
                     ),
+                    SizedBox(height: 30),
                   ],
                 ),
-              ],
-            ),
-            SizedBox(height: 20),
-            Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Align(
-                  alignment: Alignment.centerLeft,
-                  child: Text(
-                    'Personal Details',
-                    style: TextStyle(
-                      fontSize: 23,
-                      fontWeight: FontWeight.bold,
-                      color: Colors.black87,
-                    ),
-                  ),
-                ),
-                SizedBox(height: 10), // Adds some space between the titles
-                Align(
-                  alignment: Alignment.centerLeft,
-                  child: Text(
-                    'Personal Information',
-                    style: TextStyle(
-                      fontSize: 18,
-                      color: Colors.black54,
-                    ),
-                  ),
-                ),
-              ],
-            ),
-
-
-            ProfileDetailRow(
-              icon: FontAwesomeIcons.calendarAlt,
-              label: 'Date of Birth',
-              value: profile.dateOfBirth != null
-                  ? profile.dateOfBirth!
-                  .toLocal()
-                  .toString()
-                  .split(' ')[0]
-                  : 'N/A',
-            ),
-            ProfileDetailRow(
-              icon: FontAwesomeIcons.mapMarkerAlt,
-              label: 'Location',
-              value: profile.location ?? 'N/A',
-            ),
-            ProfileDetailRow(
-              icon: FontAwesomeIcons.school,
-              label: 'Year',
-              value: profile.year ?? 'N/A',
-            ),
-            ProfileDetailRow(
-              icon: FontAwesomeIcons.graduationCap,
-              label: 'Semester',
-              value: profile.semester ?? 'N/A',
-            ),
-            SizedBox(height: 30),
-          ],
-        ),
-      )
-          : Center(child: Text('Profile not found')),
+              )
+              : Center(child: Text('Profile not found')),
     );
   }
 
@@ -238,22 +254,31 @@ class ProfileDetailRow extends StatelessWidget {
     return Padding(
       padding: const EdgeInsets.symmetric(vertical: 8.0),
       child: Row(
+        crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Icon(icon, color: Colors.red),
+          Icon(icon, color: Color(0xFF118AD4)),
           SizedBox(width: 15),
-          Text(
-            '$label: ',
-            style: TextStyle(
-              fontSize: 16,
-              fontWeight: FontWeight.bold,
-              color: Colors.black87,
-            ),
-          ),
           Expanded(
-            child: Text(
-              value,
-              style: TextStyle(fontSize: 16, color: Colors.black54),
-              overflow: TextOverflow.ellipsis,
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  label,
+                  style: TextStyle(
+                    fontSize: 16, // Smaller font size for the label
+                    color: Colors.black54, // Lighter color for the label
+                  ),
+                ),
+                SizedBox(height: 4), // Spacing between label and value
+                Text(
+                  value,
+                  style: TextStyle(
+                    fontSize: 18, // Larger font size for the value
+                    fontWeight: FontWeight.bold,
+                    color: Colors.black87, // Darker color for the value
+                  ),
+                ),
+              ],
             ),
           ),
         ],
