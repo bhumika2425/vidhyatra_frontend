@@ -48,7 +48,7 @@ class VidhyatraApp extends StatelessWidget {
           '/dashboard': (context) => StudentDashboard(), // Add this line
           '/profile': (context) => StudentProfilePage(), // Add Profile Page route
           '/payment': (context) => PaymentPage(), // Add Profile Page route
-          '/calendar': (context) => CalendarPage(), // Add Profile Page route
+          '/calendar': (context) => Calendar(), // Add Profile Page route
           '/schedule': (context) => WeeklyRoutinePage(), // Add Profile Page route
           // You can also add other routes here
         },

@@ -1,115 +1,569 @@
+// import 'package:flutter/material.dart';
+// import 'package:table_calendar/table_calendar.dart';
+//
+// class CustomCalendarPage extends StatefulWidget {
+//   @override
+//   _CustomCalendarPageState createState() => _CustomCalendarPageState();
+// }
+//
+// class _CustomCalendarPageState extends State<CustomCalendarPage> {
+//   DateTime _focusedDay = DateTime.now();
+//   CalendarFormat _calendarFormat = CalendarFormat.month;
+//   int _selectedMonth = DateTime.now().month;
+//   int _selectedYear = DateTime.now().year;
+//
+//   @override
+//   Widget build(BuildContext context) {
+//     return Scaffold(
+//       appBar: AppBar(
+//         title: Text('Calendar'),
+//         centerTitle: true,
+//       ),
+//       body: Column(
+//         children: [
+//           // Centered Year and Month selection dropdowns
+//           Padding(
+//             padding: const EdgeInsets.all(8.0),
+//             child: Center(
+//               child: Row(
+//                 mainAxisAlignment: MainAxisAlignment.center, // Center the dropdowns horizontally
+//                 children: [
+//                   // Year dropdown
+//                   Container(
+//                     padding: EdgeInsets.symmetric(horizontal: 10),
+//                     child: DropdownButton<int>(
+//                       value: _selectedYear,
+//                       iconSize: 28,  // Change icon size (dropdown arrow)
+//                       style: TextStyle(
+//                         fontSize: 18, color: Colors.black, // Change the text size of the year dropdown
+//                       ),
+//                       items: List.generate(5, (index) {
+//                         int year = _selectedYear - 2 + index; // Show 5 years around the selected year
+//                         return DropdownMenuItem<int>(
+//                           value: year,
+//                           child: Text(year.toString()),
+//                         );
+//                       }),
+//                       onChanged: (value) {
+//                         setState(() {
+//                           _selectedYear = value!;
+//                           _focusedDay = DateTime(_selectedYear, _selectedMonth);
+//                         });
+//                       },
+//                     ),
+//                   ),
+//                   // Month dropdown
+//                   Container(
+//                     padding: EdgeInsets.symmetric(horizontal: 10),
+//                     child: DropdownButton<int>(
+//                       value: _selectedMonth,
+//                       iconSize: 28, // Change icon size (dropdown arrow)
+//                       style: TextStyle(
+//                         fontSize: 18, color: Colors.black, // Change the text size of the month dropdown
+//                       ),
+//                       items: List.generate(12, (index) {
+//                         return DropdownMenuItem<int>(
+//                           value: index + 1,
+//                           child: Text(
+//                             _getMonthName(index + 1),
+//                             style: TextStyle(fontSize: 18),
+//                           ),
+//                         );
+//                       }),
+//                       onChanged: (value) {
+//                         setState(() {
+//                           _selectedMonth = value!;
+//                           _focusedDay = DateTime(_selectedYear, _selectedMonth);
+//                         });
+//                       },
+//                     ),
+//                   ),
+//                 ],
+//               ),
+//             ),
+//           ),
+//
+//           // Spacer to push the month and year below the dropdowns
+//           SizedBox(height: 10), // Add some space between the dropdowns and the current month/year text
+//
+//           // Display current month and year just below the dropdowns, right-aligned
+//           Padding(
+//             padding: const EdgeInsets.only(right: 16.0),
+//             child: Align(
+//               alignment: Alignment.centerRight,
+//               child: Text(
+//                 '${_getMonthName(_selectedMonth)} $_selectedYear',
+//                 style: TextStyle(
+//                   fontSize: 20,
+//                   fontWeight: FontWeight.bold,
+//                 ),
+//               ),
+//             ),
+//           ),
+//
+//           // Calendar with month navigation
+//           Expanded(
+//             child: TableCalendar(
+//               focusedDay: _focusedDay,
+//               firstDay: DateTime(_focusedDay.year, 1),
+//               lastDay: DateTime(_focusedDay.year, 12, 31),
+//               calendarFormat: _calendarFormat,
+//               selectedDayPredicate: (day) {
+//                 return isSameDay(_focusedDay, day);
+//               },
+//               onDaySelected: (selectedDay, focusedDay) {
+//                 setState(() {
+//                   _focusedDay = focusedDay;
+//                 });
+//               },
+//               onPageChanged: (focusedDay) {
+//                 setState(() {
+//                   _focusedDay = focusedDay;
+//                   _selectedMonth = focusedDay.month;
+//                 });
+//               },
+//               headerVisible: false, // Hide the default header
+//               calendarBuilders: CalendarBuilders(
+//                 defaultBuilder: (context, day, focusedDay) {
+//                   return Container(
+//                     margin: const EdgeInsets.all(6.0),
+//                     alignment: Alignment.center,
+//                     decoration: BoxDecoration(
+//                       color: Colors.grey[200],
+//                       borderRadius: BorderRadius.circular(8),
+//                     ),
+//                     child: Text(
+//                       day.day.toString(),
+//                       style: TextStyle(fontSize: 16, color: Colors.black87),
+//                     ),
+//                   );
+//                 },
+//                 todayBuilder: (context, day, focusedDay) {
+//                   return Container(
+//                     margin: const EdgeInsets.all(6.0),
+//                     alignment: Alignment.center,
+//                     decoration: BoxDecoration(
+//                       color: Colors.blueAccent,
+//                       borderRadius: BorderRadius.circular(8),
+//                     ),
+//                     child: Text(
+//                       day.day.toString(),
+//                       style: TextStyle(fontSize: 16, color: Colors.white),
+//                     ),
+//                   );
+//                 },
+//                 selectedBuilder: (context, day, focusedDay) {
+//                   return Container(
+//                     margin: const EdgeInsets.all(6.0),
+//                     alignment: Alignment.center,
+//                     decoration: BoxDecoration(
+//                       color: Colors.orange,
+//                       borderRadius: BorderRadius.circular(8),
+//                     ),
+//                     child: Text(
+//                       day.day.toString(),
+//                       style: TextStyle(fontSize: 16, color: Colors.white),
+//                     ),
+//                   );
+//                 },
+//               ),
+//             ),
+//           ),
+//         ],
+//       ),
+//     );
+//   }
+//
+//   // Helper function to get month names
+//   String _getMonthName(int month) {
+//     const monthNames = [
+//       'Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec',
+//     ];
+//     return monthNames[month - 1];
+//   }
+// }
+
 
 import 'package:flutter/material.dart';
 import 'package:table_calendar/table_calendar.dart';
-// import 'package:http/http.dart' as http;
-import 'dart:convert'; // For parsing JSON
+import 'package:intl/intl.dart'; // Import the intl package for date formatting
 
-class CalendarPage extends StatefulWidget {
+class Calendar extends StatefulWidget {
+  const Calendar({super.key});
+
   @override
-  _CalendarPageState createState() => _CalendarPageState();
+  State<Calendar> createState() => _CalendarState();
 }
 
-class _CalendarPageState extends State<CalendarPage> {
-  CalendarFormat _calendarFormat = CalendarFormat.month;
-  DateTime _focusedDay = DateTime.now();
-  DateTime? _selectedDay;
-  Map<DateTime, List<dynamic>> _events = {};
+class _CalendarState extends State<Calendar> {
+  // State for the toggle buttons
+  List<bool> _isSelected = [true, false];
+
+  // Selected date for each calendar
+  DateTime _selectedAcademicDate = DateTime.now();
+  DateTime _selectedEventDate = DateTime.now();
+
+  // Initialize the focused day for each calendar
+  late DateTime _focusedAcademicDay;
+  late DateTime _focusedEventDay;
+
+  // Define the first and last day for both calendars
+  late DateTime _firstDay;
+  late DateTime _lastDay;
+
+  // Store the list of available years (10 years before and after the current year)
+  late List<int> _years;
+  late int _selectedYear;
+
+  // Sample event data for specific dates (example)
+  Map<DateTime, List<String>> _events = {
+    DateTime(2024, 08, 08): ['Event 1: Bhumika bhai ko birthday'],
+    DateTime(2024, 10, 11): ['Event 1: Saurabh dai ko birthday'],
+    DateTime(2024, 11, 23): [
+      'Event 1: Academic Workshop',
+      'Event 2: Conference'
+    ],
+    DateTime(2024, 11, 24): ['Event 1: Sports Day'],
+    DateTime(2024, 12, 1): ['Event 1: Festival'],
+    // Add more events as needed
+  };
 
   @override
   void initState() {
     super.initState();
-    // _fetchEventsFromBackend(); // Fetch events when page is initialized
+    _focusedAcademicDay = DateTime.now();
+    _focusedEventDay = DateTime.now();
+
+    // Set the first and last days of the calendar
+    _firstDay = DateTime(DateTime.now().year - 10, 1, 1); // 10 years ago
+    _lastDay = DateTime(DateTime.now().year + 10, 12, 31); // 10 years from now
+
+    // Initialize years list and selected year (10 years before to 10 years after)
+    _years = List.generate(21, (index) => DateTime.now().year - 10 + index);
+    _selectedYear = DateTime.now().year;
   }
 
-  // Method to fetch events from the backend
-  // Future<void> _fetchEventsFromBackend() async {
-  //   final response = await http.get(Uri.parse('https://example.com/events')); // Replace with your API URL
-  //
-  //   if (response.statusCode == 200) {
-  //     final data = json.decode(response.body); // Assuming your backend returns JSON data
-  //     Map<DateTime, List<dynamic>> fetchedEvents = {};
-  //
-  //     for (var event in data) {
-  //       DateTime eventDate = DateTime.parse(event['date']); // Parse the date from your backend
-  //       String eventTitle = event['title']; // Get the event title
-  //
-  //       // Add events to the map
-  //       if (fetchedEvents[eventDate] == null) {
-  //         fetchedEvents[eventDate] = [eventTitle];
-  //       } else {
-  //         fetchedEvents[eventDate]!.add(eventTitle);
-  //       }
-  //     }
-  //
-  //     setState(() {
-  //       _events = fetchedEvents; // Update the state with fetched events
-  //     });
-  //   } else {
-  //     // Handle error
-  //     throw Exception('Failed to load events');
-  //   }
-  // }
+  // Get events for the selected date
+  List<String> _getEventsForDay(DateTime day) {
+    // Ensure that the comparison takes date only (ignoring time)
+    day = DateTime(day.year, day.month, day.day); // Reset time part to 00:00:00
+    return _events[day] ??
+        []; // Return events for the selected day, or an empty list if none exist
+  }
 
-  // Method to return events for a specific day
-  List<dynamic> _getEventsForDay(DateTime day) {
-    return _events[day] ?? [];
+  // Format date to show only the date part (no time)
+  String _formatDate(DateTime date) {
+    return DateFormat('yyyy-MM-dd').format(date); // Adjust the format as needed
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('Event Calendar'),
+        title: const Text('Calendar'),
       ),
       body: Column(
         children: [
-          TableCalendar(
-            focusedDay: _focusedDay,
-            firstDay: DateTime(2020),
-            lastDay: DateTime(2030),
-            calendarFormat: _calendarFormat,
-            selectedDayPredicate: (day) {
-              return isSameDay(_selectedDay, day);
-            },
-            onDaySelected: (selectedDay, focusedDay) {
-              setState(() {
-                _selectedDay = selectedDay;
-                _focusedDay = focusedDay; // Update focused day
-              });
-            },
-            onFormatChanged: (format) {
-              setState(() {
-                _calendarFormat = format;
-              });
-            },
-            eventLoader: _getEventsForDay, // Loads events for the day
+          Padding(
+            padding: const EdgeInsets.all(16.0),
+            child: ToggleButtons(
+              isSelected: _isSelected,
+              onPressed: (int index) {
+                setState(() {
+                  for (int i = 0; i < _isSelected.length; i++) {
+                    _isSelected[i] = i == index;
+                  }
+                });
+              },
+              borderRadius: BorderRadius.circular(30),
+              selectedColor: Colors.white,
+              fillColor: Theme.of(context).primaryColor,
+              color: Colors.black,
+              constraints: const BoxConstraints(
+                minHeight: 50.0,
+                minWidth: 150.0,
+              ),
+              children: [
+                Padding(
+                  padding: const EdgeInsets.symmetric(vertical: 10),
+                  child: Text(
+                    'Academic Calendar',
+                    style: TextStyle(
+                      fontSize: 16,
+                      fontWeight: FontWeight.bold,
+                      fontFamily: 'Roboto', // You can change the font family
+                    ),
+                  ),
+                ),
+                Padding(
+                  padding: const EdgeInsets.symmetric(vertical: 10),
+                  child: Text(
+                    'Event Calendar',
+                    style: TextStyle(
+                      fontSize: 16,
+                      fontWeight: FontWeight.bold,
+                      fontFamily: 'Roboto', // You can change the font family
+                    ),
+                  ),
+                ),
+              ],
+              splashColor: Colors.grey.withOpacity(0.2), // Add splash effect on tap
+              highlightColor: Colors.transparent, // Remove default highlight color
+              renderBorder: true, // Render the border even when the button is not selected
+              borderWidth: 2.5, // Set border width
+              borderColor: Colors.grey.shade300, // Set border color
+            ),
           ),
-          const SizedBox(height: 8.0),
+          const SizedBox(height: 20),
+          // Year Selection Dropdown
+          Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 16.0),
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                Text("Selected year", style: TextStyle( fontSize: 16),),
+                SizedBox(width: 10,),
+                DropdownButton<int>(
+                  value: _selectedYear,
+                  onChanged: (int? newValue) {
+                    setState(() {
+                      _selectedYear = newValue!;
+                      _focusedAcademicDay = DateTime(_selectedYear,
+                          _focusedAcademicDay.month, _focusedAcademicDay.day);
+                      _focusedEventDay = DateTime(_selectedYear,
+                          _focusedEventDay.month, _focusedEventDay.day);
+                    });
+                  },
+                  items: _years.map<DropdownMenuItem<int>>((int year) {
+                    return DropdownMenuItem<int>(
+                      value: year,
+                      child: Text(year.toString()),
+                    );
+                  }).toList(),
+                ),
+              ],
+            ),
+          ),
+          const SizedBox(height: 16),
+          // Display the selected calendar
           Expanded(
-            child: _buildEventList(),
+            child: _isSelected[0]
+                ? _buildAcademicCalendar() // Academic Calendar
+                : _buildEventCalendar(), // Event Calendar
           ),
         ],
       ),
     );
   }
 
-  // Builds the list of events for the selected day
-  Widget _buildEventList() {
-    final events = _getEventsForDay(_selectedDay ?? _focusedDay);
-
-    if (events.isEmpty) {
-      return Center(
-        child: Text('No events for the selected day'),
-      );
-    }
-
-    return ListView.builder(
-      itemCount: events.length,
-      itemBuilder: (context, index) {
-        return ListTile(
-          title: Text(events[index]),
-        );
-      },
+  Widget _buildAcademicCalendar() {
+    return Column(
+      children: [
+        Container(
+          child: TableCalendar(
+            firstDay: _firstDay,
+            lastDay: _lastDay,
+            focusedDay: _focusedAcademicDay,
+            selectedDayPredicate: (day) {
+              return isSameDay(day, _selectedAcademicDate);
+            },
+            onDaySelected: (selectedDay, focusedDay) {
+              setState(() {
+                _selectedAcademicDate = selectedDay;
+                _focusedAcademicDay = focusedDay;
+                // Update the event date when academic calendar is selected
+                _selectedEventDate = selectedDay;
+              });
+            },
+            headerStyle: HeaderStyle(
+              formatButtonVisible: false,
+              titleCentered: true,
+              headerMargin: const EdgeInsets.only(bottom: 8),
+              titleTextStyle: const TextStyle(
+                fontWeight: FontWeight.bold, // Font weight for the year
+              ),
+            ),
+            calendarStyle: CalendarStyle(
+              todayDecoration: BoxDecoration(
+                color: Colors.blue,
+                // Custom color for today's date in Academic Calendar
+                border: Border.all(
+                    color: Colors.blue, width: 2), // Border for today's date
+              ),
+              selectedDecoration: BoxDecoration(
+                color: Colors.green, // Custom color for selected date
+                border: Border.all(
+                    color: Colors.green, width: 2), // Border for selected date
+              ),
+              selectedTextStyle: const TextStyle(color: Colors.white),
+              // Text color for selected day
+              todayTextStyle: const TextStyle(color: Colors.white),
+            ),
+            daysOfWeekStyle: DaysOfWeekStyle(
+              weekdayStyle: TextStyle(
+                  fontWeight: FontWeight.w500, // Font weight for weekdays
+                  color: Colors.black),
+              weekendStyle: TextStyle(
+                  fontWeight: FontWeight.w300, // Font weight for weekends
+                  color: Colors.red),
+            ),
+          ),
+        ),
+        const SizedBox(height: 20),
+        Text(
+          'Selected Date: ${_formatDate(_selectedAcademicDate)}',
+          style: const TextStyle(fontSize: 16),
+        ),
+      ],
     );
   }
+
+  Widget _buildEventCalendar() {
+    return Column(
+      children: [
+        // TableCalendar widget
+        Container(
+          child: TableCalendar(
+            firstDay: _firstDay,
+            lastDay: _lastDay,
+            focusedDay: _focusedEventDay,
+            selectedDayPredicate: (day) {
+              return isSameDay(day, _selectedEventDate);
+            },
+            onDaySelected: (selectedDay, focusedDay) {
+              setState(() {
+                _selectedEventDate = selectedDay;
+                _focusedEventDay = focusedDay;
+              });
+
+              // Navigate to event details page when a day is selected
+              Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (context) => EventDetailsPage(selectedDate: selectedDay),
+                ),
+              );
+            },
+            headerStyle: HeaderStyle(
+              formatButtonVisible: false,
+              titleCentered: true,
+              headerMargin: const EdgeInsets.only(bottom: 8),
+              titleTextStyle: const TextStyle(
+                fontWeight: FontWeight.bold,
+              ),
+            ),
+            calendarStyle: CalendarStyle(
+              todayDecoration: BoxDecoration(
+                color: Colors.orange,
+                border: Border.all(color: Colors.orange, width: 2),
+              ),
+              selectedDecoration: BoxDecoration(
+                color: Colors.green,
+                border: Border.all(color: Colors.green, width: 2),
+              ),
+              selectedTextStyle: const TextStyle(color: Colors.white),
+              todayTextStyle: const TextStyle(color: Colors.white),
+            ),
+            daysOfWeekStyle: DaysOfWeekStyle(
+              weekdayStyle: TextStyle(fontWeight: FontWeight.w500, color: Colors.black),
+              weekendStyle: TextStyle(fontWeight: FontWeight.w300, color: Colors.red),
+            ),
+          ),
+        ),
+
+        // Display selected date and events right below the calendar
+        const SizedBox(height: 20),
+        Text(
+          'Selected Date: ${_formatDate(_selectedEventDate)}',
+          style: const TextStyle(fontSize: 16),
+        ),
+
+        // Display events for the selected date
+        Padding(
+          padding: const EdgeInsets.all(16.0),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text(
+                'Events for ${_formatDate(_selectedEventDate)}:',
+                style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+              ),
+              const SizedBox(height: 8),
+              // Display events for the selected date
+              ..._getEventsForDay(_selectedEventDate)
+                  .map((event) => Text(event))
+                  .toList(),
+              if (_getEventsForDay(_selectedEventDate).isEmpty)
+                const Text('No events for this day.'),
+            ],
+          ),
+        ),
+      ],
+    );
+  }
+
 }
+
+class EventDetailsPage extends StatelessWidget {
+  final DateTime selectedDate;
+
+  // Constructor to pass the selected date
+  EventDetailsPage({required this.selectedDate});
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(
+        title: Text('Events for ${_formatDate(selectedDate)}'),
+      ),
+      body: Column(
+        children: [
+          // You can display the list of events for the selected day here
+          // Example:
+          Text('Events for ${_formatDate(selectedDate)}'),
+          // Use your own logic to fetch events for the selected day
+          Expanded(
+            child: FutureBuilder<List<String>>(
+              future: _getEventsForDay(selectedDate), // Replace with your method
+              builder: (context, snapshot) {
+                if (snapshot.connectionState == ConnectionState.waiting) {
+                  return Center(child: CircularProgressIndicator());
+                } else if (snapshot.hasError) {
+                  return Center(child: Text('Error: ${snapshot.error}'));
+                } else if (!snapshot.hasData || snapshot.data!.isEmpty) {
+                  return Center(child: Text('No events for this day.'));
+                } else {
+                  return ListView.builder(
+                    itemCount: snapshot.data!.length,
+                    itemBuilder: (context, index) {
+                      return ListTile(
+                        title: Text(snapshot.data![index]),
+                        // Optionally, add an image for each event
+                        // leading: Image.network('your_image_url'),
+                      );
+                    },
+                  );
+                }
+              },
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  // Example method to get events for the day (replace with your logic)
+  Future<List<String>> _getEventsForDay(DateTime date) async {
+    // You can fetch events from a database or API
+    // Here's a sample return:
+    return ['Event 1', 'Event 2', 'Event 3'];
+  }
+
+  // Helper method to format the date
+  String _formatDate(DateTime date) {
+    return '${date.year}-${date.month}-${date.day}';
+  }
+}
+
+
+
