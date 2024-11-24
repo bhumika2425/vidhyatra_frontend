@@ -4,6 +4,7 @@ import 'package:provider/provider.dart';
 import 'package:vidhyatra_flutter/providers/profile_provider.dart';
 import 'package:vidhyatra_flutter/providers/user_provider.dart';
 import 'package:vidhyatra_flutter/screens/calendar.dart';
+import 'package:vidhyatra_flutter/screens/chat_page.dart';
 import 'package:vidhyatra_flutter/screens/login.dart';
 import 'package:vidhyatra_flutter/screens/payment_page.dart';
 import 'package:vidhyatra_flutter/screens/register.dart';
@@ -50,6 +51,7 @@ class VidhyatraApp extends StatelessWidget {
           '/payment': (context) => PaymentPage(), // Add Profile Page route
           '/calendar': (context) => Calendar(), // Add Profile Page route
           '/schedule': (context) => WeeklyRoutinePage(), // Add Profile Page route
+          '/messages': (context) => ChatPage(),
           // You can also add other routes here
         },
       ),

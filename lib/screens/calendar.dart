@@ -1,188 +1,4 @@
-// import 'package:flutter/material.dart';
-// import 'package:table_calendar/table_calendar.dart';
-//
-// class CustomCalendarPage extends StatefulWidget {
-//   @override
-//   _CustomCalendarPageState createState() => _CustomCalendarPageState();
-// }
-//
-// class _CustomCalendarPageState extends State<CustomCalendarPage> {
-//   DateTime _focusedDay = DateTime.now();
-//   CalendarFormat _calendarFormat = CalendarFormat.month;
-//   int _selectedMonth = DateTime.now().month;
-//   int _selectedYear = DateTime.now().year;
-//
-//   @override
-//   Widget build(BuildContext context) {
-//     return Scaffold(
-//       appBar: AppBar(
-//         title: Text('Calendar'),
-//         centerTitle: true,
-//       ),
-//       body: Column(
-//         children: [
-//           // Centered Year and Month selection dropdowns
-//           Padding(
-//             padding: const EdgeInsets.all(8.0),
-//             child: Center(
-//               child: Row(
-//                 mainAxisAlignment: MainAxisAlignment.center, // Center the dropdowns horizontally
-//                 children: [
-//                   // Year dropdown
-//                   Container(
-//                     padding: EdgeInsets.symmetric(horizontal: 10),
-//                     child: DropdownButton<int>(
-//                       value: _selectedYear,
-//                       iconSize: 28,  // Change icon size (dropdown arrow)
-//                       style: TextStyle(
-//                         fontSize: 18, color: Colors.black, // Change the text size of the year dropdown
-//                       ),
-//                       items: List.generate(5, (index) {
-//                         int year = _selectedYear - 2 + index; // Show 5 years around the selected year
-//                         return DropdownMenuItem<int>(
-//                           value: year,
-//                           child: Text(year.toString()),
-//                         );
-//                       }),
-//                       onChanged: (value) {
-//                         setState(() {
-//                           _selectedYear = value!;
-//                           _focusedDay = DateTime(_selectedYear, _selectedMonth);
-//                         });
-//                       },
-//                     ),
-//                   ),
-//                   // Month dropdown
-//                   Container(
-//                     padding: EdgeInsets.symmetric(horizontal: 10),
-//                     child: DropdownButton<int>(
-//                       value: _selectedMonth,
-//                       iconSize: 28, // Change icon size (dropdown arrow)
-//                       style: TextStyle(
-//                         fontSize: 18, color: Colors.black, // Change the text size of the month dropdown
-//                       ),
-//                       items: List.generate(12, (index) {
-//                         return DropdownMenuItem<int>(
-//                           value: index + 1,
-//                           child: Text(
-//                             _getMonthName(index + 1),
-//                             style: TextStyle(fontSize: 18),
-//                           ),
-//                         );
-//                       }),
-//                       onChanged: (value) {
-//                         setState(() {
-//                           _selectedMonth = value!;
-//                           _focusedDay = DateTime(_selectedYear, _selectedMonth);
-//                         });
-//                       },
-//                     ),
-//                   ),
-//                 ],
-//               ),
-//             ),
-//           ),
-//
-//           // Spacer to push the month and year below the dropdowns
-//           SizedBox(height: 10), // Add some space between the dropdowns and the current month/year text
-//
-//           // Display current month and year just below the dropdowns, right-aligned
-//           Padding(
-//             padding: const EdgeInsets.only(right: 16.0),
-//             child: Align(
-//               alignment: Alignment.centerRight,
-//               child: Text(
-//                 '${_getMonthName(_selectedMonth)} $_selectedYear',
-//                 style: TextStyle(
-//                   fontSize: 20,
-//                   fontWeight: FontWeight.bold,
-//                 ),
-//               ),
-//             ),
-//           ),
-//
-//           // Calendar with month navigation
-//           Expanded(
-//             child: TableCalendar(
-//               focusedDay: _focusedDay,
-//               firstDay: DateTime(_focusedDay.year, 1),
-//               lastDay: DateTime(_focusedDay.year, 12, 31),
-//               calendarFormat: _calendarFormat,
-//               selectedDayPredicate: (day) {
-//                 return isSameDay(_focusedDay, day);
-//               },
-//               onDaySelected: (selectedDay, focusedDay) {
-//                 setState(() {
-//                   _focusedDay = focusedDay;
-//                 });
-//               },
-//               onPageChanged: (focusedDay) {
-//                 setState(() {
-//                   _focusedDay = focusedDay;
-//                   _selectedMonth = focusedDay.month;
-//                 });
-//               },
-//               headerVisible: false, // Hide the default header
-//               calendarBuilders: CalendarBuilders(
-//                 defaultBuilder: (context, day, focusedDay) {
-//                   return Container(
-//                     margin: const EdgeInsets.all(6.0),
-//                     alignment: Alignment.center,
-//                     decoration: BoxDecoration(
-//                       color: Colors.grey[200],
-//                       borderRadius: BorderRadius.circular(8),
-//                     ),
-//                     child: Text(
-//                       day.day.toString(),
-//                       style: TextStyle(fontSize: 16, color: Colors.black87),
-//                     ),
-//                   );
-//                 },
-//                 todayBuilder: (context, day, focusedDay) {
-//                   return Container(
-//                     margin: const EdgeInsets.all(6.0),
-//                     alignment: Alignment.center,
-//                     decoration: BoxDecoration(
-//                       color: Colors.blueAccent,
-//                       borderRadius: BorderRadius.circular(8),
-//                     ),
-//                     child: Text(
-//                       day.day.toString(),
-//                       style: TextStyle(fontSize: 16, color: Colors.white),
-//                     ),
-//                   );
-//                 },
-//                 selectedBuilder: (context, day, focusedDay) {
-//                   return Container(
-//                     margin: const EdgeInsets.all(6.0),
-//                     alignment: Alignment.center,
-//                     decoration: BoxDecoration(
-//                       color: Colors.orange,
-//                       borderRadius: BorderRadius.circular(8),
-//                     ),
-//                     child: Text(
-//                       day.day.toString(),
-//                       style: TextStyle(fontSize: 16, color: Colors.white),
-//                     ),
-//                   );
-//                 },
-//               ),
-//             ),
-//           ),
-//         ],
-//       ),
-//     );
-//   }
-//
-//   // Helper function to get month names
-//   String _getMonthName(int month) {
-//     const monthNames = [
-//       'Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec',
-//     ];
-//     return monthNames[month - 1];
-//   }
-// }
-
+import 'dart:async';
 
 import 'package:flutter/material.dart';
 import 'package:table_calendar/table_calendar.dart';
@@ -417,68 +233,75 @@ class _CalendarState extends State<Calendar> {
       ],
     );
   }
-
   Widget _buildEventCalendar() {
+    Timer? _tapTimer; // Timer to differentiate single and double taps
+    DateTime? _tappedDate;
+
     return Column(
       children: [
-        // TableCalendar widget
-        Container(
-          child: TableCalendar(
-            firstDay: _firstDay,
-            lastDay: _lastDay,
-            focusedDay: _focusedEventDay,
-            selectedDayPredicate: (day) {
-              return isSameDay(day, _selectedEventDate);
-            },
-            onDaySelected: (selectedDay, focusedDay) {
-              setState(() {
-                _selectedEventDate = selectedDay;
-                _focusedEventDay = focusedDay;
-              });
+        TableCalendar(
+          firstDay: _firstDay,
+          lastDay: _lastDay,
+          focusedDay: _focusedEventDay,
+          selectedDayPredicate: (day) {
+            return isSameDay(day, _selectedEventDate);
+          },
+          onDaySelected: (selectedDay, focusedDay) {
+            // Handle single and double-tap logic
+            if (_tapTimer != null) {
+              _tapTimer!.cancel(); // Cancel the timer for double tap
+              _tapTimer = null;
 
-              // Navigate to event details page when a day is selected
+              // Double-tap logic: Navigate to the event details page
               Navigator.push(
                 context,
                 MaterialPageRoute(
                   builder: (context) => EventDetailsPage(selectedDate: selectedDay),
                 ),
               );
-            },
-            headerStyle: HeaderStyle(
-              formatButtonVisible: false,
-              titleCentered: true,
-              headerMargin: const EdgeInsets.only(bottom: 8),
-              titleTextStyle: const TextStyle(
-                fontWeight: FontWeight.bold,
-              ),
-            ),
-            calendarStyle: CalendarStyle(
-              todayDecoration: BoxDecoration(
-                color: Colors.orange,
-                border: Border.all(color: Colors.orange, width: 2),
-              ),
-              selectedDecoration: BoxDecoration(
-                color: Colors.green,
-                border: Border.all(color: Colors.green, width: 2),
-              ),
-              selectedTextStyle: const TextStyle(color: Colors.white),
-              todayTextStyle: const TextStyle(color: Colors.white),
-            ),
-            daysOfWeekStyle: DaysOfWeekStyle(
-              weekdayStyle: TextStyle(fontWeight: FontWeight.w500, color: Colors.black),
-              weekendStyle: TextStyle(fontWeight: FontWeight.w300, color: Colors.red),
+            } else {
+              // Set up a timer for single tap
+              _tappedDate = selectedDay;
+              _tapTimer = Timer(const Duration(milliseconds: 300), () {
+                setState(() {
+                  // Single-tap logic: Show events for the selected day
+                  _selectedEventDate = _tappedDate!;
+                  _focusedEventDay = focusedDay;
+                });
+                _tapTimer = null; // Reset the timer
+              });
+            }
+          },
+          headerStyle: HeaderStyle(
+            formatButtonVisible: false,
+            titleCentered: true,
+            headerMargin: const EdgeInsets.only(bottom: 8),
+            titleTextStyle: const TextStyle(
+              fontWeight: FontWeight.bold,
             ),
           ),
+          calendarStyle: CalendarStyle(
+            todayDecoration: BoxDecoration(
+              color: Colors.orange,
+              border: Border.all(color: Colors.orange, width: 2),
+            ),
+            selectedDecoration: BoxDecoration(
+              color: Colors.green,
+              border: Border.all(color: Colors.green, width: 2),
+            ),
+            selectedTextStyle: const TextStyle(color: Colors.white),
+            todayTextStyle: const TextStyle(color: Colors.white),
+          ),
+          daysOfWeekStyle: DaysOfWeekStyle(
+            weekdayStyle: TextStyle(fontWeight: FontWeight.w500, color: Colors.black),
+            weekendStyle: TextStyle(fontWeight: FontWeight.w300, color: Colors.red),
+          ),
         ),
-
-        // Display selected date and events right below the calendar
         const SizedBox(height: 20),
         Text(
           'Selected Date: ${_formatDate(_selectedEventDate)}',
           style: const TextStyle(fontSize: 16),
         ),
-
-        // Display events for the selected date
         Padding(
           padding: const EdgeInsets.all(16.0),
           child: Column(
@@ -489,7 +312,6 @@ class _CalendarState extends State<Calendar> {
                 style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
               ),
               const SizedBox(height: 8),
-              // Display events for the selected date
               ..._getEventsForDay(_selectedEventDate)
                   .map((event) => Text(event))
                   .toList(),
@@ -501,6 +323,7 @@ class _CalendarState extends State<Calendar> {
       ],
     );
   }
+
 
 }
 
