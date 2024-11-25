@@ -95,9 +95,7 @@ class _StudentProfileUpdateState extends State<StudentProfileUpdate> {
     }
   }
 
-  Future<void> _submitForm() async {
 
-  }
 
   Future<void> _selectDate(BuildContext context) async {
     final DateTime? pickedDate = await showDatePicker(
@@ -110,6 +108,96 @@ class _StudentProfileUpdateState extends State<StudentProfileUpdate> {
       setState(() {
         _dateOfBirthController.text = "${pickedDate.toLocal()}".split(' ')[0];
       });
+    }
+  }
+
+  Future<void> _submitForm() async {
+    if (_formKey.currentState?.validate() ?? false) {
+      _formKey.currentState?.save();
+
+      setState(() {
+        _isLoading = true;
+      });
+
+      try {
+        final userProvider = Provider.of<UserProvider>(context, listen: false);
+        final token = userProvider.token;
+
+        if (token == null) {
+          throw Exception('User is not authenticated');
+        }
+
+        // Prepare request body
+        final Map<String, dynamic> body = {
+          'full_name': _fullname,
+          'date_of_birth': _dateOfBirthController.text,
+          'location': _location,
+          'department': _department,
+          'year': _year,
+          'semester': _semester,
+        };
+
+        // Add profile image if it exists
+        if (_profileImage != null) {
+          // Use multipart for image upload
+          var request = http.MultipartRequest(
+            'PUT',
+            Uri.parse('http://10.0.2.2:3001/api/profile/update'),
+          );
+
+          request.headers['Authorization'] = 'Bearer $token';
+          request.fields.addAll(body.map((key, value) => MapEntry(key, value.toString())));
+          request.files.add(await http.MultipartFile.fromPath(
+            'profile_image',
+            _profileImage!.path,
+          ));
+
+          final response = await request.send();
+          if (response.statusCode == 200) {
+            // Handle success
+            final responseBody = await response.stream.bytesToString();
+            final data = json.decode(responseBody);
+            Provider.of<ProfileProvider>(context, listen: false)
+                .setProfile(Profile.fromJson(data['profile']));
+            ScaffoldMessenger.of(context).showSnackBar(
+              SnackBar(content: Text('Profile updated successfully')),
+            );
+            Navigator.pop(context);
+          } else {
+            throw Exception('Failed to update profile');
+          }
+        } else {
+          // Standard JSON request if no image
+          final response = await http.put(
+            Uri.parse('http://10.0.2.2:3001/api/profile/update'),
+            headers: {
+              'Authorization': 'Bearer $token',
+              'Content-Type': 'application/json',
+            },
+            body: json.encode(body),
+          );
+
+          if (response.statusCode == 200) {
+            final data = json.decode(response.body);
+            Provider.of<ProfileProvider>(context, listen: false)
+                .setProfile(Profile.fromJson(data['profile']));
+            ScaffoldMessenger.of(context).showSnackBar(
+              SnackBar(content: Text('Profile updated successfully')),
+            );
+          } else {
+            throw Exception('Failed to update profile');
+          }
+        }
+      } catch (error) {
+        print('Error updating profile: $error');
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('Error: $error')),
+        );
+      } finally {
+        setState(() {
+          _isLoading = false;
+        });
+      }
     }
   }
 
