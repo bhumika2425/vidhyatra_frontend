@@ -1,86 +1,102 @@
 import 'package:flutter/material.dart';
 
-class ForgotPasswordPage extends StatelessWidget {
+import 'package:http/http.dart' as http;
+import 'dart:convert';
+
+import 'EnterOtpPage.dart';
+
+class ForgotPasswordPage extends StatefulWidget {
+  @override
+  _ForgotPasswordPageState createState() => _ForgotPasswordPageState();
+}
+
+class _ForgotPasswordPageState extends State<ForgotPasswordPage> {
+  final _emailController = TextEditingController();
+  bool _isLoading = false;
+  String? _errorMessage;
+
+  Future<void> _sendOtp() async {
+    setState(() {
+      _isLoading = true;
+      _errorMessage = null;
+    });
+
+    final email = _emailController.text.trim();
+
+    if (email.isEmpty) {
+      setState(() {
+        _errorMessage = 'Please enter your email address';
+        _isLoading = false;
+      });
+      return;
+    }
+
+    try {
+      final response = await http.post(
+        Uri.parse('http://10.0.2.2:3001/api/auth/forgot-password'),
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: json.encode({'email': email}),
+      );
+
+      print('Response body: ${response.body}'); // Log response body
+
+      final responseData = json.decode(response.body);
+
+      if (response.statusCode == 200) {
+        // OTP sent successfully
+        ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+          content: Text(responseData['message']),
+        ));
+        Navigator.push(
+          context,
+          MaterialPageRoute(
+            builder: (context) => EnterOtpPage(email: email),
+          ),
+        );
+      } else {
+        // Error response
+        setState(() {
+          _errorMessage = responseData['message'] ?? 'An error occurred';
+        });
+      }
+    } catch (error) {
+      print('Error: $error'); // Log the error for debugging
+      setState(() {
+        _errorMessage = 'Failed to send OTP. Please try again later.';
+      });
+    } finally {
+      setState(() {
+        _isLoading = false;
+      });
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Colors.white, // Light background color
-
+      appBar: AppBar(title: Text('Forgot Password')),
       body: Padding(
-        padding: const EdgeInsets.symmetric(horizontal: 24.0),
+        padding: const EdgeInsets.all(16.0),
         child: Column(
-          crossAxisAlignment: CrossAxisAlignment.center,
           mainAxisAlignment: MainAxisAlignment.center,
+          crossAxisAlignment: CrossAxisAlignment.center,
           children: [
-            Image.asset(
-              'assets/lock_icon.png', // Replace with your lock icon asset
-              height: 300,
-            ),
-            SizedBox(height: 20),
-            Text(
-              "Forgot Password",
-              style: TextStyle(
-                fontSize: 24,
-                fontWeight: FontWeight.bold,
-                color: Colors.black,
-              ),
-            ),
-            SizedBox(height: 20),
-            Text(
-              "Please Enter Your Email Address To Receive a Verification Code.",
-              textAlign: TextAlign.center,
-              style: TextStyle(
-                fontSize: 16,
-                color: Colors.grey[700],
-              ),
-            ),
-            SizedBox(height: 30),
             TextField(
+              controller: _emailController,
               decoration: InputDecoration(
                 labelText: 'Email Address',
-                border: OutlineInputBorder(
-                  borderRadius: BorderRadius.circular(10.0),
-                ),
-              ),
-              keyboardType: TextInputType.emailAddress,
-            ),
-            SizedBox(height: 10),
-            Align(
-              alignment: Alignment.centerRight,
-              child: TextButton(
-                onPressed: () {
-                  // Add alternative method action here
-                },
-                child: Text(
-                  "Try another way",
-                  style: TextStyle(
-                    color: Color(0xFF118AD4),
-                    fontWeight: FontWeight.bold,
-                  ),
-                ),
+                errorText: _errorMessage,
               ),
             ),
+            SizedBox(height: 20),
             ElevatedButton(
-              onPressed: () {
-                // Add send button action here
-              },
-              style: ElevatedButton.styleFrom(
-                backgroundColor: Color(0xFF118AD4), // Button color
-                minimumSize: Size(double.infinity, 50),
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(10),
-                ),
-              ),
-              child: Text(
-                "Send",
-                style: TextStyle(
-                  fontSize: 16,
-                  fontWeight: FontWeight.bold,
-                  color: Colors.white,
-                ),
-              ),
+              onPressed: _isLoading ? null : _sendOtp,
+              child: _isLoading
+                  ? CircularProgressIndicator()
+                  : Text('Send OTP'),
             ),
-
           ],
         ),
       ),

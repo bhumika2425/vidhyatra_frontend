@@ -7,6 +7,7 @@ import 'package:vidhyatra_flutter/screens/calendar.dart';
 import 'package:vidhyatra_flutter/screens/chat_page.dart';
 import 'package:vidhyatra_flutter/screens/forgot_password_page.dart';
 import 'package:vidhyatra_flutter/screens/login.dart';
+import 'package:vidhyatra_flutter/screens/password_reset_page.dart';
 import 'package:vidhyatra_flutter/screens/payment_page.dart';
 import 'package:vidhyatra_flutter/screens/register.dart';
 import 'package:vidhyatra_flutter/screens/student_dashboard.dart';
@@ -54,6 +55,7 @@ class VidhyatraApp extends StatelessWidget {
           '/schedule': (context) => WeeklyRoutinePage(), // Add Profile Page route
           '/messages': (context) => ChatPage(),
           '/forgot_password': (context) => ForgotPasswordPage(), // Forgot Password Page
+          // '/reset-password': (context) => ResetPasswordPage(),
           // You can also add other routes here
         },
       ),
