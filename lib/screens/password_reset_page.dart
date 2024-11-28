@@ -48,19 +48,14 @@ class _ResetPasswordPageState extends State<ResetPasswordPage> {
     }
 
     try {
-      print('Sending reset password request...');
       final response = await http.post(
         Uri.parse('http://10.0.2.2:3001/api/auth/reset-password'),
         headers: {'Content-Type': 'application/json'},
         body: json.encode({
           'email': widget.email,
           'newPassword': newPassword,
-          'confirmPassword': confirmPassword, // Make sure you're sending both
         }),
       );
-
-      print('Response status code: ${response.statusCode}');
-      print('Response body: ${response.body}');
 
       final responseData = json.decode(response.body);
 
@@ -75,7 +70,6 @@ class _ResetPasswordPageState extends State<ResetPasswordPage> {
         });
       }
     } catch (error) {
-      print('Error: $error');
       setState(() {
         _newPasswordError = 'Failed to reset password. Please try again.';
       });
@@ -86,66 +80,83 @@ class _ResetPasswordPageState extends State<ResetPasswordPage> {
     }
   }
 
-
-
   @override
   Widget build(BuildContext context) {
+    final screenHeight = MediaQuery.of(context).size.height;
+    final screenWidth = MediaQuery.of(context).size.width;
+
     return Scaffold(
       appBar: AppBar(title: Text('Reset Password')),
-      body: Padding(
-        padding: const EdgeInsets.all(16.0),
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            TextField(
-              controller: _newPasswordController,
-              obscureText: _obscureNewPassword,
-              decoration: InputDecoration(
-                labelText: 'New Password',
-                errorText: _newPasswordError,
-                suffixIcon: IconButton(
-                  icon: Icon(
-                    _obscureNewPassword
-                        ? Icons.visibility
-                        : Icons.visibility_off,
+      body: SingleChildScrollView(
+        child: Padding(
+          padding: const EdgeInsets.all(16.0),
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              // Image at the top
+              Image.asset(
+                'assets/reset_password.png',
+                height: screenHeight * 0.2,
+                width: screenWidth * 0.7,
+                fit: BoxFit.contain,
+              ),
+              SizedBox(height: 20),
+
+              // New password text field
+              TextField(
+                controller: _newPasswordController,
+                obscureText: _obscureNewPassword,
+                decoration: InputDecoration(
+                  labelText: 'New Password',
+                  errorText: _newPasswordError,
+                  suffixIcon: IconButton(
+                    icon: Icon(
+                      _obscureNewPassword
+                          ? Icons.visibility
+                          : Icons.visibility_off,
+                    ),
+                    onPressed: () {
+                      setState(() {
+                        _obscureNewPassword = !_obscureNewPassword;
+                      });
+                    },
                   ),
-                  onPressed: () {
-                    setState(() {
-                      _obscureNewPassword = !_obscureNewPassword;
-                    });
-                  },
                 ),
               ),
-            ),
-            SizedBox(height: 20),
-            TextField(
-              controller: _confirmPasswordController,
-              obscureText: _obscureConfirmPassword,
-              decoration: InputDecoration(
-                labelText: 'Confirm Password',
-                errorText: _confirmPasswordError,
-                suffixIcon: IconButton(
-                  icon: Icon(
-                    _obscureConfirmPassword
-                        ? Icons.visibility
-                        : Icons.visibility_off,
+              SizedBox(height: 20),
+
+              // Confirm password text field
+              TextField(
+                controller: _confirmPasswordController,
+                obscureText: _obscureConfirmPassword,
+                decoration: InputDecoration(
+                  labelText: 'Confirm Password',
+                  errorText: _confirmPasswordError,
+                  suffixIcon: IconButton(
+                    icon: Icon(
+                      _obscureConfirmPassword
+                          ? Icons.visibility
+                          : Icons.visibility_off,
+                    ),
+                    onPressed: () {
+                      setState(() {
+                        _obscureConfirmPassword = !_obscureConfirmPassword;
+                      });
+                    },
                   ),
-                  onPressed: () {
-                    setState(() {
-                      _obscureConfirmPassword = !_obscureConfirmPassword;
-                    });
-                  },
                 ),
               ),
-            ),
-            SizedBox(height: 20),
-            ElevatedButton(
-              onPressed: _isLoading ? null : _resetPassword,
-              child: _isLoading
-                  ? CircularProgressIndicator()
-                  : Text('Reset Password'),
-            ),
-          ],
+              SizedBox(height: 20),
+
+              // Reset password button
+              ElevatedButton(
+                onPressed: _isLoading ? null : _resetPassword,
+                child: _isLoading
+                    ? CircularProgressIndicator()
+                    : Text('Reset Password'),
+              ),
+            ],
+          ),
         ),
       ),
     );

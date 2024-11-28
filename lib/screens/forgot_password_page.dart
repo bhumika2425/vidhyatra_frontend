@@ -75,6 +75,8 @@ class _ForgotPasswordPageState extends State<ForgotPasswordPage> {
 
   @override
   Widget build(BuildContext context) {
+    final screenHeight = MediaQuery.of(context).size.height;
+    final screenWidth = MediaQuery.of(context).size.width;
     return Scaffold(
       appBar: AppBar(title: Text('Forgot Password')),
       body: Padding(
@@ -83,6 +85,14 @@ class _ForgotPasswordPageState extends State<ForgotPasswordPage> {
           mainAxisAlignment: MainAxisAlignment.center,
           crossAxisAlignment: CrossAxisAlignment.center,
           children: [
+            // Add the image
+            Image.asset(
+              'assets/forgot_password.png',
+              height: screenHeight * 0.35,  // 35% of the screen height
+              width: screenWidth * 0.9,     // 90% of the screen width
+              fit: BoxFit.contain,
+            ),
+
             TextField(
               controller: _emailController,
               decoration: InputDecoration(

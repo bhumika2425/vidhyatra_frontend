@@ -55,6 +55,8 @@ class VidhyatraApp extends StatelessWidget {
           '/schedule': (context) => WeeklyRoutinePage(), // Add Profile Page route
           '/messages': (context) => ChatPage(),
           '/forgot_password': (context) => ForgotPasswordPage(), // Forgot Password Page
+          '/reset_password': (context) => ResetPasswordPage(email: '',), // Forgot Password Page
+
           // '/reset-password': (context) => ResetPasswordPage(),
           // You can also add other routes here
         },

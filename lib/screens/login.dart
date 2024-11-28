@@ -200,6 +200,9 @@ class _LoginPageState extends State<LoginPage> {
                       ),
                     ),
                   ),
+                  TextButton(onPressed: () {
+                    Navigator.pushNamed(context, '/reset_password');// forgot password functionality
+                  }, child: Text("password reset"))
                 ],
               ),
             ),
