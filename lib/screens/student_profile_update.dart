@@ -390,5 +390,3 @@ class _StudentProfileUpdateState extends State<StudentProfileUpdate> {
   }
 }
 
-
-

@@ -11,11 +11,28 @@ class LoginPage extends StatefulWidget {
   _LoginPageState createState() => _LoginPageState();
 }
 
-class _LoginPageState extends State<LoginPage> {
-  final _formKey = GlobalKey<FormState>(); // Form key for validation
-  String emailOrID = ''; // To store user input for email or college ID
-  String password = '';  // To store user input for password
-  bool _obscurePassword = true;  // Control whether the password is visible or not
+class _LoginPageState extends State<LoginPage> with SingleTickerProviderStateMixin {
+  final _formKey = GlobalKey<FormState>();
+  String emailOrID = '';
+  String password = '';
+  bool _obscurePassword = true;
+  late AnimationController _animationController;
+
+  @override
+  void initState() {
+    super.initState();
+    _animationController = AnimationController(
+      vsync: this,
+      duration: Duration(milliseconds: 600),
+    );
+    _animationController.forward();
+  }
+
+  @override
+  void dispose() {
+    _animationController.dispose();
+    super.dispose();
+  }
 
   Future<void> loginUser() async {
     if (_formKey.currentState!.validate()) {
@@ -28,182 +45,228 @@ class _LoginPageState extends State<LoginPage> {
             'password': password,
           }),
         );
-
         if (response.statusCode == 200) {
+          print("Login successful!");
           final responseData = jsonDecode(response.body);
-
-          // Extract token from response data
           final token = responseData['token'];
-
-          // Create a User object from the response data
           final user = User(
-              userId: responseData['user']['user_id'], // Extract userId from response
-              collegeId: responseData['user']['college_id'] ?? '',
-              name: responseData['user']['name'] ?? '',
-              email: responseData['user']['email'] ?? ''
+            userId: responseData['user']['user_id'],
+            collegeId: responseData['user']['college_id'] ?? '',
+            name: responseData['user']['name'] ?? '',
+            email: responseData['user']['email'] ?? '',
           );
-
-          // Use Provider to set the user data and token
           Provider.of<UserProvider>(context, listen: false).setUser(user, token);
-
-          // Navigate to the dashboard
           Navigator.pushNamed(context, '/dashboard');
         } else {
           final responseData = jsonDecode(response.body);
-          showDialog(
-            context: context,
-            builder: (ctx) => AlertDialog(
-              title: Text('Error'),
-              content: Text(responseData['message']),
-              actions: <Widget>[
-                TextButton(
-                  child: Text('Okay'),
-                  onPressed: () {
-                    Navigator.of(ctx).pop();
-                  },
-                ),
-              ],
-            ),
-          );
+          _showErrorDialog(responseData['message']);
         }
       } catch (error) {
-        print('Error occurred: $error');
-        // Optionally show an error message
+        _showErrorDialog('An error occurred. Please try again.');
       }
+    } else {
+      print("error message");
     }
   }
+
+  void _showErrorDialog(String message) {
+    // Ensure the context is valid
+    showDialog(
+      context: context,
+      barrierDismissible: false,  // Optional: To prevent closing dialog on tapping outside
+      builder: (ctx) => AlertDialog(
+        title: Text('Login Error', style: TextStyle(color: Colors.black, fontWeight: FontWeight.bold)), // Changed to black for visibility
+        content: Text(message, style: TextStyle(color: Colors.black)),  // Changed to black for visibility
+        actions: [
+          TextButton(
+            onPressed: () {
+              Navigator.of(ctx).pop();  // Close the dialog
+            },
+            child: Text('OK', style: TextStyle(color: Colors.black, fontWeight: FontWeight.bold)),  // Changed to blue for visibility
+          ),
+        ],
+      ),
+    );
+  }
+
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Color(0xFFFBFBFB),
-      body: Center(
-        child: SingleChildScrollView( // Makes content scrollable
-          child: Padding(
-            padding: const EdgeInsets.all(24.0),
-            child: Form(
-              key: _formKey, // Wrap form with key
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.center,
-                crossAxisAlignment: CrossAxisAlignment.center,
-                children: <Widget>[
-                  Column(
-                    children: [
-                      ClipRRect(
-                        borderRadius: BorderRadius.circular(12.0),
-                        child: SizedBox(
-                          height: MediaQuery.of(context).size.height * 0.2, // Responsive height
-                          child: Image.asset(
-                            'assets/vidhyatra.png',
-                            fit: BoxFit.contain,
+      body: Container(
+        decoration: BoxDecoration(
+          gradient: LinearGradient(
+            colors: [Colors.white, Colors.black],
+            begin: Alignment.topLeft,
+            end: Alignment.bottomRight,
+          ),
+        ),
+        child: Center(
+          child: SingleChildScrollView(
+            child: Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 24.0),
+              child: Card(
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(20),
+                ),
+                elevation: 8,
+                color: Colors.white, // Card color changed to white
+                child: Padding(
+                  padding: const EdgeInsets.all(24.0),
+                  child: Form(
+                    key: _formKey,
+                    child: Column(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        TweenAnimationBuilder(
+                          tween: Tween<double>(begin: 0.8, end: 1.0),
+                          duration: Duration(seconds: 2),
+                          curve: Curves.easeInOut,
+                          builder: (context, scale, child) {
+                            return Transform.scale(
+                              scale: scale,
+                              child: Image.asset(
+                                'assets/Vidhyatra.png',
+                                height: 120,
+                                // color: Colors.black, // Set logo color to black
+                              ),
+                            );
+                          },
+                        ),
+                        SizedBox(height: 10),
+                        Text(
+                          "Welcome to Vidhyatra",
+                          style: TextStyle(
+                            fontSize: 26,
+                            fontWeight: FontWeight.bold,
+                            color: Colors.black, // Text color changed to black
                           ),
                         ),
-                      ),
-                      SizedBox(height: 10),
-                      Text(
-                        "VIDHYATRA",
-                        style: TextStyle(
-                          fontSize: 32,
-                          fontWeight: FontWeight.bold,
-                          color: Colors.black,
+                        SizedBox(height: 5),
+                        Text(
+                          "Login to continue",
+                          style: TextStyle(color: Colors.black87), // Lighter black text color
                         ),
-                      ),
-                    ],
-                  ),
-                  SizedBox(height: MediaQuery.of(context).size.height * 0.05), // Responsive spacing
+                        SizedBox(height: 20),
+                        SlideTransition(
+                          position: Tween<Offset>(begin: Offset(0, 1), end: Offset(0, 0))
+                              .animate(_animationController),
+                          child: TextFormField(
+                            decoration: InputDecoration(
+                              labelText: 'College ID or Email',
+                              labelStyle: TextStyle(color: Colors.black), // Label color black
+                              prefixIcon: Icon(Icons.person_outline, color: Colors.black), // Icon color black
+                              border: OutlineInputBorder(
+                                borderRadius: BorderRadius.circular(12.0),
+                                borderSide: BorderSide(color: Colors.black), // Border color black
+                              ),
+                            ),
+                            style: TextStyle(color: Colors.black), // Input text color black
+                            onChanged: (value) => emailOrID = value,
+                            validator: (value) => value == null || value.isEmpty
+                                ? 'Enter ID or Email'
+                                : null,
+                          ),
+                        ),
+                        SizedBox(height: 20),
+                        SlideTransition(
+                          position: Tween<Offset>(begin: Offset(0, 1), end: Offset(0, 0))
+                              .animate(_animationController),
+                          child: TextFormField(
+                            decoration: InputDecoration(
+                              labelText: 'Password',
+                              labelStyle: TextStyle(color: Colors.black), // Label color black
+                              prefixIcon: Icon(Icons.lock_outline, color: Colors.black), // Icon color black
+                              suffixIcon: IconButton(
+                                icon: Icon(
+                                  _obscurePassword ? Icons.visibility_off : Icons.visibility,
+                                  color: Colors.black, // Icon color black
+                                ),
+                                onPressed: () {
+                                  setState(() {
+                                    _obscurePassword = !_obscurePassword;
+                                  });
+                                },
+                              ),
+                              border: OutlineInputBorder(
+                                borderRadius: BorderRadius.circular(12.0),
+                                borderSide: BorderSide(color: Colors.black), // Border color black
+                              ),
+                            ),
+                            style: TextStyle(color: Colors.black), // Input text color black
+                            obscureText: _obscurePassword,
+                            onChanged: (value) => password = value,
+                            validator: (value) => value == null || value.isEmpty
+                                ? 'Enter your password'
+                                : null,
+                          ),
+                        ),
 
-                  TextFormField(
-                    decoration: InputDecoration(
-                      labelText: 'College ID or Email',
-                      border: OutlineInputBorder(
-                        borderRadius: BorderRadius.circular(12.0),
-                      ),
-                    ),
-                    onChanged: (value) {
-                      emailOrID = value;
-                    },
-                    validator: (value) {
-                      if (value == null || value.isEmpty) {
-                        return 'Please enter your College ID or Email';
-                      }
-                      return null;
-                    },
-                  ),
-                  SizedBox(height: 20),
-                  TextFormField(
-                    obscureText: _obscurePassword,
-                    decoration: InputDecoration(
-                      labelText: 'Password',
-                      border: OutlineInputBorder(
-                        borderRadius: BorderRadius.circular(12.0),
-                      ),
-                      suffixIcon: IconButton(
-                        icon: Icon(
-                          _obscurePassword ? Icons.visibility : Icons.visibility_off,
+                        SizedBox(height: 20),
+
+                        // Submit Button
+                        ElevatedButton(
+                          onPressed: () {
+                            print("Login button pressed"); // Debugging statement to check if the button is pressed
+                            loginUser();
+                          },
+                          style: ElevatedButton.styleFrom(
+                            backgroundColor: Colors.black, // Set the background color to black
+                            foregroundColor: Colors.white, // Set the text color to white
+                            padding: EdgeInsets.symmetric(vertical: 15, horizontal: 50),
+                            shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+                          ),
+                          child: Text(
+                            'Login',
+                            style: TextStyle(fontSize: 18),
+                          ),
                         ),
-                        onPressed: () {
-                          setState(() {
-                            _obscurePassword = !_obscurePassword;
-                          });
-                        },
-                      ),
-                    ),
-                    onChanged: (value) {
-                      password = value;
-                    },
-                    validator: (value) {
-                      if (value == null || value.isEmpty) {
-                        return 'Please enter your password';
-                      }
-                      return null;
-                    },
-                  ),
-                  SizedBox(height: 20),
-                  Center(
-                    child: ElevatedButton(
-                      onPressed: loginUser,
-                      child: Text(
-                        'Login',
-                        style: TextStyle(color: Colors.white, fontSize: 17),
-                      ),
-                      style: ElevatedButton.styleFrom(
-                        backgroundColor: Color(0xFF118AD4),
-                        padding: EdgeInsets.symmetric(
-                          horizontal: 40.0,
-                          vertical: 15.0,
+
+                        SizedBox(height: 10),
+
+                        // Forgot Password Link
+                        TextButton(
+                          onPressed: () {
+                            // Navigate to Forgot Password Page (implement the route accordingly)
+                            Navigator.pushNamed(context, '/forgot_password');
+                          },
+                          child: Text(
+                            'Forgot Password?',
+                            style: TextStyle(
+                              color: Colors.black, // Text color black
+                              fontSize: 14,
+                            ),
+                          ),
                         ),
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(12.0),
+
+                        SizedBox(height: 10),
+
+                        // "Don't have an account? Register here" link
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            Text("Don't have an account? ",
+                                style: TextStyle(color: Colors.black)), // Text color black
+                            GestureDetector(
+                              onTap: () {
+                                // Navigate to Register Page
+                                Navigator.pushNamed(context, '/register');
+                              },
+                              child: Text(
+                                'Register here',
+                                style: TextStyle(
+                                  color: Colors.black, // Text color black
+                                  fontWeight: FontWeight.bold,
+                                  fontSize: 14,
+                                ),
+                              ),
+                            ),
+                          ],
                         ),
-                      ),
+                      ],
                     ),
                   ),
-                  Center(
-                    child: TextButton(
-                      onPressed: () {
-                        Navigator.pushNamed(context, '/forgot_password');// forgot password functionality
-                      },
-                      child: Text(
-                        'Forgot password?',
-                        style: TextStyle(color: Colors.blueGrey),
-                      ),
-                    ),
-                  ),
-                  Center(
-                    child: TextButton(
-                      onPressed: () {
-                        Navigator.pushNamed(context, '/register');
-                      },
-                      child: Text(
-                        'Don’t have an account? Register',
-                        style: TextStyle(color: Colors.blueGrey),
-                      ),
-                    ),
-                  ),
-                  TextButton(onPressed: () {
-                    Navigator.pushNamed(context, '/reset_password');// forgot password functionality
-                  }, child: Text("password reset"))
-                ],
+                ),
               ),
             ),
           ),
@@ -211,5 +274,4 @@ class _LoginPageState extends State<LoginPage> {
       ),
     );
   }
-
 }

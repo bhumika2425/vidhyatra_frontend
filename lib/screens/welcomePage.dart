@@ -82,13 +82,14 @@ class _WelcomeScreenState extends State<WelcomeScreen> {
                   },
                   style: ElevatedButton.styleFrom(
                     padding: EdgeInsets.symmetric(horizontal: 40, vertical: 15),
-                    backgroundColor: Color(0xFF118AD4),
-                    foregroundColor: Colors.white,
+                    // backgroundColor: Color(0xFF118AD4),
+                    foregroundColor: Colors.black,
+                    backgroundColor: Colors.white,
                     shape: RoundedRectangleBorder(
                       borderRadius: BorderRadius.circular(30),
                     ),
                   ),
-                  child: Text('Get Started'),
+                  child: Text('Get Started', style: TextStyle(fontWeight: FontWeight.bold),),
                 ),
                 SizedBox(height: 30),
                 // Dots Indicator
