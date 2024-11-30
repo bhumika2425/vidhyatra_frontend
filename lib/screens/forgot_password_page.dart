@@ -1,21 +1,21 @@
-import 'package:flutter/material.dart';
-
-import 'package:http/http.dart' as http;
 import 'dart:convert';
+import 'package:flutter/material.dart';
+import 'package:http/http.dart' as http;
 
 import 'EnterOtpPage.dart';
 
-class ForgotPasswordPage extends StatefulWidget {
+class ForgotPasswordScreen extends StatefulWidget {
   @override
-  _ForgotPasswordPageState createState() => _ForgotPasswordPageState();
+  _ForgotPasswordScreenState createState() => _ForgotPasswordScreenState();
 }
 
-class _ForgotPasswordPageState extends State<ForgotPasswordPage> {
+class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
   final _emailController = TextEditingController();
-  bool _isLoading = false;
   String? _errorMessage;
+  bool _isLoading = false; // Track loading state
 
-  Future<void> _sendOtp() async {
+  // Submit the Forgot Password request
+  Future<void> _submitForgotPassword() async {
     setState(() {
       _isLoading = true;
       _errorMessage = null;
@@ -30,7 +30,6 @@ class _ForgotPasswordPageState extends State<ForgotPasswordPage> {
       });
       return;
     }
-
     try {
       final response = await http.post(
         Uri.parse('http://10.0.2.2:3001/api/auth/forgot-password'),
@@ -52,7 +51,7 @@ class _ForgotPasswordPageState extends State<ForgotPasswordPage> {
         Navigator.push(
           context,
           MaterialPageRoute(
-            builder: (context) => EnterOtpPage(email: email),
+            builder: (context) => EnterOTPPage(email: email),
           ),
         );
       } else {
@@ -75,40 +74,92 @@ class _ForgotPasswordPageState extends State<ForgotPasswordPage> {
 
   @override
   Widget build(BuildContext context) {
-    final screenHeight = MediaQuery.of(context).size.height;
-    final screenWidth = MediaQuery.of(context).size.width;
     return Scaffold(
-      appBar: AppBar(title: Text('Forgot Password')),
-      body: Padding(
-        padding: const EdgeInsets.all(16.0),
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          crossAxisAlignment: CrossAxisAlignment.center,
-          children: [
-            // Add the image
-            Image.asset(
-              'assets/forgot_password.png',
-              height: screenHeight * 0.35,  // 35% of the screen height
-              width: screenWidth * 0.9,     // 90% of the screen width
-              fit: BoxFit.contain,
-            ),
-
-            TextField(
-              controller: _emailController,
-              decoration: InputDecoration(
-                labelText: 'Email Address',
-                errorText: _errorMessage,
-              ),
-            ),
-            SizedBox(height: 20),
-            ElevatedButton(
-              onPressed: _isLoading ? null : _sendOtp,
-              child: _isLoading
-                  ? CircularProgressIndicator()
-                  : Text('Send OTP'),
-            ),
-          ],
+      appBar: AppBar(
+        title: Text(
+          'Forgot Your Password?',
+          style: TextStyle(
+            fontSize: 24,
+            fontWeight: FontWeight.bold,
+            color: Colors.black,
+          ),
         ),
+        centerTitle: true,
+      ),
+      body: Stack(
+        // Use Stack to overlay the loading indicator
+        children: [
+          Padding(
+            padding: const EdgeInsets.all(20.0),
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                // Image.asset(
+                //   'assets/images/passwordReset.png',
+                //   // Ensure the image is added to assets folder
+                //   width: 200, // Adjust the width as needed
+                //   height: 200, // Adjust the height as needed
+                // ),
+                SizedBox(height: 30),
+
+                // Email Input Field
+                TextFormField(
+                  controller: _emailController,
+                  // validator: _validateEmail,
+                  keyboardType: TextInputType.emailAddress,
+                  decoration: InputDecoration(
+                    labelText: 'Enter your email',
+                    hintText: 'example@mail.com',
+                    prefixIcon: Icon(Icons.email),
+                    border: OutlineInputBorder(),
+                    filled: true,
+                    fillColor: Colors.white,
+                    contentPadding:
+                    EdgeInsets.symmetric(vertical: 15, horizontal: 20),
+                  ),
+                ),
+                SizedBox(height: 20),
+
+                // Disclaimer Text
+                Padding(
+                  padding: const EdgeInsets.symmetric(vertical: 10),
+                  child: Text(
+                    'By submitting, you will receive a link to reset your password. Please check your email for further instructions.',
+                    style: TextStyle(
+                      fontSize: 14,
+                      color: Colors.grey[600],
+                    ),
+                    textAlign: TextAlign.center,
+                  ),
+                ),
+
+                SizedBox(height: 20),
+
+                // Submit Button
+                ElevatedButton(
+                  onPressed: _submitForgotPassword,
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: Colors.deepOrange, // Button color
+                    padding: EdgeInsets.symmetric(vertical: 15, horizontal: 40),
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(8),
+                    ),
+                  ),
+                  child: Text(
+                    'Submit',
+                    style: TextStyle(fontSize: 18, color: Colors.white),
+                  ),
+                ),
+                SizedBox(height: 20),
+              ],
+            ),
+          ),
+          // Overlay loading indicator on top of the screen
+          if (_isLoading)
+            Center(
+              child: CircularProgressIndicator(),
+            ),
+        ],
       ),
     );
   }

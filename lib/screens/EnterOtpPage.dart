@@ -1,32 +1,61 @@
+import 'dart:async';
 import 'dart:convert';
-
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'package:vidhyatra_flutter/screens/password_reset_page.dart';
 
-class EnterOtpPage extends StatefulWidget {
-  final String email; // Receive email from the previous page
+class EnterOTPPage extends StatefulWidget {
+  final String email;
 
-  EnterOtpPage({required this.email});
+  EnterOTPPage({required this.email});
 
   @override
-  _EnterOtpPageState createState() => _EnterOtpPageState();
+  _EnterOTPPageState createState() => _EnterOTPPageState();
 }
 
-class _EnterOtpPageState extends State<EnterOtpPage> {
-  // final _otpController = TextEditingController();
-  final _otpControllers = List.generate(
-      6, (_) => TextEditingController()); // Create 6 controllers for OTP
+class _EnterOTPPageState extends State<EnterOTPPage> {
+  final List<TextEditingController> _otpControllers =
+  List.generate(6, (_) => TextEditingController());
   bool _isLoading = false;
   String? _errorMessage;
+  final FocusNode _focusNode = FocusNode();
+  Timer? _timer;
+  int _remainingSeconds = 100;
+  bool _isResendEnabled = false;
 
-  // Function to automatically move to the next OTP input field when a digit is entered
-  void _onOtpChanged(String value, int index) {
-    if (value.length == 1 && index < 5) {
-      FocusScope.of(context).nextFocus();
-    } else if (value.isEmpty && index > 0) {
-      FocusScope.of(context).previousFocus();
+  @override
+  void initState() {
+    super.initState();
+    _startResendOTPTimer();
+  }
+
+  void _startResendOTPTimer() {
+    setState(() {
+      _isResendEnabled = false;
+      _remainingSeconds = 100;
+    });
+    _timer = Timer.periodic(const Duration(seconds: 1), (timer) {
+      if (_remainingSeconds > 0) {
+        setState(() {
+          _remainingSeconds--;
+        });
+      } else {
+        setState(() {
+          _isResendEnabled = true;
+        });
+        timer.cancel();
+      }
+    });
+  }
+
+  @override
+  void dispose() {
+    for (var controller in _otpControllers) {
+      controller.dispose();
     }
+    _focusNode.dispose();
+    _timer?.cancel();
+    super.dispose();
   }
 
   Future<void> _verifyOtp() async {
@@ -35,12 +64,20 @@ class _EnterOtpPageState extends State<EnterOtpPage> {
       _errorMessage = null;
     });
 
-    // Collect OTP from the 6 individual fields
-    String otp = _otpControllers.map((controller) => controller.text).join();
+    String otp = '';
+    bool allFilled = true;
 
-    if (otp.length < 6) {
+    for (var controller in _otpControllers) {
+      if (controller.text.isEmpty) {
+        allFilled = false;
+        break;
+      }
+      otp += controller.text;
+    }
+
+    if (!allFilled || otp.length != 6) {
       setState(() {
-        _errorMessage = 'Please enter the full OTP';
+        _errorMessage = 'Please enter a valid 6-digit numeric OTP';
         _isLoading = false;
       });
       return;
@@ -53,27 +90,27 @@ class _EnterOtpPageState extends State<EnterOtpPage> {
         body: json.encode({'email': widget.email, 'otp': otp}),
       );
 
-      final responseData = json.decode(response.body);
-
       if (response.statusCode == 200) {
-        // OTP verification successful
+        final responseData = json.decode(response.body);
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(content: Text(responseData['message'])),
         );
-        Navigator.push(
+        Navigator.pushReplacement(
           context,
           MaterialPageRoute(
             builder: (context) => ResetPasswordPage(email: widget.email),
           ),
         );
       } else {
+        final responseData = json.decode(response.body);
         setState(() {
           _errorMessage = responseData['message'] ?? 'Invalid OTP';
         });
       }
     } catch (error) {
+      print('Error verifying OTP: $error');
       setState(() {
-        _errorMessage = 'Failed to verify OTP. Please try again later.';
+        _errorMessage = 'Failed to verify OTP. Please check your internet connection.';
       });
     } finally {
       setState(() {
@@ -82,54 +119,142 @@ class _EnterOtpPageState extends State<EnterOtpPage> {
     }
   }
 
+
+  Widget _otpField(int index) {
+    return Container(
+      margin: const EdgeInsets.symmetric(horizontal: 4.0),
+      width: 50,
+      height: 60,
+      decoration: BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(12.0),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black12,
+            blurRadius: 6.0,
+            offset: Offset(2, 2),
+          ),
+        ],
+        border: Border.all(color: Colors.deepOrange, width: 1.5),
+      ),
+      child: TextField(
+        controller: _otpControllers[index],
+        focusNode: index == 0 ? _focusNode : null,
+        keyboardType: TextInputType.number,
+        textAlign: TextAlign.center,
+        style: const TextStyle(fontSize: 22, fontWeight: FontWeight.bold),
+        maxLength: 1,
+        decoration: const InputDecoration(
+          counterText: '',
+          border: InputBorder.none,
+        ),
+        onChanged: (value) {
+          if (value.isNotEmpty && index < 5) {
+            FocusScope.of(context).nextFocus();
+          } else if (value.isEmpty && index > 0) {
+            FocusScope.of(context).previousFocus();
+          }
+        },
+      ),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: Text('Enter OTP')),
-      body: Padding(
-        padding: const EdgeInsets.all(16.0),
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            Text('Please enter the OTP sent to ${widget.email}'),
-            SizedBox(height: 20),
-            Row(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: List.generate(6, (index) {
-                return Container(
-                  width: 40,
-                  height: 60,
-                  margin: EdgeInsets.symmetric(horizontal: 5),
-                  child: TextField(
-                    controller: _otpControllers[index],
-                    keyboardType: TextInputType.number,
-                    maxLength: 1,
-                    textAlign: TextAlign.center,
-                    decoration: InputDecoration(
-                      counterText: '',
-                      border: OutlineInputBorder(),
-                      focusedBorder: OutlineInputBorder(
-                        borderSide: BorderSide(color: Colors.blue, width: 2),
-                      ),
-                    ),
-                    onChanged: (value) => _onOtpChanged(value, index),
-                  ),
-                );
-              }),
-            ),
-            SizedBox(height: 20),
-            if (_errorMessage != null)
-              Text(
-                _errorMessage!,
-                style: TextStyle(color: Colors.red),
+      appBar: AppBar(
+        title: const Text(
+          'Verify OTP',
+          style: TextStyle(color: Colors.black, fontWeight: FontWeight.bold),
+        ),
+        centerTitle: true,
+        elevation: 0,
+      ),
+      body: Center(
+        child: Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 24.0),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              const Icon(Icons.lock_open, size: 60, color: Colors.deepOrange),
+              const SizedBox(height: 16),
+              const Text(
+                'Verification Required',
+                style: TextStyle(
+                    fontSize: 22,
+                    fontWeight: FontWeight.bold,
+                    color: Colors.black87),
               ),
-            SizedBox(height: 20),
-            ElevatedButton(
-              onPressed: _isLoading ? null : _verifyOtp,
-              child:
-                  _isLoading ? CircularProgressIndicator() : Text('Verify OTP'),
-            ),
-          ],
+              const SizedBox(height: 8),
+              Text(
+                'Please enter the 6-digit code sent to ${widget.email}',
+                textAlign: TextAlign.center,
+                style: const TextStyle(fontSize: 16, color: Colors.black54),
+              ),
+              const SizedBox(height: 30),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: List.generate(6, (index) => _otpField(index)),
+              ),
+              const SizedBox(height: 30),
+              SizedBox(
+                width: double.infinity,
+                height: 50,
+                child: ElevatedButton(
+                  onPressed: _isLoading ? null : _verifyOtp,
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: Colors.deepOrange,
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(12.0),
+                    ),
+                  ),
+                  child: _isLoading
+                      ? const CircularProgressIndicator(color: Colors.white)
+                      : const Text(
+                    'Verify OTP',
+                    style: TextStyle(
+                        fontSize: 16,
+                        fontWeight: FontWeight.bold,
+                        color: Colors.white),
+                  ),
+                ),
+              ),
+              const SizedBox(height: 20),
+              TextButton(
+                onPressed: _isResendEnabled
+                    ? () {
+                  _startResendOTPTimer();
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    const SnackBar(content: Text('OTP resent to your email!')),
+                  );
+                }
+                    : null,
+                child: _isResendEnabled
+                    ? const Text(
+                  'Resend OTP',
+                  style: TextStyle(fontSize: 16, color: Colors.deepOrange),
+                )
+                    : RichText(
+                  text: TextSpan(
+                    text: 'Resend OTP in ',
+                    style: const TextStyle(fontSize: 16, color: Colors.black54),
+                    children: [
+                      TextSpan(
+                        text: '$_remainingSeconds sec',
+                        style: const TextStyle(fontSize: 16, color: Colors.deepOrange),
+                      ),
+                    ],
+                  ),
+                ),
+              ),
+              const SizedBox(height: 10),
+              const Text(
+                'Didn’t receive the code? Please wait a few seconds before requesting again.',
+                textAlign: TextAlign.center,
+                style: TextStyle(fontSize: 14, color: Colors.black54),
+              ),
+            ],
+          ),
         ),
       ),
     );

@@ -1,6 +1,7 @@
 
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import 'package:vidhyatra_flutter/providers/blogProvider.dart';
 import 'package:vidhyatra_flutter/providers/profile_provider.dart';
 import 'package:vidhyatra_flutter/providers/user_provider.dart';
 import 'package:vidhyatra_flutter/screens/calendar.dart';
@@ -26,6 +27,7 @@ class VidhyatraApp extends StatelessWidget {
       providers: [
         ChangeNotifierProvider(create: (context) => UserProvider()), // Provide UserProvider
         ChangeNotifierProvider(create: (context) => ProfileProvider()), // Provide ProfileProvider
+        ChangeNotifierProvider(create: (context) => BlogProvider()),
       ],
       child: MaterialApp(
         title: 'Vidhyatra Login',
@@ -54,8 +56,7 @@ class VidhyatraApp extends StatelessWidget {
           '/calendar': (context) => Calendar(), // Add Profile Page route
           '/schedule': (context) => WeeklyRoutinePage(), // Add Profile Page route
           '/messages': (context) => ChatPage(),
-          '/forgot_password': (context) => ForgotPasswordPage(), // Forgot Password Page
-          '/reset_password': (context) => ResetPasswordPage(email: '',), // Forgot Password Page
+          '/forgot_password': (context) => ForgotPasswordScreen(), // Forgot Password Page
 
           // '/reset-password': (context) => ResetPasswordPage(),
           // You can also add other routes here

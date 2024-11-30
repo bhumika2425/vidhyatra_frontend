@@ -54,6 +54,7 @@ class _ResetPasswordPageState extends State<ResetPasswordPage> {
         body: json.encode({
           'email': widget.email,
           'newPassword': newPassword,
+          'confirmPassword': confirmPassword,
         }),
       );
 
@@ -82,38 +83,51 @@ class _ResetPasswordPageState extends State<ResetPasswordPage> {
 
   @override
   Widget build(BuildContext context) {
-    final screenHeight = MediaQuery.of(context).size.height;
-    final screenWidth = MediaQuery.of(context).size.width;
-
     return Scaffold(
-      appBar: AppBar(title: Text('Reset Password')),
-      body: SingleChildScrollView(
-        child: Padding(
-          padding: const EdgeInsets.all(16.0),
+      // backgroundColor: Colors.deepOrange[50],
+      appBar: AppBar(
+        title: Text(
+          'Reset Password',
+          style: TextStyle(fontWeight: FontWeight.bold),
+        ),
+      ),
+      body: Center(
+        child: SingleChildScrollView(
+          padding: const EdgeInsets.all(15.0),
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
+            crossAxisAlignment: CrossAxisAlignment.center,
             children: [
-              // Image at the top
-              Image.asset(
-                'assets/reset_password.png',
-                height: screenHeight * 0.2,
-                width: screenWidth * 0.7,
-                fit: BoxFit.contain,
+              Center(
+                child: Icon(Icons.lock_reset, size: 100, color: Colors.deepOrange),
               ),
               SizedBox(height: 20),
-
-              // New password text field
+              Center(
+                child: Text(
+                  'Secure Your Account',
+                  style: TextStyle(fontSize: 22, fontWeight: FontWeight.bold, color: Colors.black87),
+                ),
+              ),
+              SizedBox(height: 10),
+              Center(
+                child: Text(
+                  'Please create a strong new password.',
+                  textAlign: TextAlign.center,
+                  style: TextStyle(fontSize: 16, color: Colors.black54),
+                ),
+              ),
+              SizedBox(height: 30),
               TextField(
                 controller: _newPasswordController,
                 obscureText: _obscureNewPassword,
                 decoration: InputDecoration(
                   labelText: 'New Password',
+                  hintText: 'Enter your new password',
                   errorText: _newPasswordError,
+                  prefixIcon: Icon(Icons.lock, color: Colors.deepOrange),
                   suffixIcon: IconButton(
                     icon: Icon(
-                      _obscureNewPassword
-                          ? Icons.visibility
-                          : Icons.visibility_off,
+                      _obscureNewPassword ? Icons.visibility : Icons.visibility_off,
                     ),
                     onPressed: () {
                       setState(() {
@@ -121,22 +135,25 @@ class _ResetPasswordPageState extends State<ResetPasswordPage> {
                       });
                     },
                   ),
+                  filled: true,
+                  fillColor: Colors.white,
+                  border: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(8),
+                  ),
                 ),
               ),
               SizedBox(height: 20),
-
-              // Confirm password text field
               TextField(
                 controller: _confirmPasswordController,
                 obscureText: _obscureConfirmPassword,
                 decoration: InputDecoration(
                   labelText: 'Confirm Password',
+                  hintText: 'Re-enter your new password',
                   errorText: _confirmPasswordError,
+                  prefixIcon: Icon(Icons.lock_outline, color: Colors.deepOrange),
                   suffixIcon: IconButton(
                     icon: Icon(
-                      _obscureConfirmPassword
-                          ? Icons.visibility
-                          : Icons.visibility_off,
+                      _obscureConfirmPassword ? Icons.visibility : Icons.visibility_off,
                     ),
                     onPressed: () {
                       setState(() {
@@ -144,16 +161,39 @@ class _ResetPasswordPageState extends State<ResetPasswordPage> {
                       });
                     },
                   ),
+                  filled: true,
+                  fillColor: Colors.white,
+                  border: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(8),
+                  ),
+                ),
+              ),
+              SizedBox(height: 30),
+              SizedBox(
+                height: 50,
+                child: ElevatedButton(
+                  onPressed: _isLoading ? null : _resetPassword,
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: Colors.deepOrange,
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(12),
+                    ),
+                  ),
+                  child: _isLoading
+                      ? CircularProgressIndicator(color: Colors.white)
+                      : Text(
+                    'Reset Password',
+                    style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold, color: Colors.white),
+                  ),
                 ),
               ),
               SizedBox(height: 20),
-
-              // Reset password button
-              ElevatedButton(
-                onPressed: _isLoading ? null : _resetPassword,
-                child: _isLoading
-                    ? CircularProgressIndicator()
-                    : Text('Reset Password'),
+              Center(
+                child: Text(
+                  'Make sure your password is at least 8 characters long and includes a mix of letters, numbers, and special characters.',
+                  textAlign: TextAlign.center,
+                  style: TextStyle(fontSize: 14, color: Colors.black54),
+                ),
               ),
             ],
           ),
