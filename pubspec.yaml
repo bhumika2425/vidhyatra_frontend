@@ -49,6 +49,8 @@ dependencies:
   path_provider: ^2.1.5
   open_filex: ^4.5.0
   uuid: ^4.5.1
+  fluttertoast: ^8.2.8
+  share_plus: ^10.1.2
 
 
 dev_dependencies:

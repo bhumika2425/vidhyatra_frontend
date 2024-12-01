@@ -1,6 +1,8 @@
 import 'dart:convert';
 
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
+import 'package:fluttertoast/fluttertoast.dart';
 import 'package:provider/provider.dart';
 import 'package:http/http.dart' as http;
 import 'package:vidhyatra_flutter/screens/profile_creation.dart';
@@ -10,6 +12,7 @@ import 'blog_posting_page.dart';
 import 'login.dart';
 
 class StudentDashboard extends StatefulWidget {
+
   @override
   _StudentDashboardState createState() => _StudentDashboardState();
 }
@@ -18,6 +21,9 @@ class _StudentDashboardState extends State<StudentDashboard> {
   int _selectedIndex = 0; // Track the selected tab
   bool _isLoading = false;
   List<Blog> _blogs = []; // List to store blogs
+  bool _isLiked = false;
+  bool _isCommenting = false;
+  TextEditingController _commentController = TextEditingController();
 
   @override
   void initState() {
@@ -73,6 +79,7 @@ class _StudentDashboardState extends State<StudentDashboard> {
       });
     }
   }
+
 
   @override
   Widget build(BuildContext context) {
@@ -327,7 +334,8 @@ class _StudentDashboardState extends State<StudentDashboard> {
                                     children: [
                                       CircleAvatar(
                                         radius: 20, // Profile picture size
-                                        backgroundImage: NetworkImage('https://static.wikia.nocookie.net/p__/images/7/7e/Marina_design_2-3_season.png/revision/latest?cb=20200331060209&path-prefix=protagonist'), // Sample profile picture
+                                        backgroundImage: NetworkImage(
+                                            'https://static.wikia.nocookie.net/p__/images/7/7e/Marina_design_2-3_season.png/revision/latest?cb=20200331060209&path-prefix=protagonist'), // Sample profile picture
                                       ),
                                       SizedBox(width: 8),
                                       Text(
@@ -339,11 +347,8 @@ class _StudentDashboardState extends State<StudentDashboard> {
                                       ),
                                     ],
                                   ),
-                                  SizedBox(height: 8), // Space between profile and blog content
-
                                   SizedBox(height: 8),
                                   // Space between profile and blog content
-
                                   // Blog Title and Description
                                   Text(
                                     blog.blogTitle,
@@ -365,26 +370,24 @@ class _StudentDashboardState extends State<StudentDashboard> {
                                     mainAxisAlignment: MainAxisAlignment.start,
                                     children: [
                                       IconButton(
-                                        icon: Icon(Icons.thumb_up),
-                                        onPressed: () {
-                                          // Handle Like action
-                                          print('Liked the blog');
+                                        icon: Icon(
+                                          _isLiked ? Icons.thumb_up : Icons.thumb_up_off_alt,
+                                          color: _isLiked ? Colors.blue : Colors.black,
+                                        ),
+                                        onPressed: (){
+
                                         },
                                       ),
                                       IconButton(
                                         icon: Icon(Icons.comment),
-                                        onPressed: () {
-                                          // Handle Comment action
-                                          print('Commented on the blog');
-                                          // You can open a dialog or navigate to a comments page here
+                                        onPressed: (){
+
                                         },
                                       ),
                                       IconButton(
                                         icon: Icon(Icons.share),
-                                        onPressed: () {
-                                          // Handle Share action
-                                          print('Shared the blog');
-                                          // You can implement share functionality here
+                                        onPressed: (){
+
                                         },
                                       ),
                                     ],
