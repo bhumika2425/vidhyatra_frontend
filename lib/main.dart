@@ -1,11 +1,13 @@
 
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
 import 'package:provider/provider.dart';
 import 'package:vidhyatra_flutter/providers/blogProvider.dart';
 import 'package:vidhyatra_flutter/providers/profile_provider.dart';
 import 'package:vidhyatra_flutter/providers/user_provider.dart';
 import 'package:vidhyatra_flutter/screens/calendar.dart';
 import 'package:vidhyatra_flutter/screens/chat_page.dart';
+import 'package:vidhyatra_flutter/screens/dashboard.dart';
 import 'package:vidhyatra_flutter/screens/forgot_password_page.dart';
 import 'package:vidhyatra_flutter/screens/login.dart';
 import 'package:vidhyatra_flutter/screens/password_reset_page.dart';
@@ -29,7 +31,7 @@ class VidhyatraApp extends StatelessWidget {
         ChangeNotifierProvider(create: (context) => ProfileProvider()), // Provide ProfileProvider
         ChangeNotifierProvider(create: (context) => BlogProvider()),
       ],
-      child: MaterialApp(
+      child: GetMaterialApp(
         title: 'Vidhyatra Login',
         theme: ThemeData(
           primarySwatch: Colors.blue, // Adjust the primary swatch if needed
@@ -50,7 +52,7 @@ class VidhyatraApp extends StatelessWidget {
           '/login': (context) => LoginPage(),      // Add the '/login' route here
           '/register': (context) => RegisterPage(),
           '/home': (context) => StudentDashboard(),
-          '/dashboard': (context) => StudentDashboard(), // Add this line
+          '/dashboard': (context) => Dashboard(), // Add this line
           '/profile': (context) => StudentProfilePage(), // Add Profile Page route
           '/payment': (context) => PaymentPage(), // Add Profile Page route
           '/calendar': (context) => Calendar(), // Add Profile Page route

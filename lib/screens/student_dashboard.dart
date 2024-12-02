@@ -2,7 +2,7 @@ import 'dart:convert';
 
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:fluttertoast/fluttertoast.dart';
+
 import 'package:provider/provider.dart';
 import 'package:http/http.dart' as http;
 import 'package:vidhyatra_flutter/screens/profile_creation.dart';
@@ -12,7 +12,6 @@ import 'blog_posting_page.dart';
 import 'login.dart';
 
 class StudentDashboard extends StatefulWidget {
-
   @override
   _StudentDashboardState createState() => _StudentDashboardState();
 }
@@ -22,8 +21,7 @@ class _StudentDashboardState extends State<StudentDashboard> {
   bool _isLoading = false;
   List<Blog> _blogs = []; // List to store blogs
   bool _isLiked = false;
-  bool _isCommenting = false;
-  TextEditingController _commentController = TextEditingController();
+
 
   @override
   void initState() {
