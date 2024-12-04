@@ -5,6 +5,7 @@ import 'package:provider/provider.dart';
 import 'package:vidhyatra_flutter/providers/blogProvider.dart';
 import 'package:vidhyatra_flutter/providers/profile_provider.dart';
 import 'package:vidhyatra_flutter/providers/user_provider.dart';
+import 'package:vidhyatra_flutter/screens/blog_posting_page.dart';
 import 'package:vidhyatra_flutter/screens/calendar.dart';
 import 'package:vidhyatra_flutter/screens/chat_page.dart';
 import 'package:vidhyatra_flutter/screens/dashboard.dart';
@@ -44,9 +45,23 @@ class VidhyatraApp extends StatelessWidget {
               color: Colors.black, // Set title text color to black
               fontSize: 20,
               fontWeight: FontWeight.bold,
+
             ),
           ),
         ),
+        getPages: [
+          GetPage(name: '/', page: () => WelcomeScreen()),
+          GetPage(name: '/login', page: () => LoginPage()),
+          GetPage(name: '/register', page: () => RegisterPage()),
+          GetPage(name: '/payment', page: () => PaymentPage()),
+          GetPage(name: '/profile', page: () => StudentProfilePage()),
+          GetPage(name: '/calendar', page: () => Calendar()),
+          GetPage(name: '/messages', page: () => ChatPage()),
+          GetPage(name: '/dashboard', page: () => Dashboard()),
+          GetPage(name: '/new-post', page: () => BlogPostPage()),
+          GetPage(name: '/forgot-password', page: () => ForgotPasswordScreen())
+
+        ],
         routes: {
           '/': (context) => WelcomeScreen(),
           '/login': (context) => LoginPage(),      // Add the '/login' route here
