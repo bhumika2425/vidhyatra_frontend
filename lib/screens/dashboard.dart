@@ -59,11 +59,11 @@ class _DashboardState extends State<Dashboard> {
               },
             ),
             ListTile(
-              leading: Icon(Icons.person),
-              title: Text('Profile'),
-              onTap: () async {
-                Navigator.pop(context);
-              }
+                leading: Icon(Icons.person),
+                title: Text('Profile'),
+                onTap: () async {
+                  Navigator.pop(context);
+                }
             ),
             ListTile(
               leading: Icon(Icons.history),

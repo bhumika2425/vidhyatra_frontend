@@ -2,13 +2,13 @@ class Blog {
   final int blogId;
   final String blogTitle;
   final String blogDescription;
-  final int userId; // Foreign key for the user
+  final List<String> imageUrls;
 
   Blog({
     required this.blogId,
     required this.blogTitle,
     required this.blogDescription,
-    required this.userId,
+    required this.imageUrls,
   });
 
   factory Blog.fromJson(Map<String, dynamic> json) {
@@ -16,7 +16,7 @@ class Blog {
       blogId: json['blog_id'],
       blogTitle: json['blog_title'],
       blogDescription: json['blog_description'],
-      userId: json['user_id'], // Ensure user_id is fetched correctly
+      imageUrls: List<String>.from(json['image_urls'] ?? []),
     );
   }
 }

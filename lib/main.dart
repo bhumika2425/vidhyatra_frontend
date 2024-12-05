@@ -2,7 +2,6 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:provider/provider.dart';
-import 'package:vidhyatra_flutter/providers/blogProvider.dart';
 import 'package:vidhyatra_flutter/providers/profile_provider.dart';
 import 'package:vidhyatra_flutter/providers/user_provider.dart';
 import 'package:vidhyatra_flutter/screens/blog_posting_page.dart';
@@ -11,7 +10,6 @@ import 'package:vidhyatra_flutter/screens/chat_page.dart';
 import 'package:vidhyatra_flutter/screens/dashboard.dart';
 import 'package:vidhyatra_flutter/screens/forgot_password_page.dart';
 import 'package:vidhyatra_flutter/screens/login.dart';
-import 'package:vidhyatra_flutter/screens/password_reset_page.dart';
 import 'package:vidhyatra_flutter/screens/payment_page.dart';
 import 'package:vidhyatra_flutter/screens/register.dart';
 import 'package:vidhyatra_flutter/screens/student_dashboard.dart';
@@ -30,7 +28,6 @@ class VidhyatraApp extends StatelessWidget {
       providers: [
         ChangeNotifierProvider(create: (context) => UserProvider()), // Provide UserProvider
         ChangeNotifierProvider(create: (context) => ProfileProvider()), // Provide ProfileProvider
-        ChangeNotifierProvider(create: (context) => BlogProvider()),
       ],
       child: GetMaterialApp(
         title: 'Vidhyatra Login',
