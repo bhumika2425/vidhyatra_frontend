@@ -346,16 +346,6 @@ class _StudentDashboardState extends State<StudentDashboard> {
                                     ],
                                   ),
                                   SizedBox(height: 8),
-                                  // Space between profile and blog content
-                                  // Blog Title and Description
-                                  Text(
-                                    blog.blogTitle,
-                                    style: TextStyle(
-                                      fontSize: 18,
-                                      fontWeight: FontWeight.bold,
-                                    ),
-                                  ),
-                                  SizedBox(height: 8),
                                   Text(
                                     blog.blogDescription,
                                     style: TextStyle(fontSize: 14),

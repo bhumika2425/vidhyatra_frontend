@@ -59,22 +59,22 @@ class VidhyatraApp extends StatelessWidget {
           GetPage(name: '/forgot-password', page: () => ForgotPasswordScreen())
 
         ],
-        routes: {
-          '/': (context) => WelcomeScreen(),
-          '/login': (context) => LoginPage(),      // Add the '/login' route here
-          '/register': (context) => RegisterPage(),
-          '/home': (context) => StudentDashboard(),
-          '/dashboard': (context) => Dashboard(), // Add this line
-          '/profile': (context) => StudentProfilePage(), // Add Profile Page route
-          '/payment': (context) => PaymentPage(), // Add Profile Page route
-          '/calendar': (context) => Calendar(), // Add Profile Page route
-          '/schedule': (context) => WeeklyRoutinePage(), // Add Profile Page route
-          '/messages': (context) => ChatPage(),
-          '/forgot_password': (context) => ForgotPasswordScreen(), // Forgot Password Page
-
-          // '/reset-password': (context) => ResetPasswordPage(),
-          // You can also add other routes here
-        },
+        // routes: {
+        //   '/': (context) => WelcomeScreen(),
+        //   '/login': (context) => LoginPage(),      // Add the '/login' route here
+        //   '/register': (context) => RegisterPage(),
+        //   '/home': (context) => StudentDashboard(),
+        //   '/dashboard': (context) => Dashboard(), // Add this line
+        //   '/profile': (context) => StudentProfilePage(), // Add Profile Page route
+        //   '/payment': (context) => PaymentPage(), // Add Profile Page route
+        //   '/calendar': (context) => Calendar(), // Add Profile Page route
+        //   '/schedule': (context) => WeeklyRoutinePage(), // Add Profile Page route
+        //   '/messages': (context) => ChatPage(),
+        //   '/forgot_password': (context) => ForgotPasswordScreen(), // Forgot Password Page
+        //
+        //   // '/reset-password': (context) => ResetPasswordPage(),
+        //   // You can also add other routes here
+        // },
       ),
     );
   }

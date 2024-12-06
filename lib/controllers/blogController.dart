@@ -7,12 +7,18 @@ import 'package:http/http.dart' as http;
 import '../models/blogModel.dart';
 
 class BlogController extends GetxController {
-  final titleController = TextEditingController();
   final descriptionController = TextEditingController();
+  RxString labelText = 'Tell your story with us.....'.obs; // Observable for label text
+  RxBool isButtonEnabled = false.obs;
   final ImagePicker picker = ImagePicker();
   var images = <XFile>[].obs;
   var isLoading = false.obs;
   var blogs = <Blog>[].obs;  // Observable list to store blogs
+
+  void onTextFieldChange(String value) {
+    labelText.value = value.isNotEmpty ? '' : 'Tell your story with us.....';
+    isButtonEnabled.value = value.isNotEmpty; // Enable button when text is not empty
+  }
 
   Future<void> pickImages() async {
     final List<XFile>? pickedFiles = await picker.pickMultiImage(); // Allows multiple image selection
@@ -22,8 +28,8 @@ class BlogController extends GetxController {
   }
 
   Future<void> postBlog(String token) async {
-    if (titleController.text.isEmpty || descriptionController.text.isEmpty) {
-      Get.snackbar("Error", "Title and description are required");
+    if (descriptionController.text.isEmpty) {
+      Get.snackbar("Error", "Description are required");
       return;
     }
 
@@ -33,7 +39,6 @@ class BlogController extends GetxController {
     try {
       var request = http.MultipartRequest('POST', url)
         ..headers['Authorization'] = 'Bearer $token'
-        ..fields['blog_title'] = titleController.text
         ..fields['blog_description'] = descriptionController.text;
 
       // Add images to the request
@@ -47,7 +52,6 @@ class BlogController extends GetxController {
       var response = await request.send();
 
       if (response.statusCode == 201) {
-        titleController.clear();
         descriptionController.clear();
         images.clear();
         Get.back();
