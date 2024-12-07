@@ -2,8 +2,8 @@ import 'dart:io';
 
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-
 import 'package:provider/provider.dart';
+
 import '../controllers/blogController.dart';
 import '../providers/user_provider.dart'; // For accessing token
 
@@ -23,37 +23,36 @@ class BlogPostPage extends StatelessWidget {
           style: TextStyle(color: Colors.red),
         ),
         leading: IconButton(
-          icon: Icon(Icons.close, color: Colors.red), // Cross icon
-          onPressed: () {
-            Get.back(); // Navigates back to the previous page
-          },
+          icon: Icon(Icons.close, color: Colors.red), // Close icon
+          onPressed: () => Get.back(), // Navigates back
         ),
         actions: [
           Obx(() => Padding(
-                padding: const EdgeInsets.all(8.0),
-                child: TextButton(
-                  onPressed: blogController.isButtonEnabled.value
-                      ? () {
-                          // Call the postBlog function with the required token
-                          // String token = ''; // Replace with your actual token
-                          blogController.postBlog(token!);
-                        }
-                      : null, // Disable button when text is empty
-                  style: TextButton.styleFrom(
-                    backgroundColor: blogController.isButtonEnabled.value
-                        ? Colors.red
-                        : Colors.grey[200],
-                    foregroundColor: Colors.white,
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(8.0),
-                    ),
-                  ),
-                  child: Text(
-                    'Post',
-                    style: TextStyle(color: Colors.white),
-                  ),
+            padding: const EdgeInsets.all(8.0),
+            child: TextButton(
+              onPressed: blogController.isButtonEnabled.value
+                  ? () {
+                if (token != null) {
+                  blogController.postBlog(token);
+                } else {
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    SnackBar(content: Text('Token not found!')),
+                  );
+                }
+              }
+                  : null,
+              style: TextButton.styleFrom(
+                backgroundColor: blogController.isButtonEnabled.value
+                    ? Colors.red
+                    : Colors.grey[300],
+                foregroundColor: Colors.white,
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(8.0),
                 ),
-              )),
+              ),
+              child: Text('Post'),
+            ),
+          )),
         ],
       ),
       body: Column(
@@ -64,18 +63,21 @@ class BlogPostPage extends StatelessWidget {
             child: Row(
               children: [
                 CircleAvatar(
-                  radius: 30, // Adjust the size of the avatar
+                  radius: 30,
                   backgroundImage: NetworkImage(
-                    'https://example.com/profile.jpg', // Replace with actual profile image URL
+                    user?.profileImage ?? 'https://via.placeholder.com/150', // Fallback URL
                   ),
-                  backgroundColor: Colors.grey[200], // Fallback color
+                  backgroundColor: Colors.grey[200],
                 ),
-                SizedBox(width: 16), // Space between avatar and username
-                Text(
-                  '${user?.name}', // Update greeting with fetched name
-                  style: TextStyle(
-                    fontSize: 18,
-                    fontWeight: FontWeight.bold,
+                SizedBox(width: 16),
+                Expanded(
+                  child: Text(
+                    user?.name ?? 'Guest User', // Fallback name
+                    style: TextStyle(
+                      fontSize: 18,
+                      fontWeight: FontWeight.bold,
+                    ),
+                    overflow: TextOverflow.ellipsis, // Handles long names
                   ),
                 ),
               ],
@@ -89,20 +91,26 @@ class BlogPostPage extends StatelessWidget {
                 child: ListView(
                   children: [
                     Card(
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(12),
+                      ),
+                      elevation: 2,
                       child: SizedBox(
-                        height: Get.height * 0.5, // Half of the screen height using GetX
+                        height: Get.height * 0.5,
                         child: Obx(() => TextField(
                           controller: blogController.descriptionController,
                           decoration: InputDecoration(
-                            labelText: blogController.labelText.value, // Dynamic label
-                            alignLabelWithHint: true, // Keeps label at the top
-                            border: InputBorder.none, // Removes the border
-                            contentPadding: EdgeInsets.all(16), // Adds padding inside the TextField
+                            labelText: blogController.labelText.value,
+                            alignLabelWithHint: true,
+                            border: OutlineInputBorder(
+                              borderRadius: BorderRadius.circular(12),
+                            ),
+                            contentPadding: EdgeInsets.all(16),
                           ),
                           onChanged: (value) {
                             blogController.onTextFieldChange(value);
                           },
-                          maxLines: null, // Allow multiple lines
+                          maxLines: null,
                         )),
                       ),
                     ),
@@ -110,8 +118,10 @@ class BlogPostPage extends StatelessWidget {
                     SizedBox(height: 20),
                     Row(
                       children: [
-                        Text('Blog Image (Optional)',
-                            style: TextStyle(fontSize: 16)),
+                        Text(
+                          'Blog Image (Optional)',
+                          style: TextStyle(fontSize: 16),
+                        ),
                         SizedBox(width: 10),
                         ElevatedButton(
                           onPressed: () => blogController.pickImages(),
@@ -121,21 +131,24 @@ class BlogPostPage extends StatelessWidget {
                     ),
                     Obx(() => blogController.images.isNotEmpty
                         ? Padding(
-                            padding: const EdgeInsets.only(top: 10),
-                            child: Wrap(
-                              spacing: 10,
-                              runSpacing: 10,
-                              children: blogController.images.map((image) {
-                                return Image.file(
-                                  File(image.path),
-                                  height: 100,
-                                  width: 100,
-                                  fit: BoxFit.cover,
-                                );
-                              }).toList(),
+                      padding: const EdgeInsets.only(top: 10),
+                      child: Wrap(
+                        spacing: 10,
+                        runSpacing: 10,
+                        children: blogController.images.map((image) {
+                          return ClipRRect(
+                            borderRadius: BorderRadius.circular(8),
+                            child: Image.file(
+                              File(image.path),
+                              height: 100,
+                              width: 100,
+                              fit: BoxFit.cover,
                             ),
-                          )
-                        : Container()),
+                          );
+                        }).toList(),
+                      ),
+                    )
+                        : SizedBox.shrink()),
                   ],
                 ),
               ),
