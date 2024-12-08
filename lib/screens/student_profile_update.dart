@@ -148,7 +148,7 @@ class _StudentProfileUpdateState extends State<StudentProfileUpdate> {
           request.headers['Authorization'] = 'Bearer $token';
           request.fields.addAll(body.map((key, value) => MapEntry(key, value.toString())));
           request.files.add(await http.MultipartFile.fromPath(
-            'profile_image',
+            'profileImage',
             _profileImage!.path,
           ));
 
