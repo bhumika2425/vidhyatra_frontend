@@ -3,25 +3,29 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:http/http.dart' as http;
-
-import '../models/blogModel.dart';
+import 'package:vidhyatra_flutter/models/blogModel.dart';
 
 class BlogController extends GetxController {
   final descriptionController = TextEditingController();
-  RxString labelText = 'Tell your story with us.....'.obs; // Observable for label text
+  RxString labelText =
+      'Tell your story with us.....'.obs; // Observable for label text
   RxBool isButtonEnabled = false.obs;
   final ImagePicker picker = ImagePicker();
   var images = <XFile>[].obs;
-  var isLoading = false.obs;
-  var blogs = <Blog>[].obs;  // Observable list to store blogs
+
+  // Blog list observable
+  var blogs = <Blog>[].obs; // Corrected the type to a list of blogs
+  var isLoading = true.obs;
 
   void onTextFieldChange(String value) {
     labelText.value = value.isNotEmpty ? '' : 'Tell your story with us.....';
-    isButtonEnabled.value = value.isNotEmpty; // Enable button when text is not empty
+    isButtonEnabled.value =
+        value.isNotEmpty; // Enable button when text is not empty
   }
 
   Future<void> pickImages() async {
-    final List<XFile>? pickedFiles = await picker.pickMultiImage(); // Allows multiple image selection
+    final List<XFile>? pickedFiles =
+        await picker.pickMultiImage(); // Allows multiple image selection
     if (pickedFiles != null && pickedFiles.isNotEmpty) {
       images.addAll(pickedFiles); // Add all selected images to the list
     }
@@ -67,44 +71,40 @@ class BlogController extends GetxController {
     }
   }
 
-  Future<void> getBlogs(String token) async {
-    final url = Uri.parse('http://10.0.2.2:3001/api/blogs/all');  // API endpoint for getting blogs
-
+  // Fetch blogs
+  Future<void> fetchBlogs(String token) async {
     try {
       isLoading.value = true;
-      print('Fetching blogs from: $url'); // Debugging the URL
 
-      final response = await http.get(
-        url,
-        headers: {
-          'Authorization': 'Bearer $token',
-        },
-      );
+      final response = await http
+          .get(Uri.parse('http://10.0.2.2:3001/api/blog/all'), headers: {
+        "Authorization": 'Bearer $token' // Replace with user's token
+      });
+      print("${response.body}");
 
-      // Check the status code of the response
-      print('Response status: ${response.statusCode}'); // Debugging status code
-
-      // If the response is successful
       if (response.statusCode == 200) {
-        List<dynamic> blogList = json.decode(response.body);
+        final blogData = json.decode(response.body);
 
-        print('Response body: ${response.body}'); // Debugging response body
-
-        if (blogList.isNotEmpty) {
-          blogs.value = blogList.map((e) => Blog.fromJson(e)).toList();
-          print('Blogs fetched: ${blogs.length}'); // Debugging number of blogs fetched
+        if (blogData['blogs'] != null) {
+          blogs.value = (blogData['blogs'] as List)
+              .map((blogJson) => Blog.fromJson(blogJson))
+              .toList();
         } else {
-          Get.snackbar("Info", "No blogs available.");
+          Get.snackbar("Error", "No blogs found.");
         }
       } else {
-        print('Failed to fetch blogs. Status code: ${response.statusCode}'); // Debugging if request fails
-        Get.snackbar("Error", "Failed to load blogs");
+        Get.snackbar("Error", "Failed to fetch blogs: ${response.body}");
       }
     } catch (e) {
-      print('Error fetching blogs: $e'); // Debugging error during fetch
-      Get.snackbar("Error", "Error fetching blogs: $e");
+      Get.snackbar("Error", "An error occurred: $e");
+      print("$e");
     } finally {
       isLoading.value = false;
     }
   }
+// @override
+// void onInit() {
+//   fetchBlogs();
+//   super.onInit();
+// }
 }

@@ -6,8 +6,10 @@ import 'package:get/get.dart';
 import 'package:http/http.dart' as http;
 import 'package:provider/provider.dart';
 import 'package:vidhyatra_flutter/controllers/IconController.dart';
+import 'package:vidhyatra_flutter/controllers/blogController.dart';
 import 'package:vidhyatra_flutter/screens/profile_creation.dart';
 
+import '../models/blogModel.dart';
 import '../providers/profile_provider.dart';
 import '../providers/user_provider.dart';
 
@@ -21,17 +23,21 @@ class Dashboard extends StatefulWidget {
 class _DashboardState extends State<Dashboard> {
   bool isDarkMode = false; // Track the current theme mode
   final IconController iconController = Get.put(IconController());
+  final BlogController blogController = Get.put(BlogController());
 
   @override
   void initState() {
     super.initState();
     final userProvider = Provider.of<UserProvider>(context, listen: false);
     if (userProvider.token != null) {
+      // Fetch profile data if token is available
       Provider.of<ProfileProvider>(context, listen: false)
           .fetchProfileData(userProvider.token!);
+
+      // Fetch blogs after the user token is set
+      blogController.fetchBlogs(userProvider.token!);
     }
   }
-
 
   @override
   Widget build(BuildContext context) {
@@ -57,15 +63,13 @@ class _DashboardState extends State<Dashboard> {
                 Uri.parse('http://10.0.2.2:3001/api/profile/exists'),
                 headers: {
                   'Authorization': 'Bearer ${userProvider.token}',
-                  // Assuming token stored in provider
                 },
               );
 
               if (response.statusCode == 200) {
                 final data = jsonDecode(response.body);
                 if (data['exists']) {
-                  Navigator.pushNamed(context,
-                      '/profile'); // Navigate to profile page if it exists
+                  Navigator.pushNamed(context, '/profile');
                 } else {
                   showDialog(
                     context: context,
@@ -78,13 +82,13 @@ class _DashboardState extends State<Dashboard> {
                           TextButton(
                             child: Text('Cancel'),
                             onPressed: () {
-                              Navigator.of(context).pop(); // Close dialog
+                              Navigator.of(context).pop();
                             },
                           ),
                           TextButton(
                             child: Text('Create Profile'),
                             onPressed: () {
-                              Navigator.of(context).pop(); // Close dialog
+                              Navigator.of(context).pop();
                               Navigator.push(
                                 context,
                                 MaterialPageRoute(
@@ -99,7 +103,6 @@ class _DashboardState extends State<Dashboard> {
                   );
                 }
               } else {
-                // Handle error (optional)
                 print('Error checking profile existence');
               }
             },
@@ -108,9 +111,7 @@ class _DashboardState extends State<Dashboard> {
                       profile.profileImageUrl != null
                   ? NetworkImage(profile.profileImageUrl!)
                   : AssetImage('assets/default_profile.png') as ImageProvider,
-              // Fallback image
-              backgroundColor:
-                  Colors.grey.shade200, // Background color if no image
+              backgroundColor: Colors.grey.shade200,
             ),
           ),
           SizedBox(width: 10),
@@ -123,7 +124,6 @@ class _DashboardState extends State<Dashboard> {
             SizedBox(height: 60),
             Container(
               margin: EdgeInsets.only(left: 20.0),
-              // Move text to the right by 20px
               child: Text(
                 'Navigation',
                 style: TextStyle(
@@ -147,44 +147,38 @@ class _DashboardState extends State<Dashboard> {
               leading: Icon(Icons.history),
               title: Text('Payment history'),
               onTap: () {
-                // Add your navigation logic here
                 Navigator.pushNamed(context, '/paymentHistory');
               },
             ),
             ListTile(
               leading: Icon(Icons.group),
-              title: Text('Groups'), // Friends icon
+              title: Text('Groups'),
               onTap: () {
                 Navigator.pop(context);
-                Navigator.pushNamed(
-                    context, '/groups'); // Update with the correct route
+                Navigator.pushNamed(context, '/groups');
               },
             ),
             ListTile(
               leading: Icon(Icons.people),
-              title: Text('Friends'), // Groups icon
+              title: Text('Friends'),
               onTap: () {
                 Navigator.pop(context);
-                Navigator.pushNamed(
-                    context, '/friends'); // Update with the correct route
+                Navigator.pushNamed(context, '/friends');
               },
             ),
             Row(
-              // mainAxisAlignment: MainAxisAlignment.center,
               children: [
                 Padding(
                   padding: const EdgeInsets.all(16.0),
                   child: Icon(Icons.dark_mode),
                 ),
                 Text('Dark mode'),
-                SizedBox(
-                  width: 10,
-                ),
+                SizedBox(width: 10),
                 Switch(
                   value: isDarkMode,
                   onChanged: (value) {
                     setState(() {
-                      isDarkMode = value; // Update the toggle state
+                      isDarkMode = value;
                     });
                     if (isDarkMode) {
                       Get.changeTheme(ThemeData.dark());
@@ -204,9 +198,8 @@ class _DashboardState extends State<Dashboard> {
               leading: Icon(Icons.logout),
               title: Text('Logout'),
               onTap: () async {
-                // Example logout logic
                 await Future.delayed(Duration(seconds: 1));
-                Get.offAllNamed('/login'); // Navigate back to login page
+                Get.offAllNamed('/login');
               },
             ),
           ],
@@ -225,7 +218,6 @@ class _DashboardState extends State<Dashboard> {
             SingleChildScrollView(
               scrollDirection: Axis.horizontal,
               child: Row(
-                crossAxisAlignment: CrossAxisAlignment.center,
                 children: [
                   _buildTimelineCard(
                       "04-4:30PM",
@@ -238,9 +230,7 @@ class _DashboardState extends State<Dashboard> {
                 ],
               ),
             ),
-            SizedBox(
-              height: 20,
-            ),
+            SizedBox(height: 20),
             // Latest Blogs Section with grey background
             Container(
               color: Colors.grey[200], // Light grey background
@@ -255,14 +245,28 @@ class _DashboardState extends State<Dashboard> {
                           TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
                     ),
                   ),
-                  _buildBlogCard(
-                      "Username2",
-                      "Blog 2",
-                      "Artificial Intelligence (AI) is transforming education, from personalized learning experiences to automated grading systems. This blog explores how AI is reshaping classrooms, enhancing student engagement, and helping educators focus more on teaching by automating administrative tasks. Dive into the possibilities of AI-powered tools and their impact on the future of learning.",
-                      "2024/02/02"),
+                  Obx(
+                    () => blogController.isLoading.value
+                        ? Center(child: CircularProgressIndicator())
+                        : ListView.builder(
+                            shrinkWrap: true,
+                            physics: NeverScrollableScrollPhysics(),
+                            itemCount: blogController.blogs.length,
+                            itemBuilder: (context, index) {
+                              final blog = blogController.blogs[index];
+                              return ListTile(
+                                subtitle: Text(
+                                    blog.blogDescription ?? 'No description'),
+                                trailing: blog.imageUrls.isNotEmpty
+                                    ? Image.network(blog.imageUrls[0])
+                                    : null,
+                              );
+                            },
+                          ),
+                  ),
                 ],
               ),
-            ),
+            )
           ],
         ),
       ),
@@ -275,23 +279,23 @@ class _DashboardState extends State<Dashboard> {
             IconButton(
                 icon: Icon(Icons.home),
                 onPressed: () {
-                  Get.offAllNamed('/dashboard'); // Navigate to Dashboard
+                  Get.offAllNamed('/dashboard');
                 }),
             IconButton(
                 icon: Icon(Icons.payment),
                 onPressed: () {
-                  Get.toNamed('/payment'); // Navigate to Payments page
+                  Get.toNamed('/payment');
                 }),
             SizedBox(width: 40), // Space for FAB
             IconButton(
                 icon: Icon(Icons.calendar_month),
                 onPressed: () {
-                  Get.toNamed('/calendar'); // Navigate to Calendar page
+                  Get.toNamed('/calendar');
                 }),
             IconButton(
                 icon: Icon(Icons.chat),
                 onPressed: () {
-                  Get.toNamed('/messages'); // Navigate to Chat page
+                  Get.toNamed('/messages');
                 }),
           ],
         ),
@@ -349,62 +353,6 @@ class _DashboardState extends State<Dashboard> {
               height: 5,
             ),
             Text(status, style: TextStyle(color: statusColor)),
-          ],
-        ),
-      ),
-    );
-  }
-
-  Widget _buildBlogCard(
-      String username, String title, String description, String date) {
-    final IconController iconColorController = Get.put(IconController());
-
-    return Card(
-      margin: EdgeInsets.symmetric(horizontal: 16.0, vertical: 8.0),
-      child: Padding(
-        padding: EdgeInsets.all(12.0),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Row(
-              children: [
-                CircleAvatar(
-                  backgroundImage:
-                      NetworkImage('https://via.placeholder.com/150'),
-                ),
-                SizedBox(width: 8.0),
-                Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text(username,
-                        style: TextStyle(fontWeight: FontWeight.bold)),
-                    Text(date, style: TextStyle(color: Colors.grey)),
-                  ],
-                ),
-              ],
-            ),
-            SizedBox(height: 8.0),
-            Text(title,
-                style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold)),
-            Text(description),
-            Row(
-              mainAxisAlignment: MainAxisAlignment.start,
-              children: [
-                Obx(
-                  () => IconButton(
-                    icon: Icon(
-                      Icons.thumb_up,
-                      color: iconColorController.isRed.value
-                          ? Colors.red
-                          : Colors.grey,
-                    ),
-                    onPressed: iconColorController.toggleColor,
-                  ),
-                ),
-                IconButton(icon: Icon(Icons.comment), onPressed: () {}),
-                IconButton(icon: Icon(Icons.share), onPressed: () {}),
-              ],
-            )
           ],
         ),
       ),
