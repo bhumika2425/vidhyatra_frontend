@@ -8,7 +8,6 @@ import 'package:provider/provider.dart';
 import 'package:vidhyatra_flutter/controllers/IconController.dart';
 import 'package:vidhyatra_flutter/controllers/blogController.dart';
 import 'package:vidhyatra_flutter/screens/profile_creation.dart';
-
 import '../models/blogModel.dart';
 import '../providers/profile_provider.dart';
 import '../providers/user_provider.dart';
@@ -26,28 +25,18 @@ class _DashboardState extends State<Dashboard> {
   final BlogController blogController = Get.put(BlogController());
 
   @override
-  void initState() {
-    super.initState();
-    final userProvider = Provider.of<UserProvider>(context, listen: false);
-    if (userProvider.token != null) {
-      // Fetch profile data if token is available
-      Provider.of<ProfileProvider>(context, listen: false)
-          .fetchProfileData(userProvider.token!);
-
-      // Fetch blogs after the user token is set
-      blogController.fetchBlogs(userProvider.token!);
-    }
-  }
-
-  @override
   Widget build(BuildContext context) {
     final profile = Provider.of<ProfileProvider>(context).profile;
+    // Access the token from the UserProvider
+    final userProvider = Provider.of<UserProvider>(context, listen: false);
+    final token = userProvider.token;
+    blogController.fetchBlogs(token!);
     return Scaffold(
       appBar: AppBar(
         iconTheme: IconThemeData(
           color: Colors.white, // Set Drawer icon color to white
         ),
-        backgroundColor: Color(0xFFE41F1F),
+        backgroundColor: Color(0xFF971F20),
         title: Text("Vidhyatra", style: TextStyle(color: Colors.white)),
         actions: [
           SizedBox(width: 10),
@@ -245,25 +234,33 @@ class _DashboardState extends State<Dashboard> {
                           TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
                     ),
                   ),
-                  Obx(
-                    () => blogController.isLoading.value
-                        ? Center(child: CircularProgressIndicator())
-                        : ListView.builder(
-                            shrinkWrap: true,
-                            physics: NeverScrollableScrollPhysics(),
-                            itemCount: blogController.blogs.length,
-                            itemBuilder: (context, index) {
-                              final blog = blogController.blogs[index];
-                              return ListTile(
-                                subtitle: Text(
-                                    blog.blogDescription ?? 'No description'),
-                                trailing: blog.imageUrls.isNotEmpty
-                                    ? Image.network(blog.imageUrls[0])
-                                    : null,
-                              );
-                            },
-                          ),
-                  ),
+                  Obx(() {
+                    if (blogController.isLoading.value) {
+                      return Center(child: CircularProgressIndicator());
+                    }
+
+                    final blogs = blogController.blogs.value;
+
+                    if (blogs == null || blogs.isEmpty) {
+                      return Center(child: Text("No blogs available"));
+                    }
+
+                    // Reverse the list of blogs to display the most recent one at the top
+                    final reversedBlogs = blogs.reversed.toList();
+
+                    // Display the list of blogs
+                    return ListView.builder(
+                      shrinkWrap: true,
+                      // Prevents infinite height issues
+                      physics: NeverScrollableScrollPhysics(),
+                      // Prevents nested scrolling
+                      itemCount: reversedBlogs.length,
+                      itemBuilder: (context, index) {
+                        final blog = reversedBlogs[index];
+                        return _buildBlogCard(blog);
+                      },
+                    );
+                  }),
                 ],
               ),
             )
@@ -304,7 +301,7 @@ class _DashboardState extends State<Dashboard> {
         onPressed: () {
           Get.toNamed('/new-post');
         },
-        backgroundColor: Color(0xFFE41F1F),
+        backgroundColor: Color(0xFF971F20),
         child: Icon(Icons.add, color: Colors.white),
       ),
       floatingActionButtonLocation: FloatingActionButtonLocation.centerDocked,
@@ -353,6 +350,112 @@ class _DashboardState extends State<Dashboard> {
               height: 5,
             ),
             Text(status, style: TextStyle(color: statusColor)),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget _buildBlogCard(Blog blog) {
+    return Card(
+      margin: EdgeInsets.symmetric(horizontal: 16.0, vertical: 8.0),
+      child: Padding(
+        padding: const EdgeInsets.all(16.0),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Row(
+              children: [
+                CircleAvatar(
+                  radius: 25.0, // Size of the avatar
+                  backgroundImage: NetworkImage('https://www.example.com/default-avatar.png'), // Replace with user's profile image
+                  backgroundColor: Colors.grey[300],
+                ),
+                SizedBox(width: 8.0),
+                Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      'Anonymous', // Fallback if the username is null
+                      style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16.0),
+                    ),
+                    Text(
+                      'created at: 2024/10/12', // Fallback if the username is null
+                      style: TextStyle(color: Colors.grey, fontSize: 12.0),
+                    ),
+                  ],
+                ),
+              ],
+            ),
+            SizedBox(height: 8.0),
+            // Blog Description
+            Text(
+              blog.blogDescription,
+              style: TextStyle(fontSize: 16,),
+            ),
+            SizedBox(height: 8.0),
+
+            // Blog Images
+            if (blog.imageUrls.isNotEmpty)
+              SingleChildScrollView(
+                scrollDirection: Axis.horizontal,
+                child: Row(
+                  children: blog.imageUrls.map((imageUrl) {
+                    return Padding(
+                      padding: const EdgeInsets.only(right: 8.0),
+                      child: Image.network(
+                        imageUrl,
+                        height: 150,
+                        width: 150,
+                        fit: BoxFit.cover,
+                      ),
+                    );
+                  }).toList(),
+                ),
+              ),
+
+            SizedBox(height: 8.0),
+
+            // Blog Author
+            Text(
+              "Author ID: ${blog.userId}",
+              style: TextStyle(color: Colors.grey[600], fontSize: 14),
+            ),
+            // Add Comment and Share buttons at the bottom
+            SizedBox(height: 16.0),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                Row(
+                  children: [
+                    TextButton(
+                      onPressed: () {
+                        // Handle comment action
+                        print("like clicked");
+                        // You can navigate to the comment section or open a modal for commenting
+                      },
+                      child: Icon(Icons.thumb_up_off_alt_outlined, color: Colors.grey[600],),
+                    ),
+                    TextButton(
+                      onPressed: () {
+                        // Handle comment action
+                        print("Comment clicked");
+                        // You can navigate to the comment section or open a modal for commenting
+                      },
+                      child: Icon(Icons.comment, color: Colors.grey[600],),
+                    ),
+                  ],
+                ),
+                TextButton(
+                  onPressed: () {
+                    // Handle share action
+                    print("Share clicked");
+                    // You can implement the sharing logic here
+                  },
+                  child: Icon(Icons.share, color: Colors.grey[600],),
+                ),
+              ],
+            ),
           ],
         ),
       ),

@@ -96,7 +96,7 @@ class _LoginPageState extends State<LoginPage> with SingleTickerProviderStateMix
       body: Container(
         decoration: BoxDecoration(
           gradient: LinearGradient(
-            colors: [Colors.white, Colors.black],
+            colors: [Colors.white, Color(0xFF971F20)],
             begin: Alignment.topLeft,
             end: Alignment.bottomRight,
           ),
@@ -139,7 +139,7 @@ class _LoginPageState extends State<LoginPage> with SingleTickerProviderStateMix
                           style: TextStyle(
                             fontSize: 26,
                             fontWeight: FontWeight.bold,
-                            color: Colors.black, // Text color changed to black
+                            color: Color(0xFF971F20), // Text color changed to black
                           ),
                         ),
                         SizedBox(height: 5),
@@ -211,7 +211,7 @@ class _LoginPageState extends State<LoginPage> with SingleTickerProviderStateMix
                             loginUser();
                           },
                           style: ElevatedButton.styleFrom(
-                            backgroundColor: Colors.black, // Set the background color to black
+                            backgroundColor: Color(0xFF971F20), // Set the background color to black
                             foregroundColor: Colors.white, // Set the text color to white
                             padding: EdgeInsets.symmetric(vertical: 15, horizontal: 50),
                             shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
@@ -233,7 +233,7 @@ class _LoginPageState extends State<LoginPage> with SingleTickerProviderStateMix
                           child: Text(
                             'Forgot Password?',
                             style: TextStyle(
-                              color: Colors.black, // Text color black
+                              color: Color(0xFF971F20), // Text color black
                               fontSize: 14,
                             ),
                           ),
@@ -255,7 +255,7 @@ class _LoginPageState extends State<LoginPage> with SingleTickerProviderStateMix
                               child: Text(
                                 'Register here',
                                 style: TextStyle(
-                                  color: Colors.black, // Text color black
+                                  color: Color(0xFF971F20), // Text color black
                                   fontWeight: FontWeight.bold,
                                   fontSize: 14,
                                 ),

@@ -3,7 +3,10 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:http/http.dart' as http;
+import 'package:provider/provider.dart';
 import 'package:vidhyatra_flutter/models/blogModel.dart';
+
+import '../providers/user_provider.dart';
 
 class BlogController extends GetxController {
   final descriptionController = TextEditingController();
@@ -14,7 +17,7 @@ class BlogController extends GetxController {
   var images = <XFile>[].obs;
 
   // Blog list observable
-  var blogs = <Blog>[].obs; // Corrected the type to a list of blogs
+  var blogs = <Blog>[].obs; // Define blogs as an observable list
   var isLoading = true.obs;
 
   void onTextFieldChange(String value) {
@@ -59,6 +62,8 @@ class BlogController extends GetxController {
         descriptionController.clear();
         images.clear();
         Get.back();
+        // Fetch blogs again after posting the new one
+        fetchBlogs(token);
         Get.snackbar("Success", "Blog posted successfully!");
       } else {
         Get.snackbar("Error", "Failed to post blog");
@@ -76,35 +81,72 @@ class BlogController extends GetxController {
     try {
       isLoading.value = true;
 
-      final response = await http
-          .get(Uri.parse('http://10.0.2.2:3001/api/blog/all'), headers: {
-        "Authorization": 'Bearer $token' // Replace with user's token
-      });
-      print("${response.body}");
+      final response = await http.get(
+        Uri.parse('http://10.0.2.2:3001/api/blog/all'),
+        headers: {
+          "Authorization": 'Bearer $token', // Replace with user's token
+        },
+      );
+
+      print("Response status: ${response.statusCode}");
+      print("Response body: ${response.body}");
 
       if (response.statusCode == 200) {
         final blogData = json.decode(response.body);
 
-        if (blogData['blogs'] != null) {
-          blogs.value = (blogData['blogs'] as List)
-              .map((blogJson) => Blog.fromJson(blogJson))
-              .toList();
+        // Debugging: Print the entire response data
+        print("Decoded response: $blogData");
+
+        // Check if the response is an empty list or contains the expected data
+        if (blogData != null && blogData['blogs'] != null) {
+          // Parse the list of blogs
+          blogs.value = List<Blog>.from(
+            blogData['blogs'].map((blog) => Blog.fromJson(blog)),
+          );
+
+          // Debugging: Print the parsed blogs to console
+          print("Parsed blogs:");
+          for (var blog in blogs) {
+            print(blog.toJson());
+          }
         } else {
-          Get.snackbar("Error", "No blogs found.");
+          print("No blogs found or missing data in the response.");
+          Get.snackbar("Error", "No blogs found");
         }
       } else {
-        Get.snackbar("Error", "Failed to fetch blogs: ${response.body}");
+        // Handle error based on response status
+        Get.snackbar("Error", "Failed to fetch blogs: ${response.statusCode}");
       }
     } catch (e) {
+      // Debugging: Log the error and show a snackbar
       Get.snackbar("Error", "An error occurred: $e");
-      print("$e");
+      print("Error: $e");
     } finally {
+      // Stop the loading indicator once the response is processed
       isLoading.value = false;
     }
   }
-// @override
-// void onInit() {
-//   fetchBlogs();
-//   super.onInit();
-// }
+
+  // @override
+  // void onInit() {
+  //   fetchBlogs();
+  //   super.onInit();
+  // }
+  @override
+  void onInit() {
+    super.onInit();
+
+    // Access the token using Provider.of(context) inside your widget tree
+    final token = Get.context != null
+        ? Provider.of<UserProvider>(Get.context!, listen: false).token
+        : null;
+
+    if (token != null) {
+
+      fetchBlogs(token); // Pass the token to fetchBlogs
+    } else {
+      print("Error: Token not found");
+      Get.snackbar("Error", "Token is missing. Please log in again.");
+    }
+  }
 }
