@@ -98,9 +98,11 @@ class _DashboardState extends State<Dashboard> {
             child: CircleAvatar(
               backgroundImage: profile != null &&
                       profile.profileImageUrl != null
-                  ? NetworkImage(profile.profileImageUrl!)
+                  ? NetworkImage(profile.profileImageUrl!) // Load image from URL if available
                   : AssetImage('assets/default_profile.png') as ImageProvider,
+              // Fallback to default image
               backgroundColor: Colors.grey.shade200,
+              radius: 20, // Ensure the avatar size is appropriate
             ),
           ),
           SizedBox(width: 10),
@@ -368,19 +370,23 @@ class _DashboardState extends State<Dashboard> {
               children: [
                 CircleAvatar(
                   radius: 25.0, // Size of the avatar
-                  backgroundImage: NetworkImage('https://www.example.com/default-avatar.png'), // Replace with user's profile image
-                  backgroundColor: Colors.grey[300],
+                  backgroundImage: blog.profileImage.isNotEmpty
+                      ? NetworkImage(blog.profileImage)
+                      : AssetImage('assets/default_profile.png'), // Default image if profileImage is empty
+                  backgroundColor: Colors.grey[300], // Background color when no image
                 ),
                 SizedBox(width: 8.0),
                 Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Text(
-                      'Anonymous', // Fallback if the username is null
-                      style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16.0),
+                      blog.fullName, // Fallback if the username is null
+                      style: TextStyle(
+                          fontWeight: FontWeight.bold, fontSize: 16.0),
                     ),
                     Text(
-                      'created at: 2024/10/12', // Fallback if the username is null
+                      blog.createdAt,
+                      // Fallback if the username is null
                       style: TextStyle(color: Colors.grey, fontSize: 12.0),
                     ),
                   ],
@@ -391,36 +397,198 @@ class _DashboardState extends State<Dashboard> {
             // Blog Description
             Text(
               blog.blogDescription,
-              style: TextStyle(fontSize: 16,),
+              style: TextStyle(
+                fontSize: 16,
+              ),
             ),
             SizedBox(height: 8.0),
 
             // Blog Images
             if (blog.imageUrls.isNotEmpty)
-              SingleChildScrollView(
-                scrollDirection: Axis.horizontal,
-                child: Row(
-                  children: blog.imageUrls.map((imageUrl) {
-                    return Padding(
-                      padding: const EdgeInsets.only(right: 8.0),
-                      child: Image.network(
-                        imageUrl,
-                        height: 150,
-                        width: 150,
-                        fit: BoxFit.cover,
-                      ),
-                    );
-                  }).toList(),
-                ),
+            // Blog Images
+              Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  // Display the first two images
+                  SingleChildScrollView(
+                    scrollDirection: Axis.horizontal,
+                    child: Row(
+                      children: blog.imageUrls.take(2).map((imageUrl) {
+                        return GestureDetector(
+                          onTap: () {
+                            // Display the clicked image in fullscreen
+                            showDialog(
+                              context: context,
+                              builder: (context) {
+                                return Dialog(
+                                  backgroundColor: Colors.black,
+                                  insetPadding: EdgeInsets.zero,
+                                  child: Stack(
+                                    children: [
+                                      Center(
+                                        child: Hero(
+                                          tag: imageUrl,
+                                          child: Image.network(
+                                            imageUrl,
+                                            fit: BoxFit.contain,
+                                          ),
+                                        ),
+                                      ),
+                                      Positioned(
+                                        top: 20,
+                                        right: 20,
+                                        child: IconButton(
+                                          icon: Icon(
+                                            Icons.close,
+                                            color: Colors.white,
+                                            size: 30,
+                                          ),
+                                          onPressed: () {
+                                            Navigator.of(context).pop();
+                                          },
+                                        ),
+                                      ),
+                                    ],
+                                  ),
+                                );
+                              },
+                            );
+                          },
+                          child: Padding(
+                            padding: const EdgeInsets.only(right: 8.0),
+                            child: Hero(
+                              tag: imageUrl,
+                              child: Image.network(
+                                imageUrl,
+                                height: 150,
+                                width: 150,
+                                fit: BoxFit.cover,
+                              ),
+                            ),
+                          ),
+                        );
+                      }).toList(),
+                    ),
+                  ),
+
+                  // Check if there are more than 2 images
+                  if (blog.imageUrls.length > 2)
+                    TextButton(
+                      onPressed: () {
+                        // Show a dialog with all the images
+                        showDialog(
+                          context: context,
+                          builder: (context) {
+                            return Dialog(
+                              shape: RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(12.0),
+                              ),
+                              child: Column(
+                                mainAxisSize: MainAxisSize.min,
+                                children: [
+                                  // Close button
+                                  Align(
+                                    alignment: Alignment.topRight,
+                                    child: IconButton(
+                                      icon: Icon(Icons.close),
+                                      onPressed: () => Navigator.of(context).pop(),
+                                    ),
+                                  ),
+
+                                  // Title
+                                  Padding(
+                                    padding: const EdgeInsets.all(8.0),
+                                    child: Text(
+                                      "All Images",
+                                      style: TextStyle(
+                                        fontSize: 18,
+                                        fontWeight: FontWeight.bold,
+                                      ),
+                                    ),
+                                  ),
+
+                                  // GridView for images
+                                  Expanded(
+                                    child: Padding(
+                                      padding: const EdgeInsets.symmetric(horizontal: 8.0),
+                                      child: GridView.builder(
+                                        gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+                                          crossAxisCount: 2,
+                                          crossAxisSpacing: 8.0,
+                                          mainAxisSpacing: 8.0,
+                                        ),
+                                        itemCount: blog.imageUrls.length,
+                                        itemBuilder: (context, index) {
+                                          return GestureDetector(
+                                            onTap: () {
+                                              // Display the clicked image in fullscreen
+                                              showDialog(
+                                                context: context,
+                                                builder: (context) {
+                                                  return Dialog(
+                                                    backgroundColor: Colors.black,
+                                                    insetPadding: EdgeInsets.zero,
+                                                    child: Stack(
+                                                      children: [
+                                                        Center(
+                                                          child: Hero(
+                                                            tag: blog.imageUrls[index],
+                                                            child: Image.network(
+                                                              blog.imageUrls[index],
+                                                              fit: BoxFit.contain,
+                                                            ),
+                                                          ),
+                                                        ),
+                                                        Positioned(
+                                                          top: 20,
+                                                          right: 20,
+                                                          child: IconButton(
+                                                            icon: Icon(
+                                                              Icons.close,
+                                                              color: Colors.white,
+                                                              size: 30,
+                                                            ),
+                                                            onPressed: () {
+                                                              Navigator.of(context).pop();
+                                                            },
+                                                          ),
+                                                        ),
+                                                      ],
+                                                    ),
+                                                  );
+                                                },
+                                              );
+                                            },
+                                            child: ClipRRect(
+                                              borderRadius: BorderRadius.circular(8.0),
+                                              child: Hero(
+                                                tag: blog.imageUrls[index],
+                                                child: Image.network(
+                                                  blog.imageUrls[index],
+                                                  fit: BoxFit.cover,
+                                                ),
+                                              ),
+                                            ),
+                                          );
+                                        },
+                                      ),
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            );
+                          },
+                        );
+                      },
+                      child: Text("+${blog.imageUrls.length - 2} more images"),
+                    ),
+                ],
               ),
+
+
 
             SizedBox(height: 8.0),
 
-            // Blog Author
-            Text(
-              "Author ID: ${blog.userId}",
-              style: TextStyle(color: Colors.grey[600], fontSize: 14),
-            ),
             // Add Comment and Share buttons at the bottom
             SizedBox(height: 16.0),
             Row(
@@ -434,7 +602,10 @@ class _DashboardState extends State<Dashboard> {
                         print("like clicked");
                         // You can navigate to the comment section or open a modal for commenting
                       },
-                      child: Icon(Icons.thumb_up_off_alt_outlined, color: Colors.grey[600],),
+                      child: Icon(
+                        Icons.thumb_up_off_alt_outlined,
+                        color: Colors.grey[600],
+                      ),
                     ),
                     TextButton(
                       onPressed: () {
@@ -442,7 +613,10 @@ class _DashboardState extends State<Dashboard> {
                         print("Comment clicked");
                         // You can navigate to the comment section or open a modal for commenting
                       },
-                      child: Icon(Icons.comment, color: Colors.grey[600],),
+                      child: Icon(
+                        Icons.comment,
+                        color: Colors.grey[600],
+                      ),
                     ),
                   ],
                 ),
@@ -452,7 +626,10 @@ class _DashboardState extends State<Dashboard> {
                     print("Share clicked");
                     // You can implement the sharing logic here
                   },
-                  child: Icon(Icons.share, color: Colors.grey[600],),
+                  child: Icon(
+                    Icons.share,
+                    color: Colors.grey[600],
+                  ),
                 ),
               ],
             ),

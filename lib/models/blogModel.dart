@@ -7,12 +7,18 @@ class Blog {
   final String blogDescription;
   final List<String> imageUrls;
   final int userId;
+  final String createdAt;
+  final String profileImage;
+  final String fullName;
 
   Blog({
     required this.blogId,
     required this.blogDescription,
     required this.imageUrls,
     required this.userId,
+    required this.createdAt,
+    required this.profileImage,
+    required this.fullName
   });
 
   // Convert a Blog from JSON
@@ -22,6 +28,10 @@ class Blog {
       blogDescription: json['blog_description'],
       imageUrls: List<String>.from(json['image_urls'] ?? []),
       userId: json['user_id'],
+      createdAt: json['createdAt'],
+      profileImage: json['profileImageUrl'] ?? '',
+      fullName: json['full_name'] ?? '',
+
     );
   }
 
@@ -33,6 +43,9 @@ class Blog {
       'blog_description': blogDescription,
       'image_urls': imageUrls,
       'user_id': userId,
+      'createdAt': createdAt,
+      'profileImageUrl': profileImage,
+      'full_name': fullName
     };
   }
 }

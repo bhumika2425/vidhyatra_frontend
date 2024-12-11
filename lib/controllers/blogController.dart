@@ -88,9 +88,6 @@ class BlogController extends GetxController {
         },
       );
 
-      print("Response status: ${response.statusCode}");
-      print("Response body: ${response.body}");
-
       if (response.statusCode == 200) {
         final blogData = json.decode(response.body);
 
@@ -104,8 +101,6 @@ class BlogController extends GetxController {
             blogData['blogs'].map((blog) => Blog.fromJson(blog)),
           );
 
-          // Debugging: Print the parsed blogs to console
-          print("Parsed blogs:");
           for (var blog in blogs) {
             print(blog.toJson());
           }
