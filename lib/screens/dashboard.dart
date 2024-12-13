@@ -248,7 +248,7 @@ class _DashboardState extends State<Dashboard> {
                     }
 
                     // Reverse the list of blogs to display the most recent one at the top
-                    final reversedBlogs = blogs.reversed.toList();
+                    // final reversedBlogs = blogs.reversed.toList();
 
                     // Display the list of blogs
                     return ListView.builder(
@@ -256,9 +256,11 @@ class _DashboardState extends State<Dashboard> {
                       // Prevents infinite height issues
                       physics: NeverScrollableScrollPhysics(),
                       // Prevents nested scrolling
-                      itemCount: reversedBlogs.length,
+                      // itemCount: reversedBlogs.length,
+                      itemCount: blogs.length,
                       itemBuilder: (context, index) {
-                        final blog = reversedBlogs[index];
+                        // final blog = reversedBlogs[index];
+                        final blog = blogs[index];
                         return _buildBlogCard(blog);
                       },
                     );
@@ -598,13 +600,24 @@ class _DashboardState extends State<Dashboard> {
                   children: [
                     TextButton(
                       onPressed: () {
-                        // Handle comment action
                         print("like clicked");
                         // You can navigate to the comment section or open a modal for commenting
                       },
-                      child: Icon(
-                        Icons.thumb_up_off_alt_outlined,
-                        color: Colors.grey[600],
+                      child: Row(
+                        mainAxisSize: MainAxisSize.min,  // Ensures that the row takes only as much space as it needs
+                        children: [
+                          Icon(
+                            Icons.thumb_up_off_alt_outlined,
+                            color: Colors.grey[600],
+                          ),
+                          SizedBox(width: 5),  // Adds space between the icon and the like count
+                          Text(
+                            blog.likes.toString(),  // Example like count, replace with your actual like count variable
+                            style: TextStyle(
+                              color: Colors.grey[600],
+                            ),
+                          ),
+                        ],
                       ),
                     ),
                     TextButton(

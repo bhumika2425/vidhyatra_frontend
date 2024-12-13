@@ -211,7 +211,7 @@ class _ProfileCreationPageState extends State<ProfileCreationPage> {
                           ),
                           SizedBox(height: 30),
                           _buildTextFormField(
-                            label: 'Full name',
+                            label: 'Nickname',
                             icon: Icons.person,
                             onSaved: (value) => _fullname = value,
                             validator: (value) {

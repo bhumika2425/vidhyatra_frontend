@@ -3,13 +3,13 @@ import 'dart:convert';
 
 class Blog {
   final int blogId;
-
   final String blogDescription;
   final List<String> imageUrls;
   final int userId;
   final String createdAt;
   final String profileImage;
   final String fullName;
+  final int likes;
 
   Blog({
     required this.blogId,
@@ -18,7 +18,8 @@ class Blog {
     required this.userId,
     required this.createdAt,
     required this.profileImage,
-    required this.fullName
+    required this.fullName,
+    required this.likes
   });
 
   // Convert a Blog from JSON
@@ -31,6 +32,7 @@ class Blog {
       createdAt: json['createdAt'],
       profileImage: json['profileImageUrl'] ?? '',
       fullName: json['full_name'] ?? '',
+      likes: json['likes']
 
     );
   }
@@ -39,13 +41,13 @@ class Blog {
   Map<String, dynamic> toJson() {
     return {
       'blog_id': blogId,
-
       'blog_description': blogDescription,
       'image_urls': imageUrls,
       'user_id': userId,
       'createdAt': createdAt,
       'profileImageUrl': profileImage,
-      'full_name': fullName
+      'full_name': fullName,
+      'likes': likes
     };
   }
 }

@@ -50,6 +50,7 @@ class _RegisterPageState extends State<RegisterPage> with SingleTickerProviderSt
           }),
         );
         if (response.statusCode == 201) {
+
           Navigator.pushNamed(context, '/login');
         } else {
           final responseData = jsonDecode(response.body);
@@ -65,6 +66,7 @@ class _RegisterPageState extends State<RegisterPage> with SingleTickerProviderSt
     showDialog(
       context: context,
       builder: (ctx) => AlertDialog(
+        backgroundColor: Colors.black,
         title: Text('Registration Error', style: TextStyle(color: Colors.white)),
         content: Text(message, style: TextStyle(color: Colors.white)),
         actions: [
