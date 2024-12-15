@@ -4,6 +4,7 @@ import 'package:get/get.dart';
 import 'package:provider/provider.dart';
 import 'package:vidhyatra_flutter/providers/profile_provider.dart';
 import 'package:vidhyatra_flutter/providers/user_provider.dart';
+import 'package:vidhyatra_flutter/screens/Friends.dart';
 import 'package:vidhyatra_flutter/screens/blog_posting_page.dart';
 import 'package:vidhyatra_flutter/screens/calendar.dart';
 import 'package:vidhyatra_flutter/screens/chat_page.dart';
@@ -57,6 +58,7 @@ class VidhyatraApp extends StatelessWidget {
           GetPage(name: '/dashboard', page: () => Dashboard()),
           GetPage(name: '/new-post', page: () => BlogPostPage()),
           GetPage(name: '/forgot-password', page: () => ForgotPasswordScreen()),
+          GetPage(name: '/friends', page: () => FriendsScreen())
 
         ],
         // routes: {

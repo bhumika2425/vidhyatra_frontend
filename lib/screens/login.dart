@@ -1,5 +1,6 @@
 import 'dart:convert';
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
 import 'package:http/http.dart' as http;
 import 'package:provider/provider.dart';
 
@@ -47,6 +48,7 @@ class _LoginPageState extends State<LoginPage> with SingleTickerProviderStateMix
         );
         if (response.statusCode == 200) {
           print("Login successful!");
+          Get.snackbar("Logged", "You successfully logged in to the app");
           final responseData = jsonDecode(response.body);
           final token = responseData['token'];
           final user = User(

@@ -45,7 +45,7 @@ class _DashboardState extends State<Dashboard> {
           GestureDetector(
             onTap: () async {
               final userProvider =
-                  Provider.of<UserProvider>(context, listen: false);
+              Provider.of<UserProvider>(context, listen: false);
 
               // Send request to check if the profile exists
               final response = await http.get(
@@ -97,7 +97,7 @@ class _DashboardState extends State<Dashboard> {
             },
             child: CircleAvatar(
               backgroundImage: profile != null &&
-                      profile.profileImageUrl != null
+                  profile.profileImageUrl != null
                   ? NetworkImage(profile.profileImageUrl!) // Load image from URL if available
                   : AssetImage('assets/default_profile.png') as ImageProvider,
               // Fallback to default image
@@ -153,8 +153,8 @@ class _DashboardState extends State<Dashboard> {
               leading: Icon(Icons.people),
               title: Text('Friends'),
               onTap: () {
-                Navigator.pop(context);
-                Navigator.pushNamed(context, '/friends');
+                Get.toNamed('/friends');
+                // Navigator.pushNamed(context, '/friends');
               },
             ),
             Row(
@@ -189,10 +189,39 @@ class _DashboardState extends State<Dashboard> {
               leading: Icon(Icons.logout),
               title: Text('Logout'),
               onTap: () async {
-                await Future.delayed(Duration(seconds: 1));
-                Get.offAllNamed('/login');
+                // Show a confirmation dialog
+                bool? confirmLogout = await showDialog(
+                  context: context,
+                  builder: (BuildContext context) {
+                    return AlertDialog(
+                      title: Text("Confirm Logout"),
+                      content: Text("Are you sure you want to log out?"),
+                      actions: [
+                        TextButton(
+                          onPressed: () {
+                            Navigator.of(context).pop(false); // Cancel logout
+                          },
+                          child: Text("Cancel"),
+                        ),
+                        TextButton(
+                          onPressed: () {
+                            Navigator.of(context).pop(true); // Confirm logout
+                          },
+                          child: Text("Logout"),
+                        ),
+                      ],
+                    );
+                  },
+                );
+
+                // Proceed with logout if user confirmed
+                if (confirmLogout == true) {
+                  await Future.delayed(Duration(seconds: 1)); // Simulate a delay if needed
+                  Get.offAllNamed('/login');
+                }
               },
-            ),
+            )
+
           ],
         ),
       ),
@@ -233,7 +262,7 @@ class _DashboardState extends State<Dashboard> {
                     child: Text(
                       "Latest Blogs",
                       style:
-                          TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+                      TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
                     ),
                   ),
                   Obx(() {
@@ -248,7 +277,7 @@ class _DashboardState extends State<Dashboard> {
                     }
 
                     // Reverse the list of blogs to display the most recent one at the top
-                    // final reversedBlogs = blogs.reversed.toList();
+                    final reversedBlogs = blogs.reversed.toList();
 
                     // Display the list of blogs
                     return ListView.builder(
@@ -256,11 +285,11 @@ class _DashboardState extends State<Dashboard> {
                       // Prevents infinite height issues
                       physics: NeverScrollableScrollPhysics(),
                       // Prevents nested scrolling
-                      // itemCount: reversedBlogs.length,
-                      itemCount: blogs.length,
+                      itemCount: reversedBlogs.length,
+                      // itemCount: blogs.length,
                       itemBuilder: (context, index) {
-                        // final blog = reversedBlogs[index];
-                        final blog = blogs[index];
+                        final blog = reversedBlogs[index];
+                        // final blog = blogs[index];
                         return _buildBlogCard(blog);
                       },
                     );

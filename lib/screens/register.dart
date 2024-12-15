@@ -1,5 +1,6 @@
 import 'dart:convert';
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
 import 'package:http/http.dart' as http;
 
 class RegisterPage extends StatefulWidget {
@@ -52,6 +53,7 @@ class _RegisterPageState extends State<RegisterPage> with SingleTickerProviderSt
         if (response.statusCode == 201) {
 
           Navigator.pushNamed(context, '/login');
+          Get.snackbar('Registration Successful', 'You have been registered to the app successfully' );
         } else {
           final responseData = jsonDecode(response.body);
           _showErrorDialog(responseData['message']);
