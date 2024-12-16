@@ -6,8 +6,15 @@ import '../controllers/FriendsController.dart';
 class FriendsScreen extends StatelessWidget {
   final FriendsController controller = Get.put(FriendsController());
 
+  // Reactive text color for the buttons
+  Rx<Color> viewFriendsTextColor = Colors.red.obs;  // Initially red
+  Rx<Color> viewAllUsersTextColor = Colors.grey.obs; // Initially grey
   @override
   Widget build(BuildContext context) {
+    // Set the default view to 'friends' and update the displayed list
+    controller.isViewingFriends.value = true;
+    controller.updateDisplayedList();  // Fetch and display friends by default
+
     return Scaffold(
       appBar: AppBar(
         title: const Text('Friends'),
@@ -20,7 +27,7 @@ class FriendsScreen extends StatelessWidget {
             child: TextField(
               decoration: InputDecoration(
                 prefixIcon: const Icon(Icons.search),
-                hintText: 'Search by name...',
+                hintText: 'Search by email...',
                 border: OutlineInputBorder(
                   borderRadius: BorderRadius.circular(10.0),
                 ),
@@ -29,43 +36,55 @@ class FriendsScreen extends StatelessWidget {
             ),
           ),
 
-          // Toggle Button
+          // Buttons for View Friends and View All Users
           Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 8.0),
+            padding: const EdgeInsets.symmetric(horizontal: 8.0, vertical: 10.0),
             child: Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
-                TextButton(
-                  onPressed: controller.toggleView,
-                  child: Obx(() => Text(
-                    controller.isViewingFriends.value ? 'View All Users' : 'View Friends',
-                    style: const TextStyle(fontSize: 16.0),
-                  )),
-                ),
+                // View Friends Button (Text Button)
+                Obx(() => TextButton(
+                  onPressed: () {
+                    controller.isViewingFriends.value = true; // Set to view friends
+                    controller.updateDisplayedList(); // Update the list
+
+                    // Change text color to red on press
+                    viewFriendsTextColor.value = Colors.red;
+                    viewAllUsersTextColor.value = Colors.grey; // Reset the other button
+                  },
+                  style: TextButton.styleFrom(
+                    foregroundColor: viewFriendsTextColor.value, // Reactive text color
+                    padding: const EdgeInsets.symmetric(horizontal: 20.0, vertical: 10.0),
+                  ),
+                  child: const Text(
+                    'View Friends',
+                    style: TextStyle(fontSize: 16.0),
+                  ),
+                )),
+
+                // View All Users Button (Text Button)
+                Obx(() => TextButton(
+                  onPressed: () {
+                    controller.isViewingFriends.value = false; // Set to view all users
+                    controller.updateDisplayedList(); // Update the list
+
+                    // Change text color to red on press
+                    viewAllUsersTextColor.value = Colors.red;
+                    viewFriendsTextColor.value = Colors.grey; // Reset the other button
+                  },
+                  style: TextButton.styleFrom(
+                    foregroundColor: viewAllUsersTextColor.value, // Reactive text color
+                    padding: const EdgeInsets.symmetric(horizontal: 20.0, vertical: 10.0),
+                  ),
+                  child: const Text(
+                    'View All Users',
+                    style: TextStyle(fontSize: 16.0),
+                  ),
+                )),
               ],
             ),
           ),
 
-          // Users/Friends List
-          // Expanded(
-          //   child: Obx(() => ListView.builder(
-          //     itemCount: controller.displayedList.length,
-          //     itemBuilder: (context, index) {
-          //       final user = controller.displayedList[index];
-          //       return Padding(
-          //         padding: const EdgeInsets.only(left: 8.0, right: 8.0),
-          //         child: Card(
-          //           child: ListTile(
-          //             leading: const Icon(Icons.person),
-          //             title: Text(user['name']),
-          //             subtitle: Text(user['email']),
-          //             trailing: Text(user['role']),
-          //           ),
-          //         ),
-          //       );
-          //     },
-          //   )),
-          // ),
           Expanded(
             child: Obx(() => ListView.builder(
               itemCount: controller.displayedList.length,
