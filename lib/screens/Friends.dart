@@ -31,10 +31,38 @@ class FriendsScreen extends StatelessWidget {
                 border: OutlineInputBorder(
                   borderRadius: BorderRadius.circular(10.0),
                 ),
+                suffixIcon: Padding(
+                  padding: const EdgeInsets.all(5.0), // Adjust padding for proper alignment
+                  child: SizedBox(
+                    height: 30, // Controls the button height
+                    width: 60,  // Controls the button width
+                    child: ElevatedButton(
+                      onPressed: () {
+                        print("Add button pressed");
+                      },
+                      style: ElevatedButton.styleFrom(
+                        elevation: 0, // No shadow
+                        backgroundColor: Color(0xFF971F20), // Button background color
+                        padding: const EdgeInsets.all(0), // Remove default padding
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(5.0),
+                        ),
+                      ),
+                      child: const Text(
+                        'Add',
+                        style: TextStyle(
+                          color: Colors.white,
+                          fontSize: 12, // Adjust font size to fit inside
+                        ),
+                      ),
+                    ),
+                  ),
+                ),
               ),
-              onChanged: controller.filterList,
+              onChanged: controller.filterList, // Filter list on text change
             ),
           ),
+
 
           // Buttons for View Friends and View All Users
           Padding(
@@ -50,7 +78,9 @@ class FriendsScreen extends StatelessWidget {
 
                     // Change text color to red on press
                     viewFriendsTextColor.value = Colors.red;
-                    viewAllUsersTextColor.value = Colors.grey; // Reset the other button
+                    viewAllUsersTextColor.value = Colors.grey;
+                    // Reset the other button
+
                   },
                   style: TextButton.styleFrom(
                     foregroundColor: viewFriendsTextColor.value, // Reactive text color
