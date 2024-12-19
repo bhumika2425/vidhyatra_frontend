@@ -7,6 +7,7 @@ import 'package:http/http.dart' as http;
 import 'package:provider/provider.dart';
 import 'package:vidhyatra_flutter/controllers/IconController.dart';
 import 'package:vidhyatra_flutter/controllers/blogController.dart';
+import 'package:vidhyatra_flutter/screens/AssignmentPage.dart';
 import 'package:vidhyatra_flutter/screens/profile_creation.dart';
 import '../models/blogModel.dart';
 import '../providers/profile_provider.dart';
@@ -155,6 +156,15 @@ class _DashboardState extends State<Dashboard> {
               onTap: () {
                 Get.toNamed('/friends');
                 // Navigator.pushNamed(context, '/friends');
+              },
+            ),
+            ListTile(
+              leading: Icon(Icons.book_online),
+              title: Text('Assignments'),
+              onTap: () {
+                // Get.toNamed('/assignments');
+                // Get.to(AssignmentPage());
+                 Navigator.pushNamed(context, '/assignments');
               },
             ),
             Row(
