@@ -159,14 +159,6 @@ class _DashboardState extends State<Dashboard> {
               },
             ),
             ListTile(
-              leading: Icon(Icons.people),
-              title: Text('Friends'),
-              onTap: () {
-                Get.toNamed('/friends');
-                // Navigator.pushNamed(context, '/friends');
-              },
-            ),
-            ListTile(
               leading: Icon(Icons.book_online),
               title: Text('Assignments'),
               onTap: () {

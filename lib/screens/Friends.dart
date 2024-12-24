@@ -140,7 +140,7 @@ class FriendsScreen extends StatelessWidget {
                         onSelected: (String value) {
                           if (value == 'send_request') {
                             // Logic for sending a friend request
-                            print("Send friend request to ${user['name']}");
+                            controller.sendFriendRequest(1, user['user_id']); // You should pass correct sender ID
                           } else if (value == 'block_user') {
                             // Logic for blocking the user
                             print("Block user ${user['name']}");
@@ -156,7 +156,7 @@ class FriendsScreen extends StatelessWidget {
                             child: Text('Block this User'),
                           ),
                         ],
-                        icon: Icon(Icons.more_vert), // Icon to show the options
+                        icon: Icon(Icons.more_vert),
                       ),
                     ),
                   ),
