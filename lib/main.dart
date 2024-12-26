@@ -10,6 +10,7 @@ import 'package:vidhyatra_flutter/screens/blog_posting_page.dart';
 import 'package:vidhyatra_flutter/screens/calendar.dart';
 import 'package:vidhyatra_flutter/screens/chat_page.dart';
 import 'package:vidhyatra_flutter/screens/dashboard.dart';
+import 'package:vidhyatra_flutter/screens/feedback_form.dart';
 import 'package:vidhyatra_flutter/screens/forgot_password_page.dart';
 import 'package:vidhyatra_flutter/screens/login.dart';
 import 'package:vidhyatra_flutter/screens/payment_page.dart';
@@ -60,6 +61,7 @@ class VidhyatraApp extends StatelessWidget {
           GetPage(name: '/new-post', page: () => BlogPostPage()),
           GetPage(name: '/forgot-password', page: () => ForgotPasswordScreen()),
           GetPage(name: '/friends', page: () => FriendsScreen()),
+          GetPage(name: '/sendFeedback', page: () => FeedbackForm()),
           // GetPage(name: '/assignments', page: () => AssignmentPage()),
 
         ],
