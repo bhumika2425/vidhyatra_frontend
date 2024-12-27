@@ -21,8 +21,7 @@ class Dashboard extends StatefulWidget {
 }
 
 class _DashboardState extends State<Dashboard> {
-  bool isDarkMode = false; // Track the current theme mode
-  final IconController iconController = Get.put(IconController());
+
   final BlogController blogController = Get.put(BlogController());
 
   @override
@@ -119,7 +118,7 @@ class _DashboardState extends State<Dashboard> {
               child: Text(
                 'Navigation',
                 style: TextStyle(
-                  color: Colors.black,
+                  // color: Colors.black,
                   fontSize: 23,
                   fontWeight: FontWeight.bold,
                 ),
@@ -128,26 +127,10 @@ class _DashboardState extends State<Dashboard> {
             SizedBox(height: 20),
             // Drawer Items
             ListTile(
-              leading: Icon(Icons.home),
-              title: Text('Home'),
+              leading: Icon(Icons.manage_accounts),
+              title: Text('Account'),
               onTap: () {
-                Navigator.pop(context);
-                Navigator.pushNamed(context, '/home');
-              },
-            ),
-            ListTile(
-              leading: Icon(Icons.history),
-              title: Text('Payment history'),
-              onTap: () {
-                Navigator.pushNamed(context, '/paymentHistory');
-              },
-            ),
-            ListTile(
-              leading: Icon(Icons.group),
-              title: Text('Groups'),
-              onTap: () {
-                Navigator.pop(context);
-                Navigator.pushNamed(context, '/groups');
+                Get.toNamed('/account');
               },
             ),
             ListTile(
@@ -155,14 +138,6 @@ class _DashboardState extends State<Dashboard> {
               title: Text('Friends'),
               onTap: () {
                 Get.toNamed('/friends');
-                // Navigator.pushNamed(context, '/friends');
-              },
-            ),
-            ListTile(
-              leading: Icon(Icons.people),
-              title: Text('Send feedback'),
-              onTap: () {
-                Get.toNamed('/sendFeedback');
                 // Navigator.pushNamed(context, '/friends');
               },
             ),
@@ -175,70 +150,14 @@ class _DashboardState extends State<Dashboard> {
                  Navigator.pushNamed(context, '/assignments');
               },
             ),
-            Row(
-              children: [
-                Padding(
-                  padding: const EdgeInsets.all(16.0),
-                  child: Icon(Icons.dark_mode),
-                ),
-                Text('Dark mode'),
-                SizedBox(width: 10),
-                Switch(
-                  value: isDarkMode,
-                  onChanged: (value) {
-                    setState(() {
-                      isDarkMode = value;
-                    });
-                    if (isDarkMode) {
-                      Get.changeTheme(ThemeData.dark());
-                    } else {
-                      Get.changeTheme(ThemeData.light());
-                    }
-                  },
-                ),
-              ],
-            ),
             ListTile(
               leading: Icon(Icons.settings),
               title: Text('Settings'),
-              onTap: () {},
-            ),
-            ListTile(
-              leading: Icon(Icons.logout),
-              title: Text('Logout'),
-              onTap: () async {
-                // Show a confirmation dialog
-                bool? confirmLogout = await showDialog(
-                  context: context,
-                  builder: (BuildContext context) {
-                    return AlertDialog(
-                      title: Text("Confirm Logout"),
-                      content: Text("Are you sure you want to log out?"),
-                      actions: [
-                        TextButton(
-                          onPressed: () {
-                            Navigator.of(context).pop(false); // Cancel logout
-                          },
-                          child: Text("Cancel"),
-                        ),
-                        TextButton(
-                          onPressed: () {
-                            Navigator.of(context).pop(true); // Confirm logout
-                          },
-                          child: Text("Logout"),
-                        ),
-                      ],
-                    );
-                  },
-                );
-
-                // Proceed with logout if user confirmed
-                if (confirmLogout == true) {
-                  await Future.delayed(Duration(seconds: 1)); // Simulate a delay if needed
-                  Get.offAllNamed('/login');
-                }
+              onTap: () {
+                Get.toNamed("/studentSetting");
               },
-            )
+            ),
+
 
           ],
         ),

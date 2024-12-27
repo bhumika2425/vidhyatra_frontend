@@ -1,4 +1,5 @@
 // lib/controllers/feedback_controller.dart
+import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:http/http.dart' as http;
 import 'package:provider/provider.dart';
@@ -9,6 +10,18 @@ import '../providers/user_provider.dart';
 class FeedbackController extends GetxController {
   final feedbackList = <FeedbackModel>[].obs;
   final isLoading = false.obs;
+  final isAnonymous = false.obs; // Observable for isAnonymous checkbox
+
+  // Declare controllers and selected type
+  final feedbackContentController = TextEditingController();
+  String? selectedType;
+
+  // Method to clear the form
+  void clearForm() {
+    feedbackContentController.clear();
+    selectedType = null;
+    isAnonymous.value = false;
+  }
 
   // Submit feedback to the backend
   Future<void> submitFeedback(FeedbackModel feedback) async {
@@ -19,11 +32,6 @@ class FeedbackController extends GetxController {
     try {
       isLoading.value = true;
 
-      // Debug: Print request details
-      print("Submitting feedback to: $url");
-      print("Request headers: ${{'Authorization': 'Bearer $token'}}");
-      print("Request body: ${jsonEncode(feedback.toJson())}");
-
       final response = await http.post(
         url,
         headers: {
@@ -33,11 +41,9 @@ class FeedbackController extends GetxController {
         body: jsonEncode(feedback.toJson()),
       );
 
-      // Debug: Print response details
-      print("Response status: ${response.statusCode}");
-      print("Response body: ${response.body}");
-
       if (response.statusCode == 201) {
+        isAnonymous.value = false;
+        Get.back();
         Get.snackbar('Success', 'Feedback submitted successfully');
       } else {
         // Debug: Print backend error if available
