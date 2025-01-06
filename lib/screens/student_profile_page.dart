@@ -256,7 +256,7 @@ class ProfileDetailRow extends StatelessWidget {
       child: Row(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Icon(icon, color: Color(0xFF118AD4)),
+          Icon(icon, color: Color(0xFF971F20)),
           SizedBox(width: 15),
           Expanded(
             child: Column(

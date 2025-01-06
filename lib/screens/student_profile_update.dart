@@ -208,7 +208,7 @@ class _StudentProfileUpdateState extends State<StudentProfileUpdate> {
 
     return Scaffold(
       appBar: AppBar(
-        backgroundColor: Color(0xFF118AD4),
+        backgroundColor: Color(0xFF971F20),
         title: Text(
           'Update Profile, ${user?.name}',
           style: TextStyle(color: Colors.white),
@@ -220,7 +220,7 @@ class _StudentProfileUpdateState extends State<StudentProfileUpdate> {
         decoration: BoxDecoration(
           gradient: LinearGradient(
             colors: [
-              Color(0xFF118AD4),
+              Color(0xFF971F20),
               Colors.white,
             ],
             begin: Alignment.topCenter,
@@ -346,7 +346,7 @@ class _StudentProfileUpdateState extends State<StudentProfileUpdate> {
                             child: ElevatedButton(
                               onPressed: _submitForm,
                               style: ElevatedButton.styleFrom(
-                                backgroundColor: Color(0xFFBD0606),
+                                backgroundColor: Color(0xFF971F20),
                                 padding: EdgeInsets.symmetric(vertical: 16.0),
                                 shape: RoundedRectangleBorder(
                                   borderRadius: BorderRadius.circular(15.0),

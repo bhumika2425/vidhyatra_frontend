@@ -41,7 +41,7 @@ class _BlogPostingPageState extends State<BlogPostPage> {
         backgroundColor: Colors.grey[100],
         title: Text(
           'Create Post',
-          style: TextStyle(color: Colors.red, fontWeight: FontWeight.bold),
+          style: TextStyle(color: Color(0xFF971F20), fontWeight: FontWeight.bold),
         ),
         leading: IconButton(
           icon: Icon(Icons.close, color: Colors.black), // Cross icon
@@ -69,7 +69,7 @@ class _BlogPostingPageState extends State<BlogPostPage> {
                   : null, // Disable button when text is empty
               style: TextButton.styleFrom(
                 backgroundColor: blogController.isButtonEnabled.value
-                    ? Colors.red
+                    ? Color(0xFF971F20)
                     : Colors.grey[200],
                 foregroundColor: Colors.white,
                 shape: RoundedRectangleBorder(

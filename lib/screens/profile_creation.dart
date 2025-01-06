@@ -134,7 +134,7 @@ class _ProfileCreationPageState extends State<ProfileCreationPage> {
     final user = Provider.of<UserProvider>(context).user;
     return Scaffold(
       appBar: AppBar(
-        backgroundColor: Color(0xFF118AD4),
+        backgroundColor: Color(0xFF971F20),
         title: Text(
           'Create Profile, ${user?.name}',
           style: TextStyle(color: Colors.white),
@@ -144,7 +144,7 @@ class _ProfileCreationPageState extends State<ProfileCreationPage> {
         decoration: BoxDecoration(
           gradient: LinearGradient(
             colors: [
-              Color(0xFF118AD4), // Blue for the top half
+              Color(0xFF971F20), // Blue for the top half
               Colors.white, // White for the bottom half
             ],
             begin: Alignment.topCenter,

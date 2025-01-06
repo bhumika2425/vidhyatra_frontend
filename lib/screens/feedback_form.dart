@@ -98,8 +98,9 @@ class FeedbackForm extends StatelessWidget {
                           onChanged: (value) {
                             feedbackController.isAnonymous.value = value!;
                           },
+                          activeColor: Color(0xFF971F20),
                         ),
-                        Text('Submit Anonymously', style: TextStyle(fontSize: 14)),
+                        Text('Submit Anonymously', style: TextStyle(fontSize: 14, color: Colors.black)),
                       ],
                     )),
                     SizedBox(height: 20),

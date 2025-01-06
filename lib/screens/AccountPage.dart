@@ -27,16 +27,15 @@ class Accountpage extends StatelessWidget {
             },
           ),
           ListTile(
-            leading: Icon(Icons.delete_forever, color: Colors.red,),
-            title: Text("Delete", style: TextStyle(color: Colors.red),),
+            leading: Icon(Icons.delete_forever, color: Color(0xFF971F20),),
+            title: Text("Delete Account", style: TextStyle(color: Color(0xFF971F20)),),
             onTap: (){
-              Get.toNamed("/sendFeedback");
             },
           ),
 
           ListTile(
-            leading: Icon(Icons.logout, color: Colors.red,),
-            title: Text('Logout', style: TextStyle(color: Colors.red),),
+            leading: Icon(Icons.logout, color: Color(0xFF971F20),),
+            title: Text('Logout', style: TextStyle(color: Color(0xFF971F20)),),
             onTap: () async {
               // Show a confirmation dialog
               bool? confirmLogout = await showDialog(

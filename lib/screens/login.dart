@@ -230,7 +230,7 @@ class _LoginPageState extends State<LoginPage> with SingleTickerProviderStateMix
                         TextButton(
                           onPressed: () {
                             // Navigate to Forgot Password Page (implement the route accordingly)
-                            Navigator.pushNamed(context, '/forgot_password');
+                            Get.toNamed('/forgot_password');
                           },
                           child: Text(
                             'Forgot Password?',

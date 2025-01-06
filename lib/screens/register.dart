@@ -87,7 +87,7 @@ class _RegisterPageState extends State<RegisterPage> with SingleTickerProviderSt
       body: Container(
         decoration: BoxDecoration(
           gradient: LinearGradient(
-            colors: [Colors.white, Colors.black],
+            colors: [Colors.white, Color(0xFF971F20)],
             begin: Alignment.topLeft,
             end: Alignment.bottomRight,
           ),
@@ -129,7 +129,7 @@ class _RegisterPageState extends State<RegisterPage> with SingleTickerProviderSt
                           style: TextStyle(
                             fontSize: 26,
                             fontWeight: FontWeight.bold,
-                            color: Colors.black,
+                            color: Color(0xFF971F20),
                           ),
                         ),
                         SizedBox(height: 5),
@@ -322,7 +322,7 @@ class _RegisterPageState extends State<RegisterPage> with SingleTickerProviderSt
                             registerStudent();
                           },
                           style: ElevatedButton.styleFrom(
-                            backgroundColor: Colors.black, // Set the background color to black
+                            backgroundColor: Color(0xFF971F20), // Set the background color to black
                             foregroundColor: Colors.white, // Set the text color to white
                             padding: EdgeInsets.symmetric(vertical: 15, horizontal: 50),
                             shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
@@ -346,7 +346,7 @@ class _RegisterPageState extends State<RegisterPage> with SingleTickerProviderSt
                               },
                               child: Text(
                                 'Login here',
-                                style: TextStyle( fontWeight: FontWeight.bold),
+                                style: TextStyle( fontWeight: FontWeight.bold, color: Color(0xFF971F20)),
                               ),
                             ),
                           ],

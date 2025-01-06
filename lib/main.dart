@@ -61,7 +61,7 @@ class VidhyatraApp extends StatelessWidget {
           GetPage(name: '/messages', page: () => ChatPage()),
           GetPage(name: '/dashboard', page: () => Dashboard()),
           GetPage(name: '/new-post', page: () => BlogPostPage()),
-          GetPage(name: '/forgot-password', page: () => ForgotPasswordScreen()),
+          GetPage(name: '/forgot_password', page: () => ForgotPasswordScreen()),
           GetPage(name: '/friends', page: () => FriendsScreen()),
           GetPage(name: '/sendFeedback', page: () => FeedbackForm()),
           GetPage(name: '/account', page: () => Accountpage()),
