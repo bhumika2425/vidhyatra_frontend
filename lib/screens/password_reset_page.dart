@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
 
+import 'package:vidhyatra_flutter/constants/api_endpoints.dart';
+
 class ResetPasswordPage extends StatefulWidget {
   final String email;
 
@@ -49,7 +51,7 @@ class _ResetPasswordPageState extends State<ResetPasswordPage> {
 
     try {
       final response = await http.post(
-        Uri.parse('http://10.0.2.2:3001/api/auth/reset-password'),
+        Uri.parse(ApiEndPoints.passwordReset),
         headers: {'Content-Type': 'application/json'},
         body: json.encode({
           'email': widget.email,

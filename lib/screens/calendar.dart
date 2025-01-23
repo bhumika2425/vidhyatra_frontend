@@ -93,7 +93,7 @@ class _CalendarState extends State<Calendar> {
               },
               borderRadius: BorderRadius.circular(30),
               selectedColor: Colors.white,
-              fillColor: Theme.of(context).primaryColor,
+              fillColor: Color(0xFF971F20),
               color: Colors.black,
               constraints: const BoxConstraints(
                 minHeight: 50.0,
@@ -127,7 +127,7 @@ class _CalendarState extends State<Calendar> {
               highlightColor: Colors.transparent, // Remove default highlight color
               renderBorder: true, // Render the border even when the button is not selected
               borderWidth: 2.5, // Set border width
-              borderColor: Colors.grey.shade300, // Set border color
+              borderColor: Color(0xFF971F20), // Set border color
             ),
           ),
           const SizedBox(height: 20),
@@ -201,15 +201,15 @@ class _CalendarState extends State<Calendar> {
             ),
             calendarStyle: CalendarStyle(
               todayDecoration: BoxDecoration(
-                color: Colors.blue,
+                color: Color(0xFF971F20),
                 // Custom color for today's date in Academic Calendar
                 border: Border.all(
-                    color: Colors.blue, width: 2), // Border for today's date
+                    color: Color(0xFF971F20), width: 2), // Border for today's date
               ),
               selectedDecoration: BoxDecoration(
-                color: Colors.green, // Custom color for selected date
+                color: Color(0xFF971F20), // Custom color for selected date
                 border: Border.all(
-                    color: Colors.green, width: 2), // Border for selected date
+                    color: Color(0xFF971F20), width: 2), // Border for selected date
               ),
               selectedTextStyle: const TextStyle(color: Colors.white),
               // Text color for selected day

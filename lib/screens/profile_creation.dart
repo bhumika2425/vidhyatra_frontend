@@ -6,6 +6,7 @@ import 'package:image_picker/image_picker.dart';
 import 'package:provider/provider.dart';
 
 import 'package:http/http.dart' as http;
+import 'package:vidhyatra_flutter/constants/api_endpoints.dart';
 
 import '../models/profile.dart';
 import '../providers/profile_provider.dart';
@@ -71,7 +72,7 @@ class _ProfileCreationPageState extends State<ProfileCreationPage> {
         return;
       }
 
-      final uri = Uri.parse('http://10.0.2.2:3001/api/profile/create');
+      final uri = Uri.parse(ApiEndPoints.profileCreation);
       final request = http.MultipartRequest('POST', uri)
         ..headers['Authorization'] = 'Bearer $token'
         ..fields['full_name'] = _fullname ?? ''

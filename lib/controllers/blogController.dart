@@ -4,6 +4,7 @@ import 'package:get/get.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:http/http.dart' as http;
 import 'package:provider/provider.dart';
+import 'package:vidhyatra_flutter/constants/api_endpoints.dart';
 import 'package:vidhyatra_flutter/models/blogModel.dart';
 
 import '../providers/user_provider.dart';
@@ -41,7 +42,7 @@ class BlogController extends GetxController {
     }
 
     isLoading.value = true;
-    final url = Uri.parse('http://10.0.2.2:3001/api/blog/post');
+    final url = Uri.parse(ApiEndPoints.postBlogs);
 
     try {
       var request = http.MultipartRequest('POST', url)
@@ -82,7 +83,7 @@ class BlogController extends GetxController {
       isLoading.value = true;
 
       final response = await http.get(
-        Uri.parse('http://10.0.2.2:3001/api/blog/all'),
+        Uri.parse(ApiEndPoints.getAllBlogs ),
         headers: {
           "Authorization": 'Bearer $token', // Replace with user's token
         },

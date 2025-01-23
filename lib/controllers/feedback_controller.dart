@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:http/http.dart' as http;
 import 'package:provider/provider.dart';
+import 'package:vidhyatra_flutter/constants/api_endpoints.dart';
 import 'dart:convert';
 import '../models/feedback_model.dart';
 import '../providers/user_provider.dart';
@@ -27,7 +28,7 @@ class FeedbackController extends GetxController {
   Future<void> submitFeedback(FeedbackModel feedback) async {
     final userProvider = Provider.of<UserProvider>(Get.context!, listen: false);
     final token = userProvider.token; // Retrieve the token
-    final url = Uri.parse('http://10.0.2.2:3001/api/feedback/create'); // Replace with your API URL
+    final url = Uri.parse(ApiEndPoints.createFeedback); // Replace with your API URL
 
     try {
       isLoading.value = true;

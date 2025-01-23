@@ -2,6 +2,7 @@ import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:http/http.dart' as http;
+import 'package:vidhyatra_flutter/constants/api_endpoints.dart';
 
 class RegisterPage extends StatefulWidget {
   @override
@@ -40,7 +41,7 @@ class _RegisterPageState extends State<RegisterPage> with SingleTickerProviderSt
     if (_formKey.currentState!.validate()) {
       try {
         final response = await http.post(
-          Uri.parse('http://10.0.2.2:3001/api/auth/register'),
+          Uri.parse(ApiEndPoints.register),
           headers: {'Content-Type': 'application/json'},
           body: jsonEncode({
             'collegeId': collegeId,

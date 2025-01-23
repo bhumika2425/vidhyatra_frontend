@@ -1,6 +1,7 @@
 import 'dart:convert';
 import 'package:http/http.dart' as http;
 import 'package:flutter/material.dart';
+import 'package:vidhyatra_flutter/constants/api_endpoints.dart';
 
 import '../models/profile.dart';
 import '../models/user.dart';
@@ -14,7 +15,7 @@ class ProfileProvider with ChangeNotifier {
 
   Future<void> fetchProfileData(String token) async {
     final response = await http.get(
-      Uri.parse('http://10.0.2.2:3001/api/profile/'),
+      Uri.parse(ApiEndPoints.fetchProfileData),
       headers: {'Authorization': 'Bearer $token'},
     );
 

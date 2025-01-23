@@ -26,7 +26,7 @@ class PaymentPage extends StatelessWidget {
                 style: TextStyle(
                   fontSize: 20,
                   fontWeight: FontWeight.bold,
-                  color: Colors.blueAccent,
+                  color: Color(0xFF971F20),
                 ),
               ),
               SizedBox(height: 5),
@@ -65,7 +65,7 @@ class PaymentPage extends StatelessWidget {
     return Scaffold(
       appBar: AppBar(
         title: Text('Fees Payment', style: TextStyle(color: Colors.white)),
-        backgroundColor: Colors.blueAccent,
+        backgroundColor: Color(0xFF971F20),
       ),
       body: Padding(
         padding: const EdgeInsets.all(16.0),

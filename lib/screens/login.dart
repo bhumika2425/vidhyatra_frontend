@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:http/http.dart' as http;
 import 'package:provider/provider.dart';
+import 'package:vidhyatra_flutter/constants/api_endpoints.dart';
 
 import '../models/user.dart';
 import '../providers/user_provider.dart';
@@ -39,7 +40,7 @@ class _LoginPageState extends State<LoginPage> with SingleTickerProviderStateMix
     if (_formKey.currentState!.validate()) {
       try {
         final response = await http.post(
-          Uri.parse('http://10.0.2.2:3001/api/auth/login'),
+          Uri.parse(ApiEndPoints.login),
           headers: {'Content-Type': 'application/json'},
           body: jsonEncode({
             'identifier': emailOrID,

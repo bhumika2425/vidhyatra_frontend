@@ -5,6 +5,7 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:http/http.dart' as http;
 import 'package:provider/provider.dart';
+import 'package:vidhyatra_flutter/constants/api_endpoints.dart';
 import 'package:vidhyatra_flutter/controllers/IconController.dart';
 import 'package:vidhyatra_flutter/controllers/blogController.dart';
 import 'package:vidhyatra_flutter/screens/AssignmentPage.dart';
@@ -49,7 +50,7 @@ class _DashboardState extends State<Dashboard> {
 
               // Send request to check if the profile exists
               final response = await http.get(
-                Uri.parse('http://10.0.2.2:3001/api/profile/exists'),
+                Uri.parse(ApiEndPoints.checkIfProfileExist),
                 headers: {
                   'Authorization': 'Bearer ${userProvider.token}',
                 },

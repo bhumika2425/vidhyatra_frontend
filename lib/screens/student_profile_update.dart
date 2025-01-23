@@ -5,6 +5,7 @@ import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:http/http.dart' as http;
 import 'package:provider/provider.dart';
+import 'package:vidhyatra_flutter/constants/api_endpoints.dart';
 
 import '../models/profile.dart';
 import '../providers/profile_provider.dart';
@@ -142,7 +143,7 @@ class _StudentProfileUpdateState extends State<StudentProfileUpdate> {
           // Use multipart for image upload
           var request = http.MultipartRequest(
             'PUT',
-            Uri.parse('http://10.0.2.2:3001/api/profile/update'),
+            Uri.parse(ApiEndPoints.updateStudentProfileImage),
           );
 
           request.headers['Authorization'] = 'Bearer $token';
@@ -169,7 +170,7 @@ class _StudentProfileUpdateState extends State<StudentProfileUpdate> {
         } else {
           // Standard JSON request if no image
           final response = await http.put(
-            Uri.parse('http://10.0.2.2:3001/api/profile/update'),
+            Uri.parse(ApiEndPoints.studentProfileUpdate),
             headers: {
               'Authorization': 'Bearer $token',
               'Content-Type': 'application/json',
