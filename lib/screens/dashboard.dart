@@ -10,6 +10,8 @@ import 'package:vidhyatra_flutter/controllers/IconController.dart';
 import 'package:vidhyatra_flutter/controllers/blogController.dart';
 import 'package:vidhyatra_flutter/screens/AssignmentPage.dart';
 import 'package:vidhyatra_flutter/screens/profile_creation.dart';
+import '../controllers/LoginController.dart';
+import '../controllers/ProfileController.dart';
 import '../models/blogModel.dart';
 import '../providers/profile_provider.dart';
 import '../providers/user_provider.dart';
@@ -27,11 +29,10 @@ class _DashboardState extends State<Dashboard> {
 
   @override
   Widget build(BuildContext context) {
-    final profile = Provider.of<ProfileProvider>(context).profile;
-    // Access the token from the UserProvider
-    final userProvider = Provider.of<UserProvider>(context, listen: false);
-    final token = userProvider.token;
-    blogController.fetchBlogs(token!);
+    // Get the ProfileController
+    final ProfileController profileController = Get.find<ProfileController>();
+
+    blogController.fetchBlogs();
     return Scaffold(
       appBar: AppBar(
         iconTheme: IconThemeData(
@@ -45,14 +46,13 @@ class _DashboardState extends State<Dashboard> {
           SizedBox(width: 10),
           GestureDetector(
             onTap: () async {
-              final userProvider =
-              Provider.of<UserProvider>(context, listen: false);
+              final token = Get.find<LoginController>().token.value;
 
               // Send request to check if the profile exists
               final response = await http.get(
                 Uri.parse(ApiEndPoints.checkIfProfileExist),
                 headers: {
-                  'Authorization': 'Bearer ${userProvider.token}',
+                  'Authorization': 'Bearer $token',
                 },
               );
 
@@ -97,11 +97,10 @@ class _DashboardState extends State<Dashboard> {
               }
             },
             child: CircleAvatar(
-              backgroundImage: profile != null &&
-                  profile.profileImageUrl != null
-                  ? NetworkImage(profile.profileImageUrl!) // Load image from URL if available
+              backgroundImage: profileController.profile.value != null &&
+                  profileController.profile.value!.profileImageUrl != null
+                  ? NetworkImage(profileController.profile.value!.profileImageUrl!) // Load image from URL if available
                   : AssetImage('assets/default_profile.png') as ImageProvider,
-              // Fallback to default image
               backgroundColor: Colors.grey.shade200,
               radius: 20, // Ensure the avatar size is appropriate
             ),

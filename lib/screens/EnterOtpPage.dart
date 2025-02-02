@@ -136,7 +136,7 @@ class _EnterOTPPageState extends State<EnterOTPPage> {
             offset: Offset(2, 2),
           ),
         ],
-        border: Border.all(color: Colors.deepOrange, width: 1.5),
+        border: Border.all(color: Color(0xFF971F20), width: 1.5),
       ),
       child: TextField(
         controller: _otpControllers[index],
@@ -177,7 +177,7 @@ class _EnterOTPPageState extends State<EnterOTPPage> {
           child: Column(
             mainAxisSize: MainAxisSize.min,
             children: [
-              const Icon(Icons.lock_open, size: 60, color: Colors.deepOrange),
+              const Icon(Icons.lock_open, size: 60, color: Color(0xFF971F20)),
               const SizedBox(height: 16),
               const Text(
                 'Verification Required',
@@ -204,7 +204,7 @@ class _EnterOTPPageState extends State<EnterOTPPage> {
                 child: ElevatedButton(
                   onPressed: _isLoading ? null : _verifyOtp,
                   style: ElevatedButton.styleFrom(
-                    backgroundColor: Colors.deepOrange,
+                    backgroundColor: Color(0xFF971F20),
                     shape: RoundedRectangleBorder(
                       borderRadius: BorderRadius.circular(12.0),
                     ),
@@ -233,7 +233,7 @@ class _EnterOTPPageState extends State<EnterOTPPage> {
                 child: _isResendEnabled
                     ? const Text(
                   'Resend OTP',
-                  style: TextStyle(fontSize: 16, color: Colors.deepOrange),
+                  style: TextStyle(fontSize: 16, color: Color(0xFF971F20)),
                 )
                     : RichText(
                   text: TextSpan(
@@ -242,7 +242,7 @@ class _EnterOTPPageState extends State<EnterOTPPage> {
                     children: [
                       TextSpan(
                         text: '$_remainingSeconds sec',
-                        style: const TextStyle(fontSize: 16, color: Colors.deepOrange),
+                        style: const TextStyle(fontSize: 16, color: Color(0xFF971F20)),
                       ),
                     ],
                   ),

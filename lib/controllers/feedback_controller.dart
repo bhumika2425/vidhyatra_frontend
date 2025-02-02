@@ -7,6 +7,7 @@ import 'package:vidhyatra_flutter/constants/api_endpoints.dart';
 import 'dart:convert';
 import '../models/feedback_model.dart';
 import '../providers/user_provider.dart';
+import 'LoginController.dart';
 
 class FeedbackController extends GetxController {
   final feedbackList = <FeedbackModel>[].obs;
@@ -26,8 +27,7 @@ class FeedbackController extends GetxController {
 
   // Submit feedback to the backend
   Future<void> submitFeedback(FeedbackModel feedback) async {
-    final userProvider = Provider.of<UserProvider>(Get.context!, listen: false);
-    final token = userProvider.token; // Retrieve the token
+    final token = Get.find<LoginController>().token.value; // Get token from LoginController
     final url = Uri.parse(ApiEndPoints.createFeedback); // Replace with your API URL
 
     try {

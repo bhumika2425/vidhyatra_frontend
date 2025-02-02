@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:provider/provider.dart';
 
 import '../controllers/FriendsController.dart';
+import '../providers/user_provider.dart';
 
 class FriendsScreen extends StatelessWidget {
   final FriendsController controller = Get.put(FriendsController());
@@ -9,6 +11,9 @@ class FriendsScreen extends StatelessWidget {
   // Reactive text color for the buttons
   Rx<Color> viewFriendsTextColor = Colors.red.obs;  // Initially red
   Rx<Color> viewAllUsersTextColor = Colors.grey.obs; // Initially grey
+  Rx<Color> pendingRequestsTextColor = Colors.grey.obs; // Initially grey
+
+
   @override
   Widget build(BuildContext context) {
     // Set the default view to 'friends' and update the displayed list
@@ -87,7 +92,29 @@ class FriendsScreen extends StatelessWidget {
                     padding: const EdgeInsets.symmetric(horizontal: 20.0, vertical: 10.0),
                   ),
                   child: const Text(
-                    'View Friends',
+                    'Friends',
+                    style: TextStyle(fontSize: 16.0),
+                  ),
+                )),
+
+                // Pending Friend Requests Button
+                Obx(() => TextButton(
+                  onPressed: () {
+                    controller.isViewingFriends.value = false; // Set to view pending requests
+                    controller.fetchFriendRequests(); // Fetch pending requests
+                    controller.updateDisplayedList(); // Update the list
+
+                    // Change text color to red on press
+                    pendingRequestsTextColor.value = Colors.red;
+                    viewFriendsTextColor.value = Colors.grey; // Reset the other buttons
+                    viewAllUsersTextColor.value = Colors.grey;
+                  },
+                  style: TextButton.styleFrom(
+                    foregroundColor: pendingRequestsTextColor.value, // Reactive text color
+                    padding: const EdgeInsets.symmetric(horizontal: 20.0, vertical: 10.0),
+                  ),
+                  child: const Text(
+                    'Pending Friend Requests',
                     style: TextStyle(fontSize: 16.0),
                   ),
                 )),
@@ -107,7 +134,7 @@ class FriendsScreen extends StatelessWidget {
                     padding: const EdgeInsets.symmetric(horizontal: 20.0, vertical: 10.0),
                   ),
                   child: const Text(
-                    'View All Users',
+                    'All Users',
                     style: TextStyle(fontSize: 16.0),
                   ),
                 )),
@@ -164,7 +191,6 @@ class FriendsScreen extends StatelessWidget {
               },
             )),
           )
-
         ],
       ),
     );

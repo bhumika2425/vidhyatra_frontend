@@ -1,5 +1,5 @@
 class ApiEndPoints{
-  static const baseUrl = "http://172.25.7.232:3001";
+  static const baseUrl = "http://172.25.6.100:3001";
 
   //authentication
   static const login = "${baseUrl}/api/auth/login";
@@ -28,5 +28,9 @@ class ApiEndPoints{
 
   static const studentProfileUpdate = "${baseUrl}/api/profile/update";
 
+  static const fetchAllUsers = "${baseUrl}/api/auth/users";
+
+
+  static const sendFriendRequest = "${baseUrl}/api/friendRequest/friend-requests";
 
 }

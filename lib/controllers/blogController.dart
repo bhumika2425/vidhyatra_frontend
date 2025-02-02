@@ -3,41 +3,44 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:http/http.dart' as http;
-import 'package:provider/provider.dart';
 import 'package:vidhyatra_flutter/constants/api_endpoints.dart';
 import 'package:vidhyatra_flutter/models/blogModel.dart';
 
-import '../providers/user_provider.dart';
+import 'LoginController.dart'; // Add import
 
 class BlogController extends GetxController {
   final descriptionController = TextEditingController();
-  RxString labelText =
-      'Tell your story with us.....'.obs; // Observable for label text
+  RxString labelText = 'Tell your story with us.....'.obs;
   RxBool isButtonEnabled = false.obs;
   final ImagePicker picker = ImagePicker();
   var images = <XFile>[].obs;
 
-  // Blog list observable
-  var blogs = <Blog>[].obs; // Define blogs as an observable list
+  var blogs = <Blog>[].obs;
   var isLoading = true.obs;
+
+  // BlogController initialization
+  final LoginController loginController = Get.find(); // Fetch the LoginController
 
   void onTextFieldChange(String value) {
     labelText.value = value.isNotEmpty ? '' : 'Tell your story with us.....';
-    isButtonEnabled.value =
-        value.isNotEmpty; // Enable button when text is not empty
+    isButtonEnabled.value = value.isNotEmpty;
   }
 
   Future<void> pickImages() async {
-    final List<XFile>? pickedFiles =
-        await picker.pickMultiImage(); // Allows multiple image selection
+    final List<XFile>? pickedFiles = await picker.pickMultiImage();
     if (pickedFiles != null && pickedFiles.isNotEmpty) {
-      images.addAll(pickedFiles); // Add all selected images to the list
+      images.addAll(pickedFiles);
     }
   }
 
-  Future<void> postBlog(String token) async {
+  Future<void> postBlog() async {
     if (descriptionController.text.isEmpty) {
-      Get.snackbar("Error", "Description are required");
+      Get.snackbar("Error", "Description is required");
+      return;
+    }
+
+    if (loginController.token.value.isEmpty) {
+      Get.snackbar("Error", "You need to log in first.");
       return;
     }
 
@@ -46,13 +49,12 @@ class BlogController extends GetxController {
 
     try {
       var request = http.MultipartRequest('POST', url)
-        ..headers['Authorization'] = 'Bearer $token'
+        ..headers['Authorization'] = 'Bearer ${loginController.token.value}' // Use token from LoginController
         ..fields['blog_description'] = descriptionController.text;
 
-      // Add images to the request
       for (var image in images) {
         request.files.add(await http.MultipartFile.fromPath(
-          'images', // Must match your multer field name
+          'images',
           image.path,
         ));
       }
@@ -63,8 +65,7 @@ class BlogController extends GetxController {
         descriptionController.clear();
         images.clear();
         Get.back();
-        // Fetch blogs again after posting the new one
-        fetchBlogs(token);
+        fetchBlogs(); // Fetch blogs again after posting the new one
         Get.snackbar("Success", "Blog posted successfully!");
       } else {
         Get.snackbar("Error", "Failed to post blog");
@@ -77,72 +78,46 @@ class BlogController extends GetxController {
     }
   }
 
-  // Fetch blogs
-  Future<void> fetchBlogs(String token) async {
+  Future<void> fetchBlogs() async {
+    if (loginController.token.value.isEmpty) {
+      Get.snackbar("Error", "You need to log in first.");
+      return;
+    }
+
     try {
       isLoading.value = true;
 
       final response = await http.get(
-        Uri.parse(ApiEndPoints.getAllBlogs ),
+        Uri.parse(ApiEndPoints.getAllBlogs),
         headers: {
-          "Authorization": 'Bearer $token', // Replace with user's token
+          "Authorization": 'Bearer ${loginController.token.value}', // Use token from LoginController
         },
       );
 
       if (response.statusCode == 200) {
         final blogData = json.decode(response.body);
 
-        // Debugging: Print the entire response data
-        print("Decoded response: $blogData");
-
-        // Check if the response is an empty list or contains the expected data
         if (blogData != null && blogData['blogs'] != null) {
-          // Parse the list of blogs
           blogs.value = List<Blog>.from(
             blogData['blogs'].map((blog) => Blog.fromJson(blog)),
           );
-
-          for (var blog in blogs) {
-            print(blog.toJson());
-          }
         } else {
-          print("No blogs found or missing data in the response.");
           Get.snackbar("Error", "No blogs found");
         }
       } else {
-        // Handle error based on response status
         Get.snackbar("Error", "Failed to fetch blogs: ${response.statusCode}");
       }
     } catch (e) {
-      // Debugging: Log the error and show a snackbar
       Get.snackbar("Error", "An error occurred: $e");
       print("Error: $e");
     } finally {
-      // Stop the loading indicator once the response is processed
       isLoading.value = false;
     }
   }
 
-  // @override
-  // void onInit() {
-  //   fetchBlogs();
-  //   super.onInit();
-  // }
   @override
   void onInit() {
     super.onInit();
-
-    // Access the token using Provider.of(context) inside your widget tree
-    final token = Get.context != null
-        ? Provider.of<UserProvider>(Get.context!, listen: false).token
-        : null;
-
-    if (token != null) {
-
-      fetchBlogs(token); // Pass the token to fetchBlogs
-    } else {
-      print("Error: Token not found");
-      Get.snackbar("Error", "Token is missing. Please log in again.");
-    }
+    fetchBlogs(); // Fetch blogs on init
   }
 }

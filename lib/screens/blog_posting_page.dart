@@ -4,6 +4,8 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
 import 'package:provider/provider.dart';
+import 'package:vidhyatra_flutter/controllers/LoginController.dart';
+import '../controllers/ProfileController.dart';
 import '../controllers/blogController.dart';
 import '../providers/profile_provider.dart';
 import '../providers/user_provider.dart'; // For accessing token
@@ -16,32 +18,31 @@ class BlogPostPage extends StatefulWidget {
 }
 
 class _BlogPostingPageState extends State<BlogPostPage> {
+  final BlogController blogController = Get.put(BlogController());
+  final ProfileController profileController = Get.find<ProfileController>();
+  final LoginController loginController =
+      Get.find<LoginController>(); // Access user controller
+
   @override
   void initState() {
     super.initState();
-    final userProvider = Provider.of<UserProvider>(context, listen: false);
-    if (userProvider.token != null) {
-      Provider.of<ProfileProvider>(context, listen: false)
-          .fetchProfileData(userProvider.token!);
+    if (loginController.token.value != null) {
+      profileController.fetchProfileData(loginController.token.value!);
     }
   }
 
-  final BlogController blogController = Get.put(BlogController());
-
   @override
   Widget build(BuildContext context) {
+    // Get the ProfileController
+    final ProfileController profileController = Get.find<ProfileController>();
 
-    final user = Provider.of<UserProvider>(context).user;
-    final userProvider = Provider.of<UserProvider>(context, listen: false);
-    final token = userProvider.token;
-
-    final profile = Provider.of<ProfileProvider>(context).profile;
     return Scaffold(
       appBar: AppBar(
         backgroundColor: Colors.grey[100],
         title: Text(
           'Create Post',
-          style: TextStyle(color: Color(0xFF971F20), fontWeight: FontWeight.bold),
+          style:
+              TextStyle(color: Color(0xFF971F20), fontWeight: FontWeight.bold),
         ),
         leading: IconButton(
           icon: Icon(Icons.close, color: Colors.black), // Cross icon
@@ -58,30 +59,30 @@ class _BlogPostingPageState extends State<BlogPostPage> {
         ),
         actions: [
           Obx(() => Padding(
-            padding: const EdgeInsets.all(8.0),
-            child: TextButton(
-              onPressed: blogController.isButtonEnabled.value
-                  ? () {
-                // Call the postBlog function with the required token
-                // String token = ''; // Replace with your actual token
-                blogController.postBlog(token!);
-              }
-                  : null, // Disable button when text is empty
-              style: TextButton.styleFrom(
-                backgroundColor: blogController.isButtonEnabled.value
-                    ? Color(0xFF971F20)
-                    : Colors.grey[200],
-                foregroundColor: Colors.white,
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(8.0),
+                padding: const EdgeInsets.all(8.0),
+                child: TextButton(
+                  onPressed: blogController.isButtonEnabled.value
+                      ? () {
+                          // Call the postBlog function with the required token
+                          // String token = ''; // Replace with your actual token
+                          blogController.postBlog();
+                        }
+                      : null, // Disable button when text is empty
+                  style: TextButton.styleFrom(
+                    backgroundColor: blogController.isButtonEnabled.value
+                        ? Color(0xFF971F20)
+                        : Colors.grey[200],
+                    foregroundColor: Colors.white,
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(8.0),
+                    ),
+                  ),
+                  child: Text(
+                    'Post',
+                    style: TextStyle(color: Colors.white),
+                  ),
                 ),
-              ),
-              child: Text(
-                'Post',
-                style: TextStyle(color: Colors.white),
-              ),
-            ),
-          )),
+              )),
         ],
       ),
       body: Column(
@@ -92,17 +93,20 @@ class _BlogPostingPageState extends State<BlogPostPage> {
             child: Row(
               children: [
                 CircleAvatar(
-                  backgroundImage: profile != null &&
-                      profile.profileImageUrl != null
-                      ? NetworkImage(profile.profileImageUrl!)
-                      : AssetImage('assets/default_profile.png') as ImageProvider,
+                  backgroundImage: profileController.profile.value != null &&
+                          profileController.profile.value!.profileImageUrl !=
+                              null
+                      ? NetworkImage(profileController.profile.value!
+                          .profileImageUrl!) // Load image from URL if available
+                      : AssetImage('assets/default_profile.png')
+                          as ImageProvider,
                   // Fallback image
                   backgroundColor:
-                  Colors.grey.shade200, // Background color if no image
+                      Colors.grey.shade200, // Background color if no image
                 ),
                 SizedBox(width: 16), // Space between avatar and username
                 Text(
-                  '${user?.name}', // Update greeting with fetched name
+                  '${loginController.user.value?.name ?? 'Guest'}', // Access user name from loginController
                   style: TextStyle(
                     fontSize: 18,
                     fontWeight: FontWeight.bold,
@@ -123,75 +127,75 @@ class _BlogPostingPageState extends State<BlogPostPage> {
                         height: Get.height * 0.4,
                         // Half of the screen height using GetX
                         child: Obx(() => TextField(
-                          controller: blogController.descriptionController,
-                          decoration: InputDecoration(
-                            labelText: blogController.labelText.value,
-                            // Dynamic label
-                            alignLabelWithHint: true,
-                            // Keeps label at the top
-                            border: InputBorder.none,
-                            // Removes the border
-                            contentPadding: EdgeInsets.all(
-                                16), // Adds padding inside the TextField
-                          ),
-                          onChanged: (value) {
-                            blogController.onTextFieldChange(value);
-                          },
-                          maxLines: null, // Allow multiple lines
-                        )),
+                              controller: blogController.descriptionController,
+                              decoration: InputDecoration(
+                                labelText: blogController.labelText.value,
+                                // Dynamic label
+                                alignLabelWithHint: true,
+                                // Keeps label at the top
+                                border: InputBorder.none,
+                                // Removes the border
+                                contentPadding: EdgeInsets.all(
+                                    16), // Adds padding inside the TextField
+                              ),
+                              onChanged: (value) {
+                                blogController.onTextFieldChange(value);
+                              },
+                              maxLines: null, // Allow multiple lines
+                            )),
                       ),
                     ),
                     SizedBox(height: 5),
                     Obx(() => blogController.images.isNotEmpty
                         ? Padding(
-                      padding: const EdgeInsets.only(bottom: 10, top: 20),
-                      child: Wrap(
-                        spacing: 10, // Space between images
-                        runSpacing: 10, // Space between rows
-                        children: blogController.images
-                            .asMap()
-                            .entries
-                            .map((entry) {
-                          int index =
-                              entry.key; // Get the index of the image
-                          var image = entry.value; // Get the image object
-                          return SizedBox(
-                            width: (Get.width - 30) / 2,
-                            // Half of the screen width minus spacing
-                            child: Stack(
-                              children: [
-                                Image.file(
-                                  File(image.path),
-                                  height: (Get.width - 30) / 2,
-                                  // Maintain square aspect ratio
+                            padding: const EdgeInsets.only(bottom: 10, top: 20),
+                            child: Wrap(
+                              spacing: 10, // Space between images
+                              runSpacing: 10, // Space between rows
+                              children: blogController.images
+                                  .asMap()
+                                  .entries
+                                  .map((entry) {
+                                int index =
+                                    entry.key; // Get the index of the image
+                                var image = entry.value; // Get the image object
+                                return SizedBox(
                                   width: (Get.width - 30) / 2,
-                                  fit: BoxFit.cover,
-                                ),
-                                Positioned(
-                                  top: 5,
-                                  right: 5,
-                                  child: GestureDetector(
-                                    onTap: () {
-                                      blogController.images.removeAt(
-                                          index); // Remove the image
-                                    },
-                                    child: CircleAvatar(
-                                      radius: 12,
-                                      backgroundColor: Colors.black,
-                                      child: Icon(
-                                        Icons.close,
-                                        size: 16,
-                                        color: Colors.white,
+                                  // Half of the screen width minus spacing
+                                  child: Stack(
+                                    children: [
+                                      Image.file(
+                                        File(image.path),
+                                        height: (Get.width - 30) / 2,
+                                        // Maintain square aspect ratio
+                                        width: (Get.width - 30) / 2,
+                                        fit: BoxFit.cover,
                                       ),
-                                    ),
+                                      Positioned(
+                                        top: 5,
+                                        right: 5,
+                                        child: GestureDetector(
+                                          onTap: () {
+                                            blogController.images.removeAt(
+                                                index); // Remove the image
+                                          },
+                                          child: CircleAvatar(
+                                            radius: 12,
+                                            backgroundColor: Colors.black,
+                                            child: Icon(
+                                              Icons.close,
+                                              size: 16,
+                                              color: Colors.white,
+                                            ),
+                                          ),
+                                        ),
+                                      ),
+                                    ],
                                   ),
-                                ),
-                              ],
+                                );
+                              }).toList(),
                             ),
-                          );
-                        }).toList(),
-                      ),
-                    )
+                          )
                         : Container()),
                     Padding(
                       padding: const EdgeInsets.only(left: 16),
@@ -207,7 +211,11 @@ class _BlogPostingPageState extends State<BlogPostPage> {
                             style: ElevatedButton.styleFrom(
                               side: BorderSide.none, // Removes the border
                             ),
-                            child: Text('+ Add images', style: TextStyle(color: Colors.grey[550], fontSize: 17),),
+                            child: Text(
+                              '+ Add images',
+                              style: TextStyle(
+                                  color: Colors.grey[550], fontSize: 17),
+                            ),
                           )
                         ],
                       ),

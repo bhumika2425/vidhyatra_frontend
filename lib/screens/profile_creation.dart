@@ -2,15 +2,15 @@ import 'dart:convert';
 import 'dart:io';
 
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:provider/provider.dart';
 
 import 'package:http/http.dart' as http;
 import 'package:vidhyatra_flutter/constants/api_endpoints.dart';
 
+import '../controllers/LoginController.dart';
 import '../models/profile.dart';
-import '../providers/profile_provider.dart';
-import '../providers/user_provider.dart';
 
 class ProfileCreationPage extends StatefulWidget {
   @override
@@ -28,6 +28,8 @@ class _ProfileCreationPageState extends State<ProfileCreationPage> {
 
   final ImagePicker _picker = ImagePicker();
   final TextEditingController _dateOfBirthController = TextEditingController();
+  final LoginController loginController =
+  Get.find<LoginController>(); // Access user controller
 
   @override
   void dispose() {
@@ -62,15 +64,7 @@ class _ProfileCreationPageState extends State<ProfileCreationPage> {
     if (_formKey.currentState!.validate()) {
       _formKey.currentState!.save();
 
-      final userProvider = Provider.of<UserProvider>(context, listen: false);
-      final token = userProvider.token;
-
-      if (token == null) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Unable to save profile: Missing token')),
-        );
-        return;
-      }
+      final token = Get.find<LoginController>().token.value;
 
       final uri = Uri.parse(ApiEndPoints.profileCreation);
       final request = http.MultipartRequest('POST', uri)
@@ -97,9 +91,9 @@ class _ProfileCreationPageState extends State<ProfileCreationPage> {
         if (response.statusCode == 201) {
           final responseData = await response.stream.bytesToString();
           final responseJson = json.decode(responseData);
-          final profile = Profile.fromJson(responseJson['data']);
-
-          Provider.of<ProfileProvider>(context, listen: false).setProfile(profile);
+          // final profile = Profile.fromJson(responseJson['data']);
+          //
+          // Provider.of<ProfileProvider>(context, listen: false).setProfile(profile);
 
           ScaffoldMessenger.of(context).showSnackBar(
             SnackBar(content: Text('Profile created successfully')),
@@ -132,12 +126,12 @@ class _ProfileCreationPageState extends State<ProfileCreationPage> {
 
   @override
   Widget build(BuildContext context) {
-    final user = Provider.of<UserProvider>(context).user;
+
     return Scaffold(
       appBar: AppBar(
         backgroundColor: Color(0xFF971F20),
         title: Text(
-          'Create Profile, ${user?.name}',
+          'Create Profile, ${loginController.user.value?.name}',
           style: TextStyle(color: Colors.white),
         ),
       ),

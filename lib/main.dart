@@ -1,4 +1,3 @@
-
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:provider/provider.dart';
@@ -6,7 +5,7 @@ import 'package:vidhyatra_flutter/providers/profile_provider.dart';
 import 'package:vidhyatra_flutter/providers/user_provider.dart';
 import 'package:vidhyatra_flutter/screens/AccountPage.dart';
 import 'package:vidhyatra_flutter/screens/AssignmentPage.dart';
-import 'package:vidhyatra_flutter/screens/Friends.dart';
+import 'package:vidhyatra_flutter/screens/FriendsScreen.dart';
 import 'package:vidhyatra_flutter/screens/StudentSetting.dart';
 import 'package:vidhyatra_flutter/screens/blog_posting_page.dart';
 import 'package:vidhyatra_flutter/screens/calendar.dart';
@@ -17,24 +16,21 @@ import 'package:vidhyatra_flutter/screens/forgot_password_page.dart';
 import 'package:vidhyatra_flutter/screens/login.dart';
 import 'package:vidhyatra_flutter/screens/payment_page.dart';
 import 'package:vidhyatra_flutter/screens/register.dart';
-import 'package:vidhyatra_flutter/screens/student_dashboard.dart';
 import 'package:vidhyatra_flutter/screens/student_profile_page.dart';
 import 'package:vidhyatra_flutter/screens/weekly_routine.dart';
 import 'package:vidhyatra_flutter/screens/welcomePage.dart';
 
+import 'controllers/ProfileController.dart';
+
 void main() {
+  Get.put(ProfileController()); // Ensures ProfileController is available globally
   runApp(VidhyatraApp());
 }
 
 class VidhyatraApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
-    return MultiProvider( // Use MultiProvider to allow multiple providers
-      providers: [
-        ChangeNotifierProvider(create: (context) => UserProvider()), // Provide UserProvider
-        ChangeNotifierProvider(create: (context) => ProfileProvider()), // Provide ProfileProvider
-      ],
-      child: GetMaterialApp(
+    return GetMaterialApp(
         title: 'Vidhyatra Login',
         theme: ThemeData(
           primarySwatch: Colors.blue, // Adjust the primary swatch if needed
@@ -66,26 +62,7 @@ class VidhyatraApp extends StatelessWidget {
           GetPage(name: '/sendFeedback', page: () => FeedbackForm()),
           GetPage(name: '/account', page: () => Accountpage()),
           GetPage(name: '/studentSetting', page: () => Studentsetting()),
-          // GetPage(name: '/assignments', page: () => AssignmentPage()),
-
         ],
-         routes: {
-           '/assignments': (context) => AssignmentPage(),
-        //   '/login': (context) => LoginPage(),      // Add the '/login' route here
-        //   '/register': (context) => RegisterPage(),
-        //   '/home': (context) => StudentDashboard(),
-        //   '/dashboard': (context) => Dashboard(), // Add this line
-        //   '/profile': (context) => StudentProfilePage(), // Add Profile Page route
-        //   '/payment': (context) => PaymentPage(), // Add Profile Page route
-        //   '/calendar': (context) => Calendar(), // Add Profile Page route
-        //   '/schedule': (context) => WeeklyRoutinePage(), // Add Profile Page route
-        //   '/messages': (context) => ChatPage(),
-        //   '/forgot_password': (context) => ForgotPasswordScreen(), // Forgot Password Page
-        //
-        //   // '/reset-password': (context) => ResetPasswordPage(),
-        //   // You can also add other routes here
-         },
-      ),
     );
   }
 }

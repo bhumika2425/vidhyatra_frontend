@@ -140,7 +140,7 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
                 ElevatedButton(
                   onPressed: _submitForgotPassword,
                   style: ElevatedButton.styleFrom(
-                    backgroundColor: Colors.deepOrange, // Button color
+                    backgroundColor: Color(0xFF971F20), // Button color
                     padding: EdgeInsets.symmetric(vertical: 15, horizontal: 40),
                     shape: RoundedRectangleBorder(
                       borderRadius: BorderRadius.circular(8),
