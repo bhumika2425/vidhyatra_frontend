@@ -13,6 +13,7 @@ class LoginController extends GetxController {
   var isLoading = false.obs;
   var user = Rx<User?>(null); // Rx for user object
   var token = ''.obs;
+  var userId = 0.obs;
 
   // Login function
   Future<void> loginUser() async {
@@ -38,15 +39,18 @@ class LoginController extends GetxController {
       if (response.statusCode == 200) {
         final responseData = jsonDecode(response.body);
         final tokenValue = responseData['token'];
+        final userIdValue = responseData['user']['user_id'];
         final userData = User.fromJson(responseData['user']);
 
         // Storing user and token in state
         user.value = userData;
         token.value = tokenValue;
+        userId.value = userIdValue;
 
         // Example: You can use a persistent storage solution for long-term storage.
         // SharedPreferences prefs = await SharedPreferences.getInstance();
         // prefs.setString('token', tokenValue);
+
 
         Get.snackbar("Logged In", "You have successfully logged in!", snackPosition: SnackPosition.BOTTOM);
         Get.toNamed('/dashboard'); // Navigate to dashboard
