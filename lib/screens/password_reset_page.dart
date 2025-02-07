@@ -101,7 +101,7 @@ class _ResetPasswordPageState extends State<ResetPasswordPage> {
             crossAxisAlignment: CrossAxisAlignment.center,
             children: [
               Center(
-                child: Icon(Icons.lock_reset, size: 100, color: Colors.deepOrange),
+                child: Icon(Icons.lock_reset, size: 100, color: Color(0xFF971F20)),
               ),
               SizedBox(height: 20),
               Center(
@@ -126,7 +126,7 @@ class _ResetPasswordPageState extends State<ResetPasswordPage> {
                   labelText: 'New Password',
                   hintText: 'Enter your new password',
                   errorText: _newPasswordError,
-                  prefixIcon: Icon(Icons.lock, color: Colors.deepOrange),
+                  prefixIcon: Icon(Icons.lock, color: Color(0xFF971F20)),
                   suffixIcon: IconButton(
                     icon: Icon(
                       _obscureNewPassword ? Icons.visibility : Icons.visibility_off,
@@ -152,7 +152,7 @@ class _ResetPasswordPageState extends State<ResetPasswordPage> {
                   labelText: 'Confirm Password',
                   hintText: 'Re-enter your new password',
                   errorText: _confirmPasswordError,
-                  prefixIcon: Icon(Icons.lock_outline, color: Colors.deepOrange),
+                  prefixIcon: Icon(Icons.lock_outline, color: Color(0xFF971F20)),
                   suffixIcon: IconButton(
                     icon: Icon(
                       _obscureConfirmPassword ? Icons.visibility : Icons.visibility_off,
@@ -176,7 +176,7 @@ class _ResetPasswordPageState extends State<ResetPasswordPage> {
                 child: ElevatedButton(
                   onPressed: _isLoading ? null : _resetPassword,
                   style: ElevatedButton.styleFrom(
-                    backgroundColor: Colors.deepOrange,
+                    backgroundColor: Color(0xFF971F20),
                     shape: RoundedRectangleBorder(
                       borderRadius: BorderRadius.circular(12),
                     ),

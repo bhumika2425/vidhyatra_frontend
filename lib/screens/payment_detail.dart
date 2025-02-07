@@ -20,7 +20,7 @@ class _PaymentDetailPageState extends State<PaymentDetailPage> {
     return Scaffold(
       appBar: AppBar(
         title: Text('${widget.paymentInfo.title} Payment'),
-        backgroundColor: Colors.blueAccent,
+        backgroundColor: Color(0xFF971F20),
       ),
       body: Center(
         child: Padding(
@@ -36,7 +36,7 @@ class _PaymentDetailPageState extends State<PaymentDetailPage> {
                   style: TextStyle(
                     fontSize: 26,
                     fontWeight: FontWeight.bold,
-                    color: Colors.blueAccent,
+                    color: Color(0xFF971F20),
                   ),
                   textAlign: TextAlign.center,
                 ),
