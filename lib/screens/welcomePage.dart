@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:carousel_slider/carousel_slider.dart';
+import 'package:get/get.dart';
+import 'package:vidhyatra_flutter/screens/admin/admin_dashboard.dart';
 import 'package:vidhyatra_flutter/screens/login.dart';
 
 class WelcomeScreen extends StatefulWidget {
@@ -92,6 +94,10 @@ class _WelcomeScreenState extends State<WelcomeScreen> {
                   child: Text('Get Started', style: TextStyle(fontWeight: FontWeight.bold),),
                 ),
                 SizedBox(height: 30),
+                TextButton(onPressed: (){
+                  Get.to(AdminDashboard());
+
+                }, child: Text("Admin")),
                 // Dots Indicator
                 Row(
                   mainAxisAlignment: MainAxisAlignment.center,
