@@ -25,6 +25,7 @@ class AdminNavBar extends StatelessWidget {
           _buildNavItem(Icons.event, "Manage Events", 1),
           _buildNavItem(Icons.feedback, "User Feedback", 2),
           _buildNavItem(Icons.settings, "Settings", 3),
+          _buildNavItem(Icons.settings, "Settings", 4),
         ],
       ),
     );
