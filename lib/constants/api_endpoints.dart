@@ -11,15 +11,15 @@ class ApiEndPoints{
   static const postBlogs= "${baseUrl}/api/blog/post";
 
   static const fetchProfileData ="${baseUrl}/api/profile/";
-
+  //feedback
   static const createFeedback = "${baseUrl}/api/feedback/create";
-
+  //password
   static const verifyOTP = "${baseUrl}/api/auth/verify-otp";
 
   static const forgotPassword = "${baseUrl}/api/auth/forgot-password";
 
   static const passwordReset = "${baseUrl}api/auth/reset-password";
-
+//profile creation and update
   static const profileCreation = "${baseUrl}/api/profile/create";
 
   static const updateStudentProfileImage = "${baseUrl}/api/profile/update";
@@ -30,7 +30,7 @@ class ApiEndPoints{
 
   static const fetchAllUsers = "${baseUrl}/api/auth/users";
 
-
+//friend request
   static const sendFriendRequest = "${baseUrl}/api/friendRequest/friend-requests";
 
   static const getFriendRequest = "${baseUrl}/api/friendRequest/friend-requests";
