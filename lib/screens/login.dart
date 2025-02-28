@@ -1,284 +1,3 @@
-// import 'dart:convert';
-// import 'package:flutter/material.dart';
-// import 'package:get/get.dart';
-// import 'package:http/http.dart' as http;
-// import 'package:provider/provider.dart';
-// import 'package:vidhyatra_flutter/constants/api_endpoints.dart';
-//
-// import '../models/user.dart';
-// import '../providers/user_provider.dart';
-//
-// class LoginPage extends StatefulWidget {
-//   @override
-//   _LoginPageState createState() => _LoginPageState();
-// }
-//
-// class _LoginPageState extends State<LoginPage> with SingleTickerProviderStateMixin {
-//   final _formKey = GlobalKey<FormState>();
-//   String emailOrID = '';
-//   String password = '';
-//   bool _obscurePassword = true;
-//   late AnimationController _animationController;
-//
-//   @override
-//   void initState() {
-//     super.initState();
-//     _animationController = AnimationController(
-//       vsync: this,
-//       duration: Duration(milliseconds: 600),
-//     );
-//     _animationController.forward();
-//   }
-//
-//   @override
-//   void dispose() {
-//     _animationController.dispose();
-//     super.dispose();
-//   }
-//
-//   Future<void> loginUser() async {
-//     if (_formKey.currentState!.validate()) {
-//       try {
-//         final response = await http.post(
-//           Uri.parse(ApiEndPoints.login),
-//           headers: {'Content-Type': 'application/json'},
-//           body: jsonEncode({
-//             'identifier': emailOrID,
-//             'password': password,
-//           }),
-//         );
-//         if (response.statusCode == 200) {
-//           print("Login successful!");
-//           Get.snackbar("Logged", "You successfully logged in to the app");
-//           final responseData = jsonDecode(response.body);
-//           final token = responseData['token'];
-//           final user = User(
-//             userId: responseData['user']['user_id'],
-//             collegeId: responseData['user']['college_id'] ?? '',
-//             name: responseData['user']['name'] ?? '',
-//             email: responseData['user']['email'] ?? '',
-//           );
-//           Provider.of<UserProvider>(context, listen: false).setUser(user, token);
-//           Navigator.pushNamed(context, '/dashboard');
-//         } else {
-//           final responseData = jsonDecode(response.body);
-//           _showErrorDialog(responseData['message']);
-//         }
-//       } catch (error) {
-//         _showErrorDialog('An error occurred. Please try again.');
-//       }
-//     } else {
-//       print("error message");
-//     }
-//   }
-//
-//   void _showErrorDialog(String message) {
-//     // Ensure the context is valid
-//     showDialog(
-//       context: context,
-//       barrierDismissible: false,  // Optional: To prevent closing dialog on tapping outside
-//       builder: (ctx) => AlertDialog(
-//         title: Text('Login Error', style: TextStyle(color: Colors.black, fontWeight: FontWeight.bold)), // Changed to black for visibility
-//         content: Text(message, style: TextStyle(color: Colors.black)),  // Changed to black for visibility
-//         actions: [
-//           TextButton(
-//             onPressed: () {
-//               Navigator.of(ctx).pop();  // Close the dialog
-//             },
-//             child: Text('OK', style: TextStyle(color: Colors.black, fontWeight: FontWeight.bold)),  // Changed to blue for visibility
-//           ),
-//         ],
-//       ),
-//     );
-//   }
-//
-//
-//   @override
-//   Widget build(BuildContext context) {
-//     return Scaffold(
-//       body: Container(
-//         decoration: BoxDecoration(
-//           gradient: LinearGradient(
-//             colors: [Colors.white, Color(0xFF971F20)],
-//             begin: Alignment.topLeft,
-//             end: Alignment.bottomRight,
-//           ),
-//         ),
-//         child: Center(
-//           child: SingleChildScrollView(
-//             child: Padding(
-//               padding: const EdgeInsets.symmetric(horizontal: 24.0),
-//               child: Card(
-//                 shape: RoundedRectangleBorder(
-//                   borderRadius: BorderRadius.circular(20),
-//                 ),
-//                 elevation: 8,
-//                 color: Colors.white, // Card color changed to white
-//                 child: Padding(
-//                   padding: const EdgeInsets.all(24.0),
-//                   child: Form(
-//                     key: _formKey,
-//                     child: Column(
-//                       mainAxisSize: MainAxisSize.min,
-//                       children: [
-//                         TweenAnimationBuilder(
-//                           tween: Tween<double>(begin: 0.8, end: 1.0),
-//                           duration: Duration(seconds: 2),
-//                           curve: Curves.easeInOut,
-//                           builder: (context, scale, child) {
-//                             return Transform.scale(
-//                               scale: scale,
-//                               child: Image.asset(
-//                                 'assets/Vidhyatra.png',
-//                                 height: 120,
-//                                 // color: Colors.black, // Set logo color to black
-//                               ),
-//                             );
-//                           },
-//                         ),
-//                         SizedBox(height: 10),
-//                         Text(
-//                           "Welcome to Vidhyatra",
-//                           style: TextStyle(
-//                             fontSize: 26,
-//                             fontWeight: FontWeight.bold,
-//                             color: Color(0xFF971F20), // Text color changed to black
-//                           ),
-//                         ),
-//                         SizedBox(height: 5),
-//                         Text(
-//                           "Login to continue",
-//                           style: TextStyle(color: Colors.black87), // Lighter black text color
-//                         ),
-//                         SizedBox(height: 20),
-//                         SlideTransition(
-//                           position: Tween<Offset>(begin: Offset(0, 1), end: Offset(0, 0))
-//                               .animate(_animationController),
-//                           child: TextFormField(
-//                             decoration: InputDecoration(
-//                               labelText: 'College ID or Email',
-//                               labelStyle: TextStyle(color: Colors.black), // Label color black
-//                               prefixIcon: Icon(Icons.person_outline, color: Colors.black), // Icon color black
-//                               border: OutlineInputBorder(
-//                                 borderRadius: BorderRadius.circular(12.0),
-//                                 borderSide: BorderSide(color: Colors.black), // Border color black
-//                               ),
-//                             ),
-//                             style: TextStyle(color: Colors.black), // Input text color black
-//                             onChanged: (value) => emailOrID = value,
-//                             validator: (value) => value == null || value.isEmpty
-//                                 ? 'Enter ID or Email'
-//                                 : null,
-//                           ),
-//                         ),
-//                         SizedBox(height: 20),
-//                         SlideTransition(
-//                           position: Tween<Offset>(begin: Offset(0, 1), end: Offset(0, 0))
-//                               .animate(_animationController),
-//                           child: TextFormField(
-//                             decoration: InputDecoration(
-//                               labelText: 'Password',
-//                               labelStyle: TextStyle(color: Colors.black), // Label color black
-//                               prefixIcon: Icon(Icons.lock_outline, color: Colors.black), // Icon color black
-//                               suffixIcon: IconButton(
-//                                 icon: Icon(
-//                                   _obscurePassword ? Icons.visibility_off : Icons.visibility,
-//                                   color: Colors.black, // Icon color black
-//                                 ),
-//                                 onPressed: () {
-//                                   setState(() {
-//                                     _obscurePassword = !_obscurePassword;
-//                                   });
-//                                 },
-//                               ),
-//                               border: OutlineInputBorder(
-//                                 borderRadius: BorderRadius.circular(12.0),
-//                                 borderSide: BorderSide(color: Colors.black), // Border color black
-//                               ),
-//                             ),
-//                             style: TextStyle(color: Colors.black), // Input text color black
-//                             obscureText: _obscurePassword,
-//                             onChanged: (value) => password = value,
-//                             validator: (value) => value == null || value.isEmpty
-//                                 ? 'Enter your password'
-//                                 : null,
-//                           ),
-//                         ),
-//
-//                         SizedBox(height: 20),
-//
-//                         // Submit Button
-//                         ElevatedButton(
-//                           onPressed: () {
-//                             print("Login button pressed"); // Debugging statement to check if the button is pressed
-//                             loginUser();
-//                           },
-//                           style: ElevatedButton.styleFrom(
-//                             backgroundColor: Color(0xFF971F20), // Set the background color to black
-//                             foregroundColor: Colors.white, // Set the text color to white
-//                             padding: EdgeInsets.symmetric(vertical: 15, horizontal: 50),
-//                             shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
-//                           ),
-//                           child: Text(
-//                             'Login',
-//                             style: TextStyle(fontSize: 18),
-//                           ),
-//                         ),
-//
-//                         SizedBox(height: 10),
-//
-//                         // Forgot Password Link
-//                         TextButton(
-//                           onPressed: () {
-//                             // Navigate to Forgot Password Page (implement the route accordingly)
-//                             Get.toNamed('/forgot_password');
-//                           },
-//                           child: Text(
-//                             'Forgot Password?',
-//                             style: TextStyle(
-//                               color: Color(0xFF971F20), // Text color black
-//                               fontSize: 14,
-//                             ),
-//                           ),
-//                         ),
-//
-//                         SizedBox(height: 10),
-//
-//                         // "Don't have an account? Register here" link
-//                         Row(
-//                           mainAxisAlignment: MainAxisAlignment.center,
-//                           children: [
-//                             Text("Don't have an account? ",
-//                                 style: TextStyle(color: Colors.black)), // Text color black
-//                             GestureDetector(
-//                               onTap: () {
-//                                 // Navigate to Register Page
-//                                 Navigator.pushNamed(context, '/register');
-//                               },
-//                               child: Text(
-//                                 'Register here',
-//                                 style: TextStyle(
-//                                   color: Color(0xFF971F20), // Text color black
-//                                   fontWeight: FontWeight.bold,
-//                                   fontSize: 14,
-//                                 ),
-//                               ),
-//                             ),
-//                           ],
-//                         ),
-//                       ],
-//                     ),
-//                   ),
-//                 ),
-//               ),
-//             ),
-//           ),
-//         ),
-//       ),
-//     );
-//   }
-// }
-//
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import '../controllers/LoginController.dart';
@@ -451,3 +170,231 @@ class LoginPage extends StatelessWidget {
   }
 }
 // CHnage the login page
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+// import 'package:flutter/material.dart';
+// import 'package:get/get.dart';
+// import '../controllers/LoginController.dart';
+//
+// class LoginPage extends StatelessWidget {
+//   final LoginController loginController = Get.put(LoginController());
+//
+//   @override
+//   Widget build(BuildContext context) {
+//     return Scaffold(
+//       backgroundColor: Colors.white,
+//       body: SingleChildScrollView(
+//         child: Column(
+//           crossAxisAlignment: CrossAxisAlignment.start,
+//           children: [
+//             // Logo and Greeting Section
+//             Container(
+//               padding: const EdgeInsets.only(top: 100, left: 30),
+//               child: Column(
+//                 crossAxisAlignment: CrossAxisAlignment.start,
+//                 children: [
+//                   FlutterLogo(size: 100), // Replace with your logo
+//                   const SizedBox(height: 20),
+//                   const Text(
+//                     'Hello!',
+//                     style: TextStyle(fontSize: 42, fontWeight: FontWeight.bold, color: Color(0xFF971F20)),
+//                   ),
+//                   const SizedBox(height: 10),
+//                   const Text(
+//                     'Welcome to Vidhyatra',
+//                     style: TextStyle(fontSize: 23, color: Colors.grey),
+//                   ),
+//                 ],
+//               ),
+//             ),
+//
+//             // Yellow Container (60% of screen height)
+//             Container(
+//               margin: const EdgeInsets.only(top: 40),
+//               height: MediaQuery.of(context).size.height * 0.7,
+//               width: double.infinity,
+//               decoration: BoxDecoration(
+//                 color: Color(0xFF971F20),
+//                 borderRadius: const BorderRadius.only(
+//                   topLeft: Radius.circular(40),
+//                   topRight: Radius.circular(40),
+//                 ),
+//               ),
+//               child: Padding(
+//                 padding: const EdgeInsets.all(40.0),
+//                 child: Column(
+//                   crossAxisAlignment: CrossAxisAlignment.start,
+//                   children: [
+//                     const Text(
+//                       'Login to your account',
+//                       style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold, color: Colors.white),
+//                     ),
+//                     const SizedBox(height: 40),
+//
+//                     // Email TextField
+//                     TextField(
+//                       decoration: InputDecoration(
+//                         labelText: 'Email',
+//                         labelStyle: TextStyle(color: Colors.blue), // Label text color
+//                         hintText: 'Enter your email',
+//                         hintStyle: TextStyle(color: Colors.grey), // Hint text color
+//                         filled: true, // Enable background color
+//                         fillColor: Colors.white, // Background color
+//                         prefixIcon: Icon(Icons.mail),
+//                         enabledBorder: OutlineInputBorder(
+//                           borderRadius: BorderRadius.circular(10),
+//                           borderSide: BorderSide(color: Colors.green), // Border color when not focused
+//                         ),
+//                         focusedBorder: OutlineInputBorder(
+//                           borderRadius: BorderRadius.circular(10),
+//                           borderSide: BorderSide(color: Colors.blue), // Border color when focused
+//                         ),
+//                         errorBorder: OutlineInputBorder(
+//                           borderRadius: BorderRadius.circular(10),
+//                           borderSide: BorderSide(color: Colors.red), // Border color when there's an error
+//                         ),
+//                       ),
+//                       style: TextStyle(color: Colors.black), // Input text color
+//                       onChanged: (value) => loginController.email.value = value,
+//                     ),
+//                     const SizedBox(height: 20),
+//
+//                     // Password TextField with Visibility Toggle
+//                     Obx(
+//                           () => TextField(
+//                         obscureText: !loginController.isPasswordVisible.value, // Toggle password visibility
+//                         decoration: InputDecoration(
+//                           labelText: 'Password',
+//                           labelStyle: TextStyle(color: Colors.blue), // Label text color
+//                           hintText: 'Enter your password',
+//                           hintStyle: TextStyle(color: Colors.grey), // Hint text color
+//                           filled: true, // Enable background color
+//                           fillColor: Colors.white, // Background color
+//                           prefixIcon: Icon(Icons.lock, color: Colors.blue), // Password icon
+//                           suffixIcon: IconButton(
+//                             icon: Icon(
+//                               loginController.isPasswordVisible.value ? Icons.visibility : Icons.visibility_off,
+//                               color: Colors.blue,
+//                             ),
+//                             onPressed: () {
+//                               loginController.togglePasswordVisibility(); // Toggle visibility
+//                             },
+//                           ),
+//                           enabledBorder: OutlineInputBorder(
+//                             borderRadius: BorderRadius.circular(10),
+//                             borderSide: BorderSide(color: Colors.green), // Border color when not focused
+//                           ),
+//                           focusedBorder: OutlineInputBorder(
+//                             borderRadius: BorderRadius.circular(10),
+//                             borderSide: BorderSide(color: Colors.blue), // Border color when focused
+//                           ),
+//                           errorBorder: OutlineInputBorder(
+//                             borderRadius: BorderRadius.circular(10),
+//                             borderSide: BorderSide(color: Colors.red), // Border color when there's an error
+//                           ),
+//                         ),
+//                         style: TextStyle(color: Colors.black), // Input text color
+//                         onChanged: (value) => loginController.password.value = value,
+//                       ),
+//                     ),
+//                     const SizedBox(height: 30),
+//
+//                     // Login Button
+//                     Center(
+//                       child: SizedBox(
+//                         width: Get.width * 0.3,
+//                         child: ElevatedButton(
+//                           onPressed: () => loginController.login(),
+//                           style: ElevatedButton.styleFrom(
+//                             padding: const EdgeInsets.symmetric(vertical: 15),
+//                             shape: RoundedRectangleBorder(
+//                               borderRadius: BorderRadius.circular(10),
+//                             ),
+//                           ),
+//                           child: const Text('Login'),
+//                         ),
+//                       ),
+//                     ),
+//                     const SizedBox(height: 20),
+//
+//                     Center(
+//                       child: GestureDetector(
+//                         onTap: () {
+//                           // Navigate to registration page
+//                           Get.snackbar('Info', 'Navigate to password reset page');
+//                         },
+//                         child: const Text(
+//                           'Forgot password?',
+//                           style: TextStyle(color: Colors.white),
+//                         ),
+//                       ),
+//                     ),
+//                     const SizedBox(height: 20),
+//
+//                     // Register Prompt
+//                     Center(
+//                       child: GestureDetector(
+//                         onTap: () {
+//                           // Navigate to registration page
+//                           Get.snackbar('Info', 'Navigate to registration page');
+//                         },
+//                         child: Text.rich(
+//                           TextSpan(
+//                             children: [
+//                               TextSpan(
+//                                 text: "Don't have an account? ",
+//                                 style: TextStyle(color: Colors.black),
+//                               ),
+//                               TextSpan(
+//                                 text: "Register here",
+//                                 style: TextStyle(color: Colors.white),
+//                               ),
+//                             ],
+//                           ),
+//                         ),
+//
+//                       ),
+//                     ),
+//                   ],
+//                 ),
+//               ),
+//             ),
+//           ],
+//         ),
+//       ),
+//     );
+//   }
+// }
+//
+// class LoginController extends GetxController {
+//   var email = ''.obs;
+//   var password = ''.obs;
+//   var isPasswordVisible = false.obs; // Observable for password visibility
+//
+//   void login() {
+//     // Add your login logic here
+//     if (email.value.isNotEmpty && password.value.isNotEmpty) {
+//       Get.snackbar('Success', 'Logged in with ${email.value}');
+//     } else {
+//       Get.snackbar('Error', 'Please fill all fields');
+//     }
+//   }
+//
+//   void togglePasswordVisibility() {
+//     isPasswordVisible.toggle(); // Toggle password visibility
+//   }
+// } // <--- Missing closing brace added here
