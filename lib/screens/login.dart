@@ -169,23 +169,10 @@ class LoginPage extends StatelessWidget {
     );
   }
 }
-// CHnage the login page
 
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
+// import 'package:flutter/gestures.dart';
 // import 'package:flutter/material.dart';
 // import 'package:get/get.dart';
 // import '../controllers/LoginController.dart';
@@ -211,7 +198,10 @@ class LoginPage extends StatelessWidget {
 //                   const SizedBox(height: 20),
 //                   const Text(
 //                     'Hello!',
-//                     style: TextStyle(fontSize: 42, fontWeight: FontWeight.bold, color: Color(0xFF971F20)),
+//                     style: TextStyle(
+//                         fontSize: 42,
+//                         fontWeight: FontWeight.bold,
+//                         color: Color(0xFF971F20)),
 //                   ),
 //                   const SizedBox(height: 10),
 //                   const Text(
@@ -241,74 +231,97 @@ class LoginPage extends StatelessWidget {
 //                   children: [
 //                     const Text(
 //                       'Login to your account',
-//                       style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold, color: Colors.white),
+//                       style: TextStyle(
+//                           fontSize: 20,
+//                           fontWeight: FontWeight.bold,
+//                           color: Colors.white),
 //                     ),
 //                     const SizedBox(height: 40),
 //
 //                     // Email TextField
-//                     TextField(
+//                     TextFormField(
 //                       decoration: InputDecoration(
-//                         labelText: 'Email',
-//                         labelStyle: TextStyle(color: Colors.blue), // Label text color
-//                         hintText: 'Enter your email',
-//                         hintStyle: TextStyle(color: Colors.grey), // Hint text color
-//                         filled: true, // Enable background color
-//                         fillColor: Colors.white, // Background color
-//                         prefixIcon: Icon(Icons.mail),
+//                         labelText: 'College ID or Email',
+//                         labelStyle: TextStyle(color: Colors.black),
+//                         prefixIcon: Icon(Icons.person_outline, color: Colors.black),
+//                         // Hint text color
+//                         filled: true,
+//                         // Enable background color
+//                         fillColor: Colors.white,
 //                         enabledBorder: OutlineInputBorder(
 //                           borderRadius: BorderRadius.circular(10),
-//                           borderSide: BorderSide(color: Colors.green), // Border color when not focused
+//                           borderSide: BorderSide(
+//                               color: Colors
+//                                   .green), // Border color when not focused
 //                         ),
 //                         focusedBorder: OutlineInputBorder(
 //                           borderRadius: BorderRadius.circular(10),
-//                           borderSide: BorderSide(color: Colors.blue), // Border color when focused
+//                           borderSide: BorderSide(
+//                               color: Colors.blue), // Border color when focused
 //                         ),
 //                         errorBorder: OutlineInputBorder(
 //                           borderRadius: BorderRadius.circular(10),
-//                           borderSide: BorderSide(color: Colors.red), // Border color when there's an error
+//                           borderSide: BorderSide(
+//                               color: Colors
+//                                   .red), // Border color when there's an error
 //                         ),
 //                       ),
 //                       style: TextStyle(color: Colors.black), // Input text color
-//                       onChanged: (value) => loginController.email.value = value,
+//                       onChanged: (value) => loginController.emailOrID.value = value,
+//                       validator: (value) => value == null || value.isEmpty ? 'Enter ID or Email' : null,
 //                     ),
 //                     const SizedBox(height: 20),
 //
 //                     // Password TextField with Visibility Toggle
 //                     Obx(
-//                           () => TextField(
-//                         obscureText: !loginController.isPasswordVisible.value, // Toggle password visibility
+//                           () => TextFormField(
+//                         // obscureText: !loginController.isPasswordVisible.value,
+//                         // Toggle password visibility
 //                         decoration: InputDecoration(
 //                           labelText: 'Password',
-//                           labelStyle: TextStyle(color: Colors.blue), // Label text color
+//                           labelStyle: TextStyle(color: Colors.blue),
+//                           // Label text color
 //                           hintText: 'Enter your password',
-//                           hintStyle: TextStyle(color: Colors.grey), // Hint text color
-//                           filled: true, // Enable background color
-//                           fillColor: Colors.white, // Background color
-//                           prefixIcon: Icon(Icons.lock, color: Colors.blue), // Password icon
+//                           hintStyle: TextStyle(color: Colors.grey),
+//                           // Hint text color
+//                           filled: true,
+//                           // Enable background color
+//                           fillColor: Colors.white,
+//                           // Background color
+//                           prefixIcon: Icon(Icons.lock, color: Colors.blue),
+//                           // Password icon
 //                           suffixIcon: IconButton(
 //                             icon: Icon(
 //                               loginController.isPasswordVisible.value ? Icons.visibility : Icons.visibility_off,
-//                               color: Colors.blue,
+//                               color: Colors.black,
 //                             ),
 //                             onPressed: () {
-//                               loginController.togglePasswordVisibility(); // Toggle visibility
+//                               loginController.isPasswordVisible.value = !loginController.isPasswordVisible.value;
 //                             },
 //                           ),
 //                           enabledBorder: OutlineInputBorder(
 //                             borderRadius: BorderRadius.circular(10),
-//                             borderSide: BorderSide(color: Colors.green), // Border color when not focused
+//                             borderSide: BorderSide(
+//                                 color: Colors
+//                                     .green), // Border color when not focused
 //                           ),
 //                           focusedBorder: OutlineInputBorder(
 //                             borderRadius: BorderRadius.circular(10),
-//                             borderSide: BorderSide(color: Colors.blue), // Border color when focused
+//                             borderSide: BorderSide(
+//                                 color:
+//                                 Colors.blue), // Border color when focused
 //                           ),
 //                           errorBorder: OutlineInputBorder(
 //                             borderRadius: BorderRadius.circular(10),
-//                             borderSide: BorderSide(color: Colors.red), // Border color when there's an error
+//                             borderSide: BorderSide(
+//                                 color: Colors
+//                                     .red), // Border color when there's an error
 //                           ),
 //                         ),
-//                         style: TextStyle(color: Colors.black), // Input text color
+//                         style: TextStyle(color: Colors.black),
+//                         obscureText: !loginController.isPasswordVisible.value,
 //                         onChanged: (value) => loginController.password.value = value,
+//                         validator: (value) => value == null || value.isEmpty ? 'Enter your password' : null,
 //                       ),
 //                     ),
 //                     const SizedBox(height: 30),
@@ -318,7 +331,11 @@ class LoginPage extends StatelessWidget {
 //                       child: SizedBox(
 //                         width: Get.width * 0.3,
 //                         child: ElevatedButton(
-//                           onPressed: () => loginController.login(),
+//                           onPressed: loginController.isLoading.value
+//                               ? null
+//                               : () {
+//                             loginController.loginUser();
+//                           },
 //                           style: ElevatedButton.styleFrom(
 //                             padding: const EdgeInsets.symmetric(vertical: 15),
 //                             shape: RoundedRectangleBorder(
@@ -334,8 +351,7 @@ class LoginPage extends StatelessWidget {
 //                     Center(
 //                       child: GestureDetector(
 //                         onTap: () {
-//                           // Navigate to registration page
-//                           Get.snackbar('Info', 'Navigate to password reset page');
+//                           Get.toNamed('/forgot_password');
 //                         },
 //                         child: const Text(
 //                           'Forgot password?',
@@ -349,26 +365,27 @@ class LoginPage extends StatelessWidget {
 //                     Center(
 //                       child: GestureDetector(
 //                         onTap: () {
-//                           // Navigate to registration page
-//                           Get.snackbar('Info', 'Navigate to registration page');
+//                           Get.toNamed('/register');
 //                         },
 //                         child: Text.rich(
 //                           TextSpan(
 //                             children: [
-//                               TextSpan(
+//                               const TextSpan(
 //                                 text: "Don't have an account? ",
 //                                 style: TextStyle(color: Colors.black),
 //                               ),
 //                               TextSpan(
 //                                 text: "Register here",
-//                                 style: TextStyle(color: Colors.white),
+//                                 style: const TextStyle(color: Colors.white),
+//                                 recognizer: TapGestureRecognizer()
+//                                   ..onTap = () => Get.toNamed('/register'),
 //                               ),
 //                             ],
 //                           ),
 //                         ),
-//
 //                       ),
 //                     ),
+//
 //                   ],
 //                 ),
 //               ),
@@ -379,22 +396,4 @@ class LoginPage extends StatelessWidget {
 //     );
 //   }
 // }
-//
-// class LoginController extends GetxController {
-//   var email = ''.obs;
-//   var password = ''.obs;
-//   var isPasswordVisible = false.obs; // Observable for password visibility
-//
-//   void login() {
-//     // Add your login logic here
-//     if (email.value.isNotEmpty && password.value.isNotEmpty) {
-//       Get.snackbar('Success', 'Logged in with ${email.value}');
-//     } else {
-//       Get.snackbar('Error', 'Please fill all fields');
-//     }
-//   }
-//
-//   void togglePasswordVisibility() {
-//     isPasswordVisible.toggle(); // Toggle password visibility
-//   }
-// } // <--- Missing closing brace added here
+
