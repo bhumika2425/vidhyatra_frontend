@@ -58,7 +58,7 @@ class EventController extends GetxController {
         ..fields['created_by'] = '1'; // Assuming 1 is the admin ID, this can be dynamic
 
       // Add the Authorization header
-        request.headers['Authorization'] = "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyX2lkIjoyMSwicm9sZSI6IkFkbWluIiwiaWF0IjoxNzQwOTE0NzAwLCJleHAiOjE3NDA5MTgzMDB9.952UehQi6tEJ2jrkWpY69K6oUkRKU0Tiqv0VjvlZ2Xc";
+        request.headers['Authorization'] = "Bearer token";
 
       // if (selectedImage.value != null) {
       //   var image = await http.MultipartFile.fromPath('image', selectedImage.value!.path);
