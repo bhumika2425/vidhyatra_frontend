@@ -1,3 +1,4 @@
+//Dashboard
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import '../../controllers/AdminController.dart';
@@ -8,7 +9,6 @@ class AdminDashboard extends StatefulWidget {
   @override
   _AdminDashboardState createState() => _AdminDashboardState();
 }
-
 class _AdminDashboardState extends State<AdminDashboard> {
   final AdminDashboardController controller = Get.put(
       AdminDashboardController());
