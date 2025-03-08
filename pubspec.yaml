@@ -52,6 +52,7 @@ dependencies:
   fluttertoast: ^8.2.8
   share_plus: ^10.1.2
   get: ^4.6.6
+  url_launcher: ^6.3.1
 
 
 dev_dependencies:

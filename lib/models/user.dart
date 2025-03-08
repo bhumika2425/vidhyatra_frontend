@@ -16,4 +16,15 @@ class User {
       email: json['email'] ?? '',
     );
   }
+
+  // Method to convert User object to JSON
+  Map<String, dynamic> toJson() {
+    return {
+      'user_id': userId,
+      'college_id': collegeId,
+      'name': name,
+      'email': email,
+      'has_profile': hasProfile, // Include hasProfile if needed
+    };
+  }
 }

@@ -5,6 +5,7 @@ import 'package:vidhyatra_flutter/providers/profile_provider.dart';
 import 'package:vidhyatra_flutter/providers/user_provider.dart';
 import 'package:vidhyatra_flutter/screens/AccountPage.dart';
 import 'package:vidhyatra_flutter/screens/AssignmentPage.dart';
+import 'package:vidhyatra_flutter/screens/FeesScreen.dart';
 import 'package:vidhyatra_flutter/screens/FriendsScreen.dart';
 import 'package:vidhyatra_flutter/screens/StudentSetting.dart';
 import 'package:vidhyatra_flutter/screens/blog_posting_page.dart';
@@ -62,6 +63,7 @@ class VidhyatraApp extends StatelessWidget {
           GetPage(name: '/sendFeedback', page: () => FeedbackForm()),
           GetPage(name: '/account', page: () => Accountpage()),
           GetPage(name: '/studentSetting', page: () => Studentsetting()),
+          GetPage(name: '/feesScreen', page: () => FeesScreen()),
         ],
     );
   }

@@ -1,7 +1,7 @@
 class ApiEndPoints{
   // static const baseUrl = "http://localhost:3001";
-  // static const baseUrl = "http://192.168.1.8:3001";
-  static const baseUrl = "http://10.0.2.2:3001";
+  static const baseUrl = "http://192.168.1.89:3001";
+  // static const baseUrl = "http://10.0.2.2:3001";
   //authentication
   static const login = "${baseUrl}/api/auth/login";
 
@@ -35,4 +35,15 @@ class ApiEndPoints{
   static const sendFriendRequest = "${baseUrl}/api/friendRequest/friend-requests";
 
   static const getFriendRequest = "${baseUrl}/api/friendRequest/friend-requests";
+
+
+
+
+  // fees
+static const getAllFees = "${baseUrl}/api/collegeFees/fees";
+
+
+
+// esewa
+static const initializePaymentWithEsewa = "${baseUrl}/api/payFees/initialize-esewa";
 }

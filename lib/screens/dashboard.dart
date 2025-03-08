@@ -251,7 +251,7 @@ class _DashboardState extends State<Dashboard> {
             IconButton(
                 icon: Icon(Icons.payment),
                 onPressed: () {
-                  Get.toNamed('/payment');
+                  Get.toNamed('/feesScreen');
                 }),
             SizedBox(width: 40), // Space for FAB
             IconButton(
