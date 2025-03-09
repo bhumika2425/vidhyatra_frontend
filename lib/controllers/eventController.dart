@@ -1,82 +1,68 @@
-import 'dart:convert';
 import 'package:get/get.dart';
 import 'package:http/http.dart' as http;
-import 'package:image_picker/image_picker.dart';
+import 'package:vidhyatra_flutter/constants/api_endpoints.dart';
+import 'dart:convert';
+import '../models/EventsModel.dart';
+import '../models/FeesModel.dart';
+import 'LoginController.dart'; // Assuming LoginController is located here
 
 class EventController extends GetxController {
-  var eventTitle = ''.obs;
-  var eventDescription = ''.obs;
-  var eventVenue = ''.obs;
-  var eventDate = ''.obs;
-  var selectedImage = Rx<XFile?>(null);
-  var isLoading = false.obs;
+  var events = <Event>[].obs; // Observable list to store fees
+  var isLoading = true.obs; // Observable for loading state
+  var errorMessage = ''.obs; // Observable for error messages
+  Rx<Fee?> selectedFee = Rx<Fee?>(null);
 
-  // Function to set the event details
-  void setEventTitle(String title) {
-    eventTitle.value = title;
+  // Reference to LoginController to access the token
+  final LoginController loginController = Get.find<LoginController>();
+
+  @override
+  void onInit() {
+    super.onInit();
+    print("EventController initialized, fetching events...");
+    fetchEvents(); // Automatically fetch events when the controller is initialized
   }
 
-  void setEventDescription(String description) {
-    eventDescription.value = description;
-  }
-
-  void setEventVenue(String venue) {
-    eventVenue.value = venue;
-  }
-
-  void setEventDate(String date) {
-    eventDate.value = date;
-  }
-
-  void setSelectedImage(XFile? image) {
-    selectedImage.value = image;
-  }
-
-  // Function to pick an image from the gallery
-  Future<void> pickImage() async {
-    final ImagePicker picker = ImagePicker();
-    final XFile? pickedImage = await picker.pickImage(source: ImageSource.gallery);
-    setSelectedImage(pickedImage);
-  }
-
-  // Function to create an event
-  Future<void> createEvent() async {
-    if (eventTitle.isEmpty || eventDescription.isEmpty || eventVenue.isEmpty || eventDate.isEmpty == null) {
-      Get.snackbar('Error', 'Please fill in all fields and select an image.');
-      return;
-    }
-
-    isLoading.value = true;
-
+  // Method to fetch fees
+  Future<void> fetchEvents() async {
     try {
-      final Uri url = Uri.parse('http://192.168.1.8:3001/api/eventCalender/events');
-      var request = http.MultipartRequest('POST', url)
-        ..fields['title'] = eventTitle.value
-        ..fields['description'] = eventDescription.value
-        ..fields['venue'] = eventVenue.value
-        ..fields['event_date'] = eventDate.value
-        ..fields['created_by'] = '1'; // Assuming 1 is the admin ID, this can be dynamic
+      isLoading(true); // Set loading to true while fetching data
+      errorMessage.value = ''; // Reset error message
 
-      // Add the Authorization header
-        request.headers['Authorization'] = "Bearer token";
+      // Parse the URL separately
+      Uri uri = Uri.parse(ApiEndPoints.getEvents); // Ensure this URL is correct
 
-      // if (selectedImage.value != null) {
-      //   var image = await http.MultipartFile.fromPath('image', selectedImage.value!.path);
-      //   request.files.add(image);
-      // }
+      // Get the token from the LoginController
+      String token = loginController.token.value; // Access the token dynamically
 
-      var response = await request.send();
+      // Define headers, including the Authorization header with Bearer token
+      Map<String, String> headers = {
+        'Authorization': 'Bearer $token', // Pass the token in the Authorization header
+        'Content-Type': 'application/json',
+      };
 
-      if (response.statusCode == 201) {
-        Get.snackbar('Success', 'Event posted successfully!');
+      // Debugging: Print request details
+      print("Fetching events from: $uri");
+      print("Headers: $headers");
+
+      final response = await http.get(uri, headers: headers); // Send GET request with headers
+
+      // Debugging: Print response status and body
+      print("Response Status Code: ${response.statusCode}");
+      print("Response Body: ${response.body}");
+
+      if (response.statusCode == 200) {
+        List jsonResponse = json.decode(response.body);
+        events.value = jsonResponse.map((event) => Event.fromJson(event)).toList(); // Update the fees list
+        print("Events fetched successfully: ${events.length} items");
       } else {
-        Get.snackbar('Error', 'Failed to post event.');
+        errorMessage.value = 'Failed to load events: ${response.statusCode}';
+        print("Error: ${errorMessage.value}");
       }
     } catch (e) {
-      Get.snackbar('Error', 'Something went wrong. Please try again.');
-      print('Error: $e');
+      errorMessage.value = 'Error: $e'; // If an error occurs, show the error message
+      print("Exception occurred: $e");
     } finally {
-      isLoading.value = false;
+      isLoading(false); // Set loading to false when done
     }
   }
 }

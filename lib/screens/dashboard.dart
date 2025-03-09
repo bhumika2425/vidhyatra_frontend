@@ -4,17 +4,14 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:http/http.dart' as http;
-import 'package:provider/provider.dart';
 import 'package:vidhyatra_flutter/constants/api_endpoints.dart';
-import 'package:vidhyatra_flutter/controllers/IconController.dart';
 import 'package:vidhyatra_flutter/controllers/blogController.dart';
-import 'package:vidhyatra_flutter/screens/AssignmentPage.dart';
+import 'package:vidhyatra_flutter/screens/calendar.dart';
 import 'package:vidhyatra_flutter/screens/profile_creation.dart';
 import '../controllers/LoginController.dart';
 import '../controllers/ProfileController.dart';
 import '../models/blogModel.dart';
-import '../providers/profile_provider.dart';
-import '../providers/user_provider.dart';
+
 
 class Dashboard extends StatefulWidget {
   const Dashboard({super.key});
@@ -125,7 +122,6 @@ class _DashboardState extends State<Dashboard> {
               ),
             ),
             SizedBox(height: 20),
-            // Drawer Items
             ListTile(
               leading: Icon(Icons.manage_accounts),
               title: Text('Account'),
@@ -133,6 +129,7 @@ class _DashboardState extends State<Dashboard> {
                 Get.toNamed('/account');
               },
             ),
+
             ListTile(
               leading: Icon(Icons.people),
               title: Text('Friends'),
@@ -244,9 +241,9 @@ class _DashboardState extends State<Dashboard> {
           mainAxisAlignment: MainAxisAlignment.spaceAround,
           children: [
             IconButton(
-                icon: Icon(Icons.home),
+                icon: Icon(Icons.schedule_outlined),
                 onPressed: () {
-                  Get.offAllNamed('/dashboard');
+                  Get.toNamed('/classSchedule');
                 }),
             IconButton(
                 icon: Icon(Icons.payment),

@@ -16,7 +16,7 @@ class AdminTopNavBar extends StatelessWidget {
     return Container(
       width: double.infinity, // Full width of the screen
       height: 60, // Set the height of the top navbar
-      color: Colors.blueGrey.shade900, // Navbar background color
+      color: Color(0xFF042F6B), // Navbar background color
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceBetween, // Space between elements
         children: [

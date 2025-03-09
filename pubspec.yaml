@@ -88,6 +88,9 @@ flutter:
     - assets/lock_icon.png
     - assets/forgot_password.png
     - assets/reset_password.png
+    - assets/img.png
+    - assets/img_1.png
+    - assets/img_2.png
   #   - images/a_dot_burr.jpeg
   #   - images/a_dot_ham.jpeg
 

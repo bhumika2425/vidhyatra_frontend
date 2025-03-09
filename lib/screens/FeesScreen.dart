@@ -16,6 +16,14 @@ class FeesScreen extends StatelessWidget {
     double screenHeight = MediaQuery.of(context).size.height;
     double textScale = MediaQuery.of(context).textScaleFactor;
 
+    // Helper function to calculate date difference in days
+    int getDaysRemaining(String dueDate) {
+      DateTime due = DateTime.parse(dueDate);
+      DateTime current = DateTime.now();
+      return due.difference(current).inDays;
+    }
+
+
 
     return Scaffold(
       appBar: AppBar(
@@ -103,6 +111,8 @@ class FeesScreen extends StatelessWidget {
             itemCount: feeController.fees.length,
             itemBuilder: (context, index) {
               Fee fee = feeController.fees[index];
+              int daysRemaining = getDaysRemaining(fee.dueDate);
+
               return Card(
                 shape: RoundedRectangleBorder(
                   borderRadius: BorderRadius.circular(15),
@@ -114,6 +124,14 @@ class FeesScreen extends StatelessWidget {
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
+                      if (daysRemaining <= 5 && daysRemaining > 0)
+                        Padding(
+                          padding: EdgeInsets.symmetric(vertical: screenHeight * 0.015),
+                          child: Text(
+                            "⏳ Just $daysRemaining day(s) left! Make sure to complete your payment on time and stay ahead of your finances. Your timely payment keeps everything running smoothly. You've got this! 💪",
+                            style: TextStyle(fontSize: 14 * textScale, fontWeight: FontWeight.bold, color: Colors.orange),
+                          ),
+                        ),
                       Row(
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         children: [
@@ -171,6 +189,14 @@ class FeesScreen extends StatelessWidget {
                           color: Colors.green[900],
                         ),
                       ),
+                      if (daysRemaining <= 0)
+                        Padding(
+                          padding: EdgeInsets.symmetric(vertical: screenHeight * 0.015),
+                          child: Text(
+                            "⚠️ The due date has passed! No worries, it's not too late to take action. Please visit the Finance Department as soon as possible to settle your fee. We're here to help you stay on track! 💪",
+                            style: TextStyle(fontSize: 14 * textScale, fontWeight: FontWeight.bold, color: Colors.red),
+                          ),
+                        ),
                     ],
                   ),
                 ),

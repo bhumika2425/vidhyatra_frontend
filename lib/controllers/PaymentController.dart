@@ -1,8 +1,14 @@
+import 'dart:convert';
+
+import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:url_launcher/url_launcher.dart';
+import 'package:vidhyatra_flutter/screens/FeesScreen.dart';
 import 'package:vidhyatra_flutter/screens/PaidFeesDetails.dart';
 import 'package:vidhyatra_flutter/services/PaymentService.dart';
 import 'package:http/http.dart' as http;
+
+import '../constants/api_endpoints.dart';
 
 class PaymentController extends GetxController {
   final PaymentService paymentService;
@@ -10,6 +16,7 @@ class PaymentController extends GetxController {
   var isLoading = false.obs;
   var paymentData = {}.obs;
   var paidFeesData = {}.obs;
+
 
   PaymentController({required this.paymentService});
 
@@ -65,7 +72,7 @@ class PaymentController extends GetxController {
       'product_code': 'EPAYTEST', // Replace with your actual product code
       'product_service_charge': serviceCharge.toString(),
       'product_delivery_charge': deliveryCharge.toString(),
-      'success_url': 'http://localhost:3001/api/payFees/complete-payment', // Update with actual success URL
+      'success_url': '${ApiEndPoints.baseUrl}/api/payFees/complete-payment', // Update with actual success URL
       'failure_url': 'https://developer.esewa.com.np/failure', // Update with actual failure URL
       'signed_field_names': 'total_amount,transaction_uuid,product_code',
       'signature': signature, // Signature should be generated before this step
@@ -101,6 +108,70 @@ class PaymentController extends GetxController {
       }
     } catch (e) {
       print("❌ Exception Occurred: $e");
+    }
+  }
+
+  Future<void> completeEsewaPayment(String encodedData) async {
+    isLoading(true);
+    try {
+      String url = "${ApiEndPoints.baseUrl}/api/payFees/complete-payment?data=$encodedData"; // Backend verification API
+      print("🔹 Verifying eSewa Payment at: $url");
+
+      var response = await http.get(Uri.parse(url));
+      print("🔹 Response Status Code: ${response.statusCode}");
+      print("🔹 Response Body: ${response.body}");
+
+      var responseData = jsonDecode(response.body);
+
+      if (responseData['success']) {
+        print("✅ Payment Verification Successful");
+
+        // Debugging log for navigation
+        print("🔹 Navigating back to ItemScreen...");
+
+        // Show success message in Snackbar
+        Get.snackbar(
+          "Payment Successful",
+          "Your payment has been verified successfully!",
+          snackPosition: SnackPosition.BOTTOM,
+          backgroundColor: Colors.green,
+          colorText: Colors.white,
+          duration: Duration(seconds: 3),
+        );
+
+        // Navigate back to the item screen
+        Get.offAll(() => FeesScreen()); // Replace with your actual item screen
+
+        // Confirm that navigation is triggered
+        print("🔹 Navigation to ItemScreen triggered.");
+      } else {
+        print("❌ Payment Verification Failed: ${responseData['message']}");
+
+        // Show failure message
+        Get.snackbar(
+          "Payment Failed",
+          responseData['message'],
+          snackPosition: SnackPosition.BOTTOM,
+          backgroundColor: Colors.red,
+          colorText: Colors.white,
+          duration: Duration(seconds: 3),
+        );
+      }
+    } catch (e) {
+      print("❌ Error Completing Payment: $e");
+
+      // Show error message
+      Get.snackbar(
+        "Error",
+        "An error occurred while verifying the payment.",
+        snackPosition: SnackPosition.BOTTOM,
+        backgroundColor: Colors.orange,
+        colorText: Colors.white,
+        duration: Duration(seconds: 3),
+      );
+    } finally {
+      isLoading(false);
+      print("🔹 isLoading set to false.");
     }
   }
 }

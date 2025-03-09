@@ -98,6 +98,7 @@ class _WelcomeScreenState extends State<WelcomeScreen> {
                   Get.to(AdminDashboard());
 
                 }, child: Text("Admin")),
+                SizedBox(height: 30),
                 // Dots Indicator
                 Row(
                   mainAxisAlignment: MainAxisAlignment.center,

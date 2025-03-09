@@ -1,10 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:provider/provider.dart';
-import 'package:vidhyatra_flutter/providers/profile_provider.dart';
-import 'package:vidhyatra_flutter/providers/user_provider.dart';
 import 'package:vidhyatra_flutter/screens/AccountPage.dart';
-import 'package:vidhyatra_flutter/screens/AssignmentPage.dart';
+import 'package:vidhyatra_flutter/screens/ClassRoutine.dart';
 import 'package:vidhyatra_flutter/screens/FeesScreen.dart';
 import 'package:vidhyatra_flutter/screens/FriendsScreen.dart';
 import 'package:vidhyatra_flutter/screens/StudentSetting.dart';
@@ -15,10 +12,8 @@ import 'package:vidhyatra_flutter/screens/dashboard.dart';
 import 'package:vidhyatra_flutter/screens/feedback_form.dart';
 import 'package:vidhyatra_flutter/screens/forgot_password_page.dart';
 import 'package:vidhyatra_flutter/screens/login.dart';
-import 'package:vidhyatra_flutter/screens/payment_page.dart';
 import 'package:vidhyatra_flutter/screens/register.dart';
 import 'package:vidhyatra_flutter/screens/student_profile_page.dart';
-import 'package:vidhyatra_flutter/screens/weekly_routine.dart';
 import 'package:vidhyatra_flutter/screens/welcomePage.dart';
 
 import 'controllers/ProfileController.dart';
@@ -52,7 +47,6 @@ class VidhyatraApp extends StatelessWidget {
           GetPage(name: '/', page: () => WelcomeScreen()),
           GetPage(name: '/login', page: () => LoginPage()),
           GetPage(name: '/register', page: () => RegisterPage()),
-          GetPage(name: '/payment', page: () => PaymentPage()),
           GetPage(name: '/profile', page: () => StudentProfilePage()),
           GetPage(name: '/calendar', page: () => Calendar()),
           GetPage(name: '/messages', page: () => ChatPage()),
@@ -64,6 +58,7 @@ class VidhyatraApp extends StatelessWidget {
           GetPage(name: '/account', page: () => Accountpage()),
           GetPage(name: '/studentSetting', page: () => Studentsetting()),
           GetPage(name: '/feesScreen', page: () => FeesScreen()),
+          GetPage(name: '/classSchedule', page: () => ClassRoutine()),
         ],
     );
   }

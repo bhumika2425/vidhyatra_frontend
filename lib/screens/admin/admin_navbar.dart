@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:vidhyatra_flutter/screens/admin/ManageRoutine.dart';
 import 'package:vidhyatra_flutter/screens/admin/admin_dashboard.dart';
 import 'package:vidhyatra_flutter/screens/admin/event_management.dart';
 
@@ -30,6 +31,7 @@ class AdminNavBar extends StatelessWidget {
           _buildNavItem(Icons.account_box_rounded, "Professors", 3),
           _buildNavItem(Icons.supervisor_account_rounded, "Students", 4),
           _buildNavItem(Icons.money, "Fees", 5),
+          _buildNavItem(Icons.schedule_outlined, "Manage Routine", 6),
         ],
       ),
     );
@@ -62,7 +64,7 @@ class AdminNavBar extends StatelessWidget {
         Get.to(() => AdminDashboard()); // Navigate to Dashboard page
         break;
       case 1:
-        Get.to(() => EventManagementPage()); // Navigate to Event Management page
+        // Get.to(() => EventManagementPage()); // Navigate to Event Management page
         break;
       case 2:
         // Get.to(() => FeedbackPage()); // Navigate to Feedback page
@@ -75,6 +77,9 @@ class AdminNavBar extends StatelessWidget {
         break;
       case 5:
         // Get.to(() => FeesPage()); // Navigate to Fees page
+        break;
+      case 6:
+      Get.to(() => ManageRoutine()); // Navigate to Fees page
         break;
       default:
         // Get.to(() => DashboardPage()); // Default fallback to Dashboard
