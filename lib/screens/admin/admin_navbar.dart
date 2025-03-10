@@ -1,8 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:vidhyatra_flutter/screens/admin/ManageRoutine.dart';
+// import 'package:vidhyatra_flutter/screens/admin/ManageRoutine.dart';
 import 'package:vidhyatra_flutter/screens/admin/admin_dashboard.dart';
 import 'package:vidhyatra_flutter/screens/admin/event_management.dart';
+// import 'package:vidhyatra_flutter/screens/admin/event_management.dart';
 
 class AdminNavBar extends StatelessWidget {
   final Function(int) onTap; // Callback function for navigation
@@ -64,7 +66,7 @@ class AdminNavBar extends StatelessWidget {
         Get.to(() => AdminDashboard()); // Navigate to Dashboard page
         break;
       case 1:
-        // Get.to(() => EventManagementPage()); // Navigate to Event Management page
+        Get.to(() => ManageEvent()); // Navigate to Event Management page
         break;
       case 2:
         // Get.to(() => FeedbackPage()); // Navigate to Feedback page
