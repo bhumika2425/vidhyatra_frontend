@@ -29,42 +29,42 @@ class VidhyatraApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return GetMaterialApp(
-        title: 'Vidhyatra Login',
-        theme: ThemeData(
-          primarySwatch: Colors.blue, // Adjust the primary swatch if needed
-          scaffoldBackgroundColor: Colors.white, // Set the scaffold background to white
-          visualDensity: VisualDensity.adaptivePlatformDensity,
-          appBarTheme: AppBarTheme(
-            backgroundColor: Colors.white, // Set AppBar background to white
-            iconTheme: IconThemeData(color: Colors.black), // Set icon color to black
-            titleTextStyle: TextStyle(
-              color: Colors.black, // Set title text color to black
-              fontSize: 20,
-              fontWeight: FontWeight.bold,
+      title: 'Vidhyatra Login',
+      theme: ThemeData(
+        primarySwatch: Colors.blue, // Adjust the primary swatch if needed
+        scaffoldBackgroundColor: Colors.white, // Set the scaffold background to white
+        visualDensity: VisualDensity.adaptivePlatformDensity,
+        appBarTheme: AppBarTheme(
+          backgroundColor: Colors.white, // Set AppBar background to white
+          iconTheme: IconThemeData(color: Colors.black), // Set icon color to black
+          titleTextStyle: TextStyle(
+            color: Colors.black, // Set title text color to black
+            fontSize: 20,
+            fontWeight: FontWeight.bold,
 
-            ),
           ),
         ),
-        getPages: [
-          GetPage(name: '/', page: () => WelcomeScreen()),
-          GetPage(name: '/login', page: () => LoginPage()),
-          GetPage(name: '/register', page: () => RegisterPage()),
-          GetPage(name: '/profile', page: () => StudentProfilePage()),
-          GetPage(name: '/calendar', page: () => Calendar()),
-          GetPage(name: '/messages', page: () => ChatPage()),
-          GetPage(name: '/dashboard', page: () => Dashboard()),
-          GetPage(name: '/new-post', page: () => BlogPostPage()),
-          GetPage(name: '/forgot_password', page: () => ForgotPasswordScreen()),
-          GetPage(name: '/friends', page: () => FriendsScreen()),
-          GetPage(name: '/sendFeedback', page: () => FeedbackForm()),
-          GetPage(name: '/account', page: () => Accountpage()),
-          GetPage(name: '/studentSetting', page: () => Studentsetting()),
-          GetPage(name: '/feesScreen', page: () => FeesScreen()),
-          GetPage(name: '/classSchedule', page: () => ClassRoutine()),
-          GetPage(name: '/manageEvents', page: () => ManageEvent()),
-          GetPage(name: '/adminDashboard', page: () => AdminDashboard()),
+      ),
+      getPages: [
+        GetPage(name: '/', page: () => WelcomeScreen()),
+        GetPage(name: '/login', page: () => LoginPage()),
+        GetPage(name: '/register', page: () => RegisterPage()),
+        GetPage(name: '/profile', page: () => StudentProfilePage()),
+        GetPage(name: '/calendar', page: () => Calendar()),
+        GetPage(name: '/messages', page: () => ChatPage()),
+        GetPage(name: '/dashboard', page: () => Dashboard()),
+        GetPage(name: '/new-post', page: () => BlogPostPage()),
+        GetPage(name: '/forgot_password', page: () => ForgotPasswordScreen()),
+        GetPage(name: '/friends', page: () => FriendsScreen()),
+        GetPage(name: '/sendFeedback', page: () => FeedbackForm()),
+        GetPage(name: '/account', page: () => Accountpage()),
+        GetPage(name: '/studentSetting', page: () => Studentsetting()),
+        GetPage(name: '/feesScreen', page: () => FeesScreen()),
+        GetPage(name: '/classSchedule', page: () => ClassRoutine()),
+        GetPage(name: '/manageEvents', page: () => ManageEvent()),
+        GetPage(name: '/adminDashboard', page: () => AdminDashboard()),
 
-        ],
+      ],
     );
   }
 }

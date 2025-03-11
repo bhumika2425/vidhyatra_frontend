@@ -1,6 +1,7 @@
 class ApiEndPoints{
-  static const baseUrl = "http://192.168.1.12:3001";
-  // static const baseUrl = "http://10.0.2.2:3001";
+  // static const baseUrl = "http://192.168.1.12:3001";
+  static const baseUrl = "http://10.0.2.2:3001";
+  // static const baseUrl = "http://localhost:3001";
   //authentication
   static const login = "${baseUrl}/api/auth/login";
 
