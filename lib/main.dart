@@ -52,7 +52,7 @@ class VidhyatraApp extends StatelessWidget {
         GetPage(name: '/profile', page: () => StudentProfilePage()),
         GetPage(name: '/calendar', page: () => Calendar()),
         GetPage(name: '/messages', page: () => ChatPage()),
-        GetPage(name: '/dashboard', page: () => Dashboard()),
+        GetPage(name: '/student-dashboard', page: () => Dashboard()),
         GetPage(name: '/new-post', page: () => BlogPostPage()),
         GetPage(name: '/forgot_password', page: () => ForgotPasswordScreen()),
         GetPage(name: '/friends', page: () => FriendsScreen()),
@@ -62,7 +62,7 @@ class VidhyatraApp extends StatelessWidget {
         GetPage(name: '/feesScreen', page: () => FeesScreen()),
         GetPage(name: '/classSchedule', page: () => ClassRoutine()),
         GetPage(name: '/manageEvents', page: () => ManageEvent()),
-        GetPage(name: '/adminDashboard', page: () => AdminDashboard()),
+        GetPage(name: '/admin-dashboard', page: () => AdminDashboard()),
 
       ],
     );

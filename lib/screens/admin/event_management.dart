@@ -45,8 +45,6 @@ class _ManageEventState extends State<ManageEvent> {
       appBar: PreferredSize(
         preferredSize: Size.fromHeight(60),
         child: AdminTopNavBar(
-          onNotificationTap: _onNotificationTap,
-          onProfileTap: _onProfileTap,
         ),
       ),
       body: Row(

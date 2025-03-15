@@ -49,32 +49,57 @@ class LoginController extends GetxController {
             responseData.containsKey('user')) {
           final tokenValue = responseData['token'];
           final userIdValue = responseData['user']['user_id'];
+          final userRole = responseData['user']['role']; // Extract role
+          final isAdmin = responseData['user']['isAdmin'] ??
+              false; // Check isAdmin flag
           final userData = User.fromJson(responseData['user']);
 
-          // Storing user and token in state
+          // Store user details
           user.value = userData;
           token.value = tokenValue;
           userId.value = userIdValue;
 
+          print(
+              "✅ Login Successful - Token: $tokenValue, UserID: $userIdValue, Role: $userRole, isAdmin: $isAdmin");
+
           Get.snackbar("Success", "Logged in successfully!",
               snackPosition: SnackPosition.BOTTOM);
-          Get.toNamed('/dashboard'); // Navigate to dashboard
+
+          // Debugging role-based navigation
+          if (isAdmin) {
+            print("🔹 Navigating to /admin-dashboard");
+            Get.toNamed('/admin-dashboard');
+          } else if (userRole.toLowerCase() == 'teacher') {
+            print("🔹 Navigating to /teacher-dashboard");
+            Get.toNamed('/teacher-dashboard');
+          } else if (userRole.toLowerCase() == 'student') {
+            print("🔹 Navigating to /student-dashboard");
+            Get.toNamed('/student-dashboard');
+          } else {
+            print("❌ Invalid Role: $userRole");
+            Get.snackbar("Error", "Invalid role assigned to user.",
+                snackPosition: SnackPosition.BOTTOM);
+          }
         } else {
+          print("❌ Missing token or user data in response");
           Get.snackbar("Login Error", "Invalid response from server",
               snackPosition: SnackPosition.BOTTOM);
         }
       } else {
         final responseData = jsonDecode(response.body);
         String errorMessage = responseData['message'] ?? "Invalid credentials";
+        print("❌ Login failed - Server Response: $errorMessage");
         Get.snackbar(
             "Login Error", errorMessage, snackPosition: SnackPosition.BOTTOM);
       }
     } on http.ClientException catch (e) {
       isLoading.value = false;
+      print("❌ Network Error: ${e.toString()}");
       Get.snackbar("Network Error", "Please check your internet connection.",
           snackPosition: SnackPosition.BOTTOM);
     } catch (error) {
       isLoading.value = false;
+      print("❌ Unexpected Error: ${error.toString()}");
       Get.snackbar("Error", "An error occurred. Please try again.",
           snackPosition: SnackPosition.BOTTOM);
     }

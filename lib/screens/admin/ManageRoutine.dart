@@ -60,8 +60,6 @@ class _ManageRoutineState extends State<ManageRoutine> {
       appBar: PreferredSize(
         preferredSize: Size.fromHeight(60),
         child: AdminTopNavBar(
-          onNotificationTap: _onNotificationTap,
-          onProfileTap: _onProfileTap,
         ),
       ),
       body: Container(

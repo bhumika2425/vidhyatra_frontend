@@ -16,25 +16,47 @@ class AdminNavBar extends StatelessWidget {
     return Container(
       width: 250,
       decoration: BoxDecoration(
-        color: Colors.white,
+        color: Color(0xFF053985),
         border: Border(
-          right: BorderSide(
-            color: Colors.grey,  // You can change the color
-            width: 2,            // You can set the width of the border
+          top: BorderSide(
+            color: Colors.white,  // You can change the color
+            width: 3,            // You can set the width of the border
           ),
         ),
       ),
-      child: Column(
-        children: [
-          SizedBox(height: 20),
-          _buildNavItem(Icons.dashboard, "Dashboard", 0),
-          _buildNavItem(Icons.event, "Manage Events", 1),
-          _buildNavItem(Icons.feedback, "User Feedback", 2),
-          _buildNavItem(Icons.account_box_rounded, "Professors", 3),
-          _buildNavItem(Icons.supervisor_account_rounded, "Students", 4),
-          _buildNavItem(Icons.money, "Fees", 5),
-          _buildNavItem(Icons.schedule_outlined, "Manage Routine", 6),
-        ],
+      child: Padding(
+        padding: const EdgeInsets.symmetric(vertical: 18.0, horizontal: 20),
+        child: Column(
+          // crossAxisAlignment: CrossAxisAlignment.center,
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          children: [
+            Column(
+              children: [
+                _buildNavItem(Icons.dashboard, "Dashboard", 0),
+                _buildNavItem(Icons.event, "Manage Events", 1),
+                _buildNavItem(Icons.feedback, "User Feedback", 2),
+                _buildNavItem(Icons.account_box_rounded, "Professors", 3),
+                _buildNavItem(Icons.supervisor_account_rounded, "Students", 4),
+                _buildNavItem(Icons.money, "Fees", 5),
+                _buildNavItem(Icons.schedule_outlined, "Manage Routine", 6),
+              ],
+            ),
+            Row(
+              children: [
+                Container(
+                  height: 60,
+                  width: 60,
+                  decoration: BoxDecoration(
+                    color: Colors.grey,
+                    borderRadius: BorderRadius.circular(50)
+                  ),
+                ),
+                SizedBox(width: 15),
+                Text('Admin', style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold, fontSize: 20),)
+              ],
+            )
+          ],
+        ),
       ),
     );
   }
@@ -50,10 +72,9 @@ class AdminNavBar extends StatelessWidget {
         child: Row(
           mainAxisAlignment: MainAxisAlignment.start,
           children: [
-            SizedBox(width: 20),
-            Icon(icon, color: Colors.black),
+            Icon(icon, color: Colors.white),
             SizedBox(width: 15),
-            Text(title, style: TextStyle(color: Colors.black, fontSize: 16)),
+            Text(title, style: TextStyle(color: Colors.white, fontSize: 16)),
           ],
         ),
       ),

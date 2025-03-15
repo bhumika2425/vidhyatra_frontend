@@ -94,11 +94,6 @@ class _WelcomeScreenState extends State<WelcomeScreen> {
                   child: Text('Get Started', style: TextStyle(fontWeight: FontWeight.bold),),
                 ),
                 SizedBox(height: 30),
-                TextButton(onPressed: (){
-                  Get.to(AdminDashboard());
-
-                }, child: Text("Admin")),
-                SizedBox(height: 30),
                 // Dots Indicator
                 Row(
                   mainAxisAlignment: MainAxisAlignment.center,
