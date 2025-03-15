@@ -3,14 +3,12 @@ import 'package:http/http.dart' as http;
 import 'package:vidhyatra_flutter/constants/api_endpoints.dart';
 import 'dart:convert';
 import '../models/EventsModel.dart';
-import '../models/FeesModel.dart';
 import 'LoginController.dart'; // Assuming LoginController is located here
 
 class EventController extends GetxController {
   var events = <Event>[].obs; // Observable list to store fees
   var isLoading = true.obs; // Observable for loading state
   var errorMessage = ''.obs; // Observable for error messages
-  Rx<Fee?> selectedFee = Rx<Fee?>(null);
 
   // Reference to LoginController to access the token
   final LoginController loginController = Get.find<LoginController>();
@@ -18,7 +16,6 @@ class EventController extends GetxController {
   @override
   void onInit() {
     super.onInit();
-    print("EventController initialized, fetching events...");
     fetchEvents(); // Automatically fetch events when the controller is initialized
   }
 

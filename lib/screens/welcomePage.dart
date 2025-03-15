@@ -1,7 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:carousel_slider/carousel_slider.dart';
-import 'package:get/get.dart';
-import 'package:vidhyatra_flutter/screens/admin/admin_dashboard.dart';
 import 'package:vidhyatra_flutter/screens/login.dart';
 
 class WelcomeScreen extends StatefulWidget {

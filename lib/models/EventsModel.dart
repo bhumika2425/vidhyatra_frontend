@@ -39,13 +39,11 @@ class Event {
   // Convert Event object to JSON
   Map<String, dynamic> toJson() {
     return {
-      'event_id': eventId,
       'title': title,
       'description': description,
       'venue': venue,
       'event_date': eventDate,
       'event_start_time': eventStartTime, // Nullable field
-      'created_by': createdBy,
       'created_at': createdAt,
       'updated_at': updatedAt,
     };

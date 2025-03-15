@@ -3,7 +3,7 @@ import 'package:get/get.dart';
 import 'package:vidhyatra_flutter/screens/admin/ManageRoutine.dart';
 // import 'package:vidhyatra_flutter/screens/admin/ManageRoutine.dart';
 import 'package:vidhyatra_flutter/screens/admin/admin_dashboard.dart';
-import 'package:vidhyatra_flutter/screens/admin/event_management.dart';
+import 'package:vidhyatra_flutter/screens/admin/event_management/view/event_management.dart';
 // import 'package:vidhyatra_flutter/screens/admin/event_management.dart';
 
 class AdminNavBar extends StatelessWidget {

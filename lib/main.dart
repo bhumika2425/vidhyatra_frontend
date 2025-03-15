@@ -6,7 +6,8 @@ import 'package:vidhyatra_flutter/screens/FeesScreen.dart';
 import 'package:vidhyatra_flutter/screens/FriendsScreen.dart';
 import 'package:vidhyatra_flutter/screens/StudentSetting.dart';
 import 'package:vidhyatra_flutter/screens/admin/admin_dashboard.dart';
-import 'package:vidhyatra_flutter/screens/admin/event_management.dart';
+import 'package:vidhyatra_flutter/screens/admin/event_management/controller/event_posting_controller.dart';
+import 'package:vidhyatra_flutter/screens/admin/event_management/view/event_management.dart';
 import 'package:vidhyatra_flutter/screens/blog_posting_page.dart';
 import 'package:vidhyatra_flutter/screens/calendar.dart';
 import 'package:vidhyatra_flutter/screens/chat_page.dart';
@@ -17,11 +18,14 @@ import 'package:vidhyatra_flutter/screens/login.dart';
 import 'package:vidhyatra_flutter/screens/register.dart';
 import 'package:vidhyatra_flutter/screens/student_profile_page.dart';
 import 'package:vidhyatra_flutter/screens/welcomePage.dart';
-
+import 'controllers/LoginController.dart';
 import 'controllers/ProfileController.dart';
 
 void main() {
+  Get.put(LoginController());
   Get.put(ProfileController()); // Ensures ProfileController is available globally
+  Get.put(EventPostingController());
+
   runApp(VidhyatraApp());
 }
 
