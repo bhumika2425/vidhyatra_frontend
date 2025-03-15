@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
+import '../../models/EventsModel.dart';
 import 'admin_navbar.dart';
 import 'admin_top_narbar.dart';
 
@@ -18,24 +20,31 @@ class _ManageEventState extends State<ManageEvent> {
   final TextEditingController _dateController = TextEditingController();
   final TextEditingController _startTimeController = TextEditingController();
 
+  final EventController eventController = Get.find<EventController>();
+
   void _onNavItemSelected(int index) {
     setState(() {
       selectedIndex = index;
     });
   }
 
-  void _onNotificationTap() {
-    // Handle notification tap
-  }
-
-  void _onProfileTap() {
-    // Handle profile tap
-  }
-
   void _submitForm() {
     if (_formKey.currentState!.validate()) {
-      // Handle form submission
-      print("Event Created: ${_nameController.text}");
+      // Prepare event data and create an Event instance
+      Event newEvent = Event(
+        eventId: 0,  // Set the event ID as needed (you can set it to 0 if it's new)
+        title: _nameController.text,
+        description: _descriptionController.text,
+        venue: _locationController.text,
+        eventDate: _dateController.text,
+        eventStartTime: _startTimeController.text.isEmpty ? null : _startTimeController.text, // Nullable
+        createdBy: 1,  // Replace with the actual creator ID (e.g., logged-in user ID)
+        createdAt: DateTime.now().toIso8601String(),  // Set current timestamp for createdAt
+        updatedAt: DateTime.now().toIso8601String(),  // Set current timestamp for updatedAt
+      );
+
+      // Call the postEvent method from EventController
+      eventController.postEvent(newEvent);
     }
   }
 
