@@ -1,15 +1,16 @@
 class ApiEndPoints{
-  // static const baseUrl = "http://192.168.1.12:3001";
-  static const baseUrl = "http://10.0.2.2:3001";
+  static const baseUrl = "http://192.168.1.6:3001";
+  // static const baseUrl = "http://10.0.2.2:3001";
   // static const baseUrl = "http://127.0.0.1:3001";
-  //authentication
+
+  // authentication
   static const login = "${baseUrl}/api/auth/login";
 
   static const register = "${baseUrl}/api/auth/register";
   //blog
   static const getAllBlogs = "${baseUrl}/api/blog/all";
 
-  static const postBlogs= "${baseUrl}/api/blog/post";
+  static const postBlogs= "${baseUrl}/api/blog/post"; 
 
   static const fetchProfileData ="${baseUrl}/api/profile/";
   //feedback
@@ -36,12 +37,11 @@ class ApiEndPoints{
 
   static const getFriendRequest = "${baseUrl}/api/friendRequest/friend-requests";
 
-
-
-
   // fees
 static const getAllFees = "${baseUrl}/api/collegeFees/fees";
 
+// get students
+static const getStudents= "${baseUrl}/api/auth/students";
 
 
 // esewa
