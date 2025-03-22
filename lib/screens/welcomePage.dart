@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:carousel_slider/carousel_slider.dart';
+import 'package:vidhyatra_flutter/screens/another_page.dart';
 import 'package:vidhyatra_flutter/screens/login.dart';
 
 class WelcomeScreen extends StatefulWidget {
@@ -93,6 +94,26 @@ class _WelcomeScreenState extends State<WelcomeScreen> {
                 ),
                 SizedBox(height: 30),
                 // Dots Indicator
+                ElevatedButton(
+                  onPressed: () {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(builder: (context) => TryScreen()),
+                    );
+                  },
+                  style: ElevatedButton.styleFrom(
+                    padding: EdgeInsets.symmetric(horizontal: 40, vertical: 15),
+                    foregroundColor: Colors.white,
+                    backgroundColor: Color(0xFF971F20), // Your deep red theme color
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(30),
+                    ),
+                  ),
+                  child: Text('Explore More', style: TextStyle(fontWeight: FontWeight.bold)),
+                ),
+
+                SizedBox(height: 30),
+
                 Row(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: List.generate(images.length, (index) {

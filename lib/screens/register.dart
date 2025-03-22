@@ -87,273 +87,267 @@ class _RegisterPageState extends State<RegisterPage> with SingleTickerProviderSt
     return Scaffold(
       body: Container(
         decoration: BoxDecoration(
-          gradient: LinearGradient(
-            colors: [Colors.white, Color(0xFF971F20)],
-            begin: Alignment.topLeft,
-            end: Alignment.bottomRight,
-          ),
+          // gradient: LinearGradient(
+          //   colors: [Colors.white, Color(0xFF971F20)],
+          //   begin: Alignment.topLeft,
+          //   end: Alignment.bottomRight,
+          // ),
+          color: Colors.white,
         ),
         child: Center(
           child: SingleChildScrollView(
             child: Padding(
               padding: const EdgeInsets.symmetric(horizontal: 24.0),
-              child: Card(
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(20),
-                ),
-                elevation: 8,
-                color: Colors.white,
-                child: Padding(
-                  padding: const EdgeInsets.all(24.0),
-                  child: Form(
-                    key: _formKey,
-                    child: Column(
-                      mainAxisSize: MainAxisSize.min,
-                      children: [
-                        TweenAnimationBuilder(
-                          tween: Tween<double>(begin: 0.8, end: 1.0),
-                          duration: Duration(seconds: 2),
-                          curve: Curves.easeInOut,
-                          builder: (context, scale, child) {
-                            return Transform.scale(
-                              scale: scale,
-                              child: Image.asset(
-                                'assets/Vidhyatra.png',
-                                height: 120,
-                              ),
-                            );
+              child: Padding(
+                padding: const EdgeInsets.all(24.0),
+                child: Form(
+                  key: _formKey,
+                  child: Column(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      TweenAnimationBuilder(
+                        tween: Tween<double>(begin: 0.8, end: 1.0),
+                        duration: Duration(seconds: 2),
+                        curve: Curves.easeInOut,
+                        builder: (context, scale, child) {
+                          return Transform.scale(
+                            scale: scale,
+                            child: Image.asset(
+                              'assets/Vidhyatra.png',
+                              height: 120,
+                            ),
+                          );
+                        },
+                      ),
+                      SizedBox(height: 10),
+                      Text(
+                        "Register for Vidhyatra",
+                        style: TextStyle(
+                          fontSize: 26,
+                          fontWeight: FontWeight.bold,
+                          color: Color(0xFF971F20),
+                        ),
+                      ),
+                      SizedBox(height: 5),
+                      Text(
+                        "Create your account",
+                        style: TextStyle(color: Colors.black87),
+                      ),
+                      SizedBox(height: 20),
+                      SlideTransition(
+                        position: Tween<Offset>(begin: Offset(0, 1), end: Offset(0, 0))
+                            .animate(_animationController),
+                        child: TextFormField(
+                          decoration: InputDecoration(
+                            labelText: 'Full Name',
+                            labelStyle: TextStyle(color: Colors.black),
+                            prefixIcon: Icon(Icons.person_outline, color: Colors.black),
+                            border: OutlineInputBorder(
+                              borderRadius: BorderRadius.circular(12.0),
+                              borderSide: BorderSide(color: Colors.black),
+                            ),
+                          ),
+                          style: TextStyle(color: Colors.black),
+                          onChanged: (value) => name = value,
+                          validator: (value) => value == null || value.isEmpty
+                              ? 'Enter your full name'
+                              : null,
+                        ),
+                      ),
+                      SizedBox(height: 20),
+                      SlideTransition(
+                        position: Tween<Offset>(begin: Offset(0, 1), end: Offset(0, 0))
+                            .animate(_animationController),
+                        child: TextFormField(
+                          decoration: InputDecoration(
+                            labelText: 'Email',
+                            labelStyle: TextStyle(color: Colors.black),
+                            prefixIcon: Icon(Icons.email_outlined, color: Colors.black),
+                            border: OutlineInputBorder(
+                              borderRadius: BorderRadius.circular(12.0),
+                              borderSide: BorderSide(color: Colors.black),
+                            ),
+                          ),
+                          style: TextStyle(color: Colors.black),
+                          onChanged: (value) => email = value,
+                          validator: (value) {
+                            if (value == null || value.isEmpty) {
+                              return 'Please enter your email';
+                            }
+                            return null;
                           },
                         ),
-                        SizedBox(height: 10),
-                        Text(
-                          "Register for Vidhyatra",
-                          style: TextStyle(
-                            fontSize: 26,
-                            fontWeight: FontWeight.bold,
-                            color: Color(0xFF971F20),
-                          ),
-                        ),
-                        SizedBox(height: 5),
-                        Text(
-                          "Create your account",
-                          style: TextStyle(color: Colors.black87),
-                        ),
-                        SizedBox(height: 20),
-                        SlideTransition(
-                          position: Tween<Offset>(begin: Offset(0, 1), end: Offset(0, 0))
-                              .animate(_animationController),
-                          child: TextFormField(
-                            decoration: InputDecoration(
-                              labelText: 'Full Name',
-                              labelStyle: TextStyle(color: Colors.black),
-                              prefixIcon: Icon(Icons.person_outline, color: Colors.black),
-                              border: OutlineInputBorder(
-                                borderRadius: BorderRadius.circular(12.0),
-                                borderSide: BorderSide(color: Colors.black),
-                              ),
+                      ),
+                      SizedBox(height: 20),
+                      SlideTransition(
+                        position: Tween<Offset>(begin: Offset(0, 1), end: Offset(0, 0))
+                            .animate(_animationController),
+                        child: TextFormField(
+                          decoration: InputDecoration(
+                            labelText: 'College ID',
+                            labelStyle: TextStyle(color: Colors.black),
+                            prefixIcon: Icon(Icons.school_outlined, color: Colors.black),
+                            border: OutlineInputBorder(
+                              borderRadius: BorderRadius.circular(12.0),
+                              borderSide: BorderSide(color: Colors.black),
                             ),
-                            style: TextStyle(color: Colors.black),
-                            onChanged: (value) => name = value,
-                            validator: (value) => value == null || value.isEmpty
-                                ? 'Enter your full name'
-                                : null,
                           ),
-                        ),
-                        SizedBox(height: 20),
-                        SlideTransition(
-                          position: Tween<Offset>(begin: Offset(0, 1), end: Offset(0, 0))
-                              .animate(_animationController),
-                          child: TextFormField(
-                            decoration: InputDecoration(
-                              labelText: 'Email',
-                              labelStyle: TextStyle(color: Colors.black),
-                              prefixIcon: Icon(Icons.email_outlined, color: Colors.black),
-                              border: OutlineInputBorder(
-                                borderRadius: BorderRadius.circular(12.0),
-                                borderSide: BorderSide(color: Colors.black),
-                              ),
-                            ),
-                            style: TextStyle(color: Colors.black),
-                            onChanged: (value) => email = value,
-                            validator: (value) {
-                              if (value == null || value.isEmpty) {
-                                return 'Please enter your email';
-                              }
-                              return null;
-                            },
-                          ),
-                        ),
-                        SizedBox(height: 20),
-                        SlideTransition(
-                          position: Tween<Offset>(begin: Offset(0, 1), end: Offset(0, 0))
-                              .animate(_animationController),
-                          child: TextFormField(
-                            decoration: InputDecoration(
-                              labelText: 'College ID',
-                              labelStyle: TextStyle(color: Colors.black),
-                              prefixIcon: Icon(Icons.school_outlined, color: Colors.black),
-                              border: OutlineInputBorder(
-                                borderRadius: BorderRadius.circular(12.0),
-                                borderSide: BorderSide(color: Colors.black),
-                              ),
-                            ),
-                            style: TextStyle(color: Colors.black),
-                            onChanged: (value) => collegeId = value,
-                            validator: (value) {
-                              if (value == null || value.isEmpty) {
-                                return 'Please enter your college ID';
-                              }
-                              return null;
-                            },
-                          ),
-                        ),
-                        SizedBox(height: 20),
-                        // Dropdown for Role selection
-                        SlideTransition(
-                          position: Tween<Offset>(begin: Offset(0, 1), end: Offset(0, 0))
-                              .animate(_animationController),
-                          child: DropdownButtonFormField<String>(
-                            value: role,
-                            decoration: InputDecoration(
-                              labelText: 'Role',
-                              labelStyle: TextStyle(color: Colors.black),
-                              prefixIcon: Icon(Icons.person, color: Colors.black),
-                              border: OutlineInputBorder(
-                                borderRadius: BorderRadius.circular(12.0),
-                                borderSide: BorderSide(color: Colors.black),
-                              ),
-                            ),
-                            items: ['Student', 'Teacher']
-                                .map((roleValue) => DropdownMenuItem<String>(
-                              value: roleValue,
-                              child: Text(roleValue),
-                            ))
-                                .toList(),
-                            onChanged: (newValue) {
-                              setState(() {
-                                role = newValue!;
-                              });
-                            },
-                            validator: (value) {
-                              if (value == null || value.isEmpty) {
-                                return 'Please select a role';
-                              }
-                              return null;
-                            },
-                          ),
-                        ),
-                        SizedBox(height: 20),
-                        SlideTransition(
-                          position: Tween<Offset>(begin: Offset(0, 1), end: Offset(0, 0))
-                              .animate(_animationController),
-                          child: TextFormField(
-                            decoration: InputDecoration(
-                              labelText: 'Password',
-                              labelStyle: TextStyle(color: Colors.black),
-                              prefixIcon: Icon(Icons.lock_outline, color: Colors.black),
-                              suffixIcon: IconButton(
-                                icon: Icon(
-                                  _obscurePassword ? Icons.visibility_off : Icons.visibility,
-                                  color: Colors.black,
-                                ),
-                                onPressed: () {
-                                  setState(() {
-                                    _obscurePassword = !_obscurePassword;
-                                  });
-                                },
-                              ),
-                              border: OutlineInputBorder(
-                                borderRadius: BorderRadius.circular(12.0),
-                                borderSide: BorderSide(color: Colors.black),
-                              ),
-                            ),
-                            style: TextStyle(color: Colors.black),
-                            obscureText: _obscurePassword,
-                            onChanged: (value) => password = value,
-                            validator: (value) {
-                              if (value == null || value.isEmpty) {
-                                return 'Please enter your password';
-                              }
-                              return null;
-                            },
-                          ),
-                        ),
-                        SizedBox(height: 20),
-                        SlideTransition(
-                          position: Tween<Offset>(begin: Offset(0, 1), end: Offset(0, 0))
-                              .animate(_animationController),
-                          child: TextFormField(
-                            decoration: InputDecoration(
-                              labelText: 'Confirm Password',
-                              labelStyle: TextStyle(color: Colors.black),
-                              prefixIcon: Icon(Icons.lock_outline, color: Colors.black),
-                              suffixIcon: IconButton(
-                                icon: Icon(
-                                  _obscureConfirmPassword ? Icons.visibility_off : Icons.visibility,
-                                  color: Colors.black,
-                                ),
-                                onPressed: () {
-                                  setState(() {
-                                    _obscureConfirmPassword = !_obscureConfirmPassword;
-                                  });
-                                },
-                              ),
-                              border: OutlineInputBorder(
-                                borderRadius: BorderRadius.circular(12.0),
-                                borderSide: BorderSide(color: Colors.black),
-                              ),
-                            ),
-                            style: TextStyle(color: Colors.black),
-                            obscureText: _obscureConfirmPassword,
-                            onChanged: (value) => confirmPassword = value,
-                            validator: (value) {
-                              if (value == null || value.isEmpty) {
-                                return 'Please confirm your password';
-                              }
-                              if (value != password) {
-                                return 'Passwords do not match';
-                              }
-                              return null;
-                            },
-                          ),
-                        ),
-                        SizedBox(height: 20),
-                        ElevatedButton(
-                          onPressed: () {
-                            registerStudent();
+                          style: TextStyle(color: Colors.black),
+                          onChanged: (value) => collegeId = value,
+                          validator: (value) {
+                            if (value == null || value.isEmpty) {
+                              return 'Please enter your college ID';
+                            }
+                            return null;
                           },
-                          style: ElevatedButton.styleFrom(
-                            backgroundColor: Color(0xFF971F20), // Set the background color to black
-                            foregroundColor: Colors.white, // Set the text color to white
-                            padding: EdgeInsets.symmetric(vertical: 15, horizontal: 50),
-                            shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
-                          ),
-                          child: Text(
-                            'Register',
-                            style: TextStyle(fontSize: 18),
-                          ),
                         ),
-                        SizedBox(height: 20),
-                        Row(
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          children: [
-                            Text(
-                              'Already have an account? ',
-                              style: TextStyle(color: Colors.black),
+                      ),
+                      SizedBox(height: 20),
+                      // Dropdown for Role selection
+                      SlideTransition(
+                        position: Tween<Offset>(begin: Offset(0, 1), end: Offset(0, 0))
+                            .animate(_animationController),
+                        child: DropdownButtonFormField<String>(
+                          value: role,
+                          decoration: InputDecoration(
+                            labelText: 'Role',
+                            labelStyle: TextStyle(color: Colors.black),
+                            prefixIcon: Icon(Icons.person, color: Colors.black),
+                            border: OutlineInputBorder(
+                              borderRadius: BorderRadius.circular(12.0),
+                              borderSide: BorderSide(color: Colors.black),
                             ),
-                            GestureDetector(
-                              onTap: () {
-                                Navigator.pushNamed(context, '/login');
+                          ),
+                          items: ['Student', 'Teacher']
+                              .map((roleValue) => DropdownMenuItem<String>(
+                            value: roleValue,
+                            child: Text(roleValue),
+                          ))
+                              .toList(),
+                          onChanged: (newValue) {
+                            setState(() {
+                              role = newValue!;
+                            });
+                          },
+                          validator: (value) {
+                            if (value == null || value.isEmpty) {
+                              return 'Please select a role';
+                            }
+                            return null;
+                          },
+                        ),
+                      ),
+                      SizedBox(height: 20),
+                      SlideTransition(
+                        position: Tween<Offset>(begin: Offset(0, 1), end: Offset(0, 0))
+                            .animate(_animationController),
+                        child: TextFormField(
+                          decoration: InputDecoration(
+                            labelText: 'Password',
+                            labelStyle: TextStyle(color: Colors.black),
+                            prefixIcon: Icon(Icons.lock_outline, color: Colors.black),
+                            suffixIcon: IconButton(
+                              icon: Icon(
+                                _obscurePassword ? Icons.visibility_off : Icons.visibility,
+                                color: Colors.black,
+                              ),
+                              onPressed: () {
+                                setState(() {
+                                  _obscurePassword = !_obscurePassword;
+                                });
                               },
-                              child: Text(
-                                'Login here',
-                                style: TextStyle( fontWeight: FontWeight.bold, color: Color(0xFF971F20)),
-                              ),
                             ),
-                          ],
+                            border: OutlineInputBorder(
+                              borderRadius: BorderRadius.circular(12.0),
+                              borderSide: BorderSide(color: Colors.black),
+                            ),
+                          ),
+                          style: TextStyle(color: Colors.black),
+                          obscureText: _obscurePassword,
+                          onChanged: (value) => password = value,
+                          validator: (value) {
+                            if (value == null || value.isEmpty) {
+                              return 'Please enter your password';
+                            }
+                            return null;
+                          },
                         ),
-                      ],
-                    ),
+                      ),
+                      SizedBox(height: 20),
+                      SlideTransition(
+                        position: Tween<Offset>(begin: Offset(0, 1), end: Offset(0, 0))
+                            .animate(_animationController),
+                        child: TextFormField(
+                          decoration: InputDecoration(
+                            labelText: 'Confirm Password',
+                            labelStyle: TextStyle(color: Colors.black),
+                            prefixIcon: Icon(Icons.lock_outline, color: Colors.black),
+                            suffixIcon: IconButton(
+                              icon: Icon(
+                                _obscureConfirmPassword ? Icons.visibility_off : Icons.visibility,
+                                color: Colors.black,
+                              ),
+                              onPressed: () {
+                                setState(() {
+                                  _obscureConfirmPassword = !_obscureConfirmPassword;
+                                });
+                              },
+                            ),
+                            border: OutlineInputBorder(
+                              borderRadius: BorderRadius.circular(12.0),
+                              borderSide: BorderSide(color: Colors.black),
+                            ),
+                          ),
+                          style: TextStyle(color: Colors.black),
+                          obscureText: _obscureConfirmPassword,
+                          onChanged: (value) => confirmPassword = value,
+                          validator: (value) {
+                            if (value == null || value.isEmpty) {
+                              return 'Please confirm your password';
+                            }
+                            if (value != password) {
+                              return 'Passwords do not match';
+                            }
+                            return null;
+                          },
+                        ),
+                      ),
+                      SizedBox(height: 20),
+                      ElevatedButton(
+                        onPressed: () {
+                          registerStudent();
+                        },
+                        style: ElevatedButton.styleFrom(
+                          backgroundColor: Color(0xFF971F20), // Set the background color to black
+                          foregroundColor: Colors.white, // Set the text color to white
+                          padding: EdgeInsets.symmetric(vertical: 15, horizontal: 50),
+                          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+                        ),
+                        child: Text(
+                          'Register',
+                          style: TextStyle(fontSize: 18),
+                        ),
+                      ),
+                      SizedBox(height: 20),
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          Text(
+                            'Already have an account? ',
+                            style: TextStyle(color: Colors.black),
+                          ),
+                          GestureDetector(
+                            onTap: () {
+                              Navigator.pushNamed(context, '/login');
+                            },
+                            child: Text(
+                              'Login here',
+                              style: TextStyle( fontWeight: FontWeight.bold, color: Color(0xFF971F20)),
+                            ),
+                          ),
+                        ],
+                      ),
+                    ],
                   ),
                 ),
               ),
