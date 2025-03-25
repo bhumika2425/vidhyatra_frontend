@@ -1,10 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:vidhyatra_flutter/screens/admin/ManageRoutine.dart';
-// import 'package:vidhyatra_flutter/screens/admin/ManageRoutine.dart';
 import 'package:vidhyatra_flutter/screens/admin/admin_dashboard.dart';
 import 'package:vidhyatra_flutter/screens/admin/admin_students/view/admin_students_page.dart';
 import 'package:vidhyatra_flutter/screens/admin/event_management/view/event_management.dart';
+import 'package:vidhyatra_flutter/screens/admin/fees_page/view/fees_page.dart';
 import 'package:vidhyatra_flutter/screens/admin/professors_page/view/professor_page.dart';
 // import 'package:vidhyatra_flutter/screens/admin/event_management.dart';
 
@@ -100,11 +100,11 @@ class AdminNavBar extends StatelessWidget {
       case 4:
         Get.to(() => AdminStudentsPage()); // Navigate to Students page
         break;
-      case 5:
-        // Get.to(() => FeesPage()); // Navigate to Fees page
-        break;
+      // case 5:
+      //   Get.to(() => FeesPage()); // Navigate to Fees page
+      //   break;
       case 6:
-      Get.to(() => ManageRoutine()); // Navigate to Fees page
+      Get.to(() => ManageRoutine()); // Navigate to Manage routine page
         break;
       default:
         // Get.to(() => DashboardPage()); // Default fallback to Dashboard

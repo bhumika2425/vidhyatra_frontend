@@ -2,42 +2,47 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:vidhyatra_flutter/screens/admin/admin_navbar.dart';
 import 'package:vidhyatra_flutter/screens/admin/admin_top_narbar.dart';
-import 'package:vidhyatra_flutter/screens/admin/professors_page/controller/professor_controller.dart';
+import 'package:vidhyatra_flutter/screens/admin/fees_page/controller/fees_controller.dart';
 
-class ProfessorsPage extends StatelessWidget {
-  final ProfessorController controller = Get.put(ProfessorController());
+import '../../../../models/FeesModel.dart';
+// import 'package:vidhyatra_flutter/screens/admin/fees_page/model/fee_model.dart';
 
-  ProfessorsPage({super.key});
 
-  void _showAddProfessorDialog(BuildContext context) {
-    final nameController = TextEditingController();
-    final emailController = TextEditingController();
-    final collegeIdController = TextEditingController();
-    final roleController = TextEditingController();
+class FeesPage extends StatelessWidget {
+  final FeeController controller = Get.put(FeeController());
+
+  FeesPage({super.key});
+
+  void _showAddFeeDialog(BuildContext context) {
+    final feeTypeController = TextEditingController();
+    final feeDescriptionController = TextEditingController();
+    final feeAmountController = TextEditingController();
+    final dueDateController = TextEditingController();
 
     showDialog(
       context: context,
       builder: (context) => AlertDialog(
-        title: const Text('Add Professor'),
+        title: const Text('Add Fee'),
         content: SingleChildScrollView(
           child: Column(
             mainAxisSize: MainAxisSize.min,
             children: [
               TextField(
-                controller: nameController,
-                decoration: const InputDecoration(labelText: 'Name'),
+                controller: feeTypeController,
+                decoration: const InputDecoration(labelText: 'Fee Type'),
               ),
               TextField(
-                controller: emailController,
-                decoration: const InputDecoration(labelText: 'Email'),
+                controller: feeDescriptionController,
+                decoration: const InputDecoration(labelText: 'Fee Description'),
               ),
               TextField(
-                controller: collegeIdController,
-                decoration: const InputDecoration(labelText: 'College ID'),
+                controller: feeAmountController,
+                decoration: const InputDecoration(labelText: 'Fee Amount'),
+                keyboardType: TextInputType.number,
               ),
               TextField(
-                controller: roleController,
-                decoration: const InputDecoration(labelText: 'Role'),
+                controller: dueDateController,
+                decoration: const InputDecoration(labelText: 'Due Date (YYYY-MM-DD)'),
               ),
             ],
           ),
@@ -49,9 +54,16 @@ class ProfessorsPage extends StatelessWidget {
           ),
           ElevatedButton(
             onPressed: () {
+              final fee = Fee(
+                feeType: feeTypeController.text,
+                feeDescription: feeDescriptionController.text,
+                feeAmount: double.parse(feeAmountController.text),
+                dueDate: dueDateController.text,
+              );
+              controller.addFee(fee);
               Navigator.pop(context);
             },
-            child: const Text('Add'),
+            child: const Text('Add Fee'),
           ),
         ],
       ),
@@ -63,20 +75,17 @@ class ProfessorsPage extends StatelessWidget {
     return Scaffold(
       appBar: PreferredSize(
         preferredSize: const Size.fromHeight(60),
-        child: AdminTopNavBar(), // Top Navbar
+        child: AdminTopNavBar(),
       ),
       body: Row(
         children: [
-          AdminNavBar(onTap: (index) {
-            // Handle sidebar navigation if needed
-          }),
+          AdminNavBar(onTap: (index) {}),
           Expanded(
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                // ✅ Add title with same style as "Manage Events"
                 const Text(
-                  "Professors",
+                  "Fees",
                   style: TextStyle(
                     fontSize: 22,
                     fontWeight: FontWeight.bold,
@@ -84,8 +93,6 @@ class ProfessorsPage extends StatelessWidget {
                   ),
                 ),
                 const SizedBox(height: 20),
-
-                // ✅ Display the list of professors
                 Expanded(
                   child: Obx(() {
                     if (controller.isLoading.value) {
@@ -98,26 +105,26 @@ class ProfessorsPage extends StatelessWidget {
                           children: [
                             Text(controller.errorMessage.value, style: const TextStyle(color: Colors.red)),
                             ElevatedButton(
-                              onPressed: () => controller.fetchProfessor(),
+                              onPressed: () => controller.fetchFees(),
                               child: const Text('Retry'),
                             ),
                           ],
                         ),
                       );
                     }
-                    if (controller.professors.isEmpty) {
-                      return const Center(child: Text('No professors found'));
+                    if (controller.fees.isEmpty) {
+                      return const Center(child: Text('No fees found'));
                     }
                     return RefreshIndicator(
-                      onRefresh: controller.fetchProfessor,
+                      onRefresh: controller.fetchFees,
                       child: ListView.builder(
-                        itemCount: controller.professors.length,
+                        itemCount: controller.fees.length,
                         itemBuilder: (context, index) {
-                          final professor = controller.professors[index];
+                          final fee = controller.fees[index];
                           return ListTile(
-                            title: Text(professor.name),
-                            subtitle: Text(professor.email),
-                            trailing: Text(professor.collegeId),
+                            title: Text(fee.feeType),
+                            subtitle: Text(fee.feeDescription),
+                            trailing: Text('₹${fee.feeAmount}'),
                           );
                         },
                       ),
@@ -130,7 +137,7 @@ class ProfessorsPage extends StatelessWidget {
         ],
       ),
       floatingActionButton: FloatingActionButton(
-        onPressed: () => _showAddProfessorDialog(context),
+        onPressed: () => _showAddFeeDialog(context),
         child: const Icon(Icons.add),
       ),
     );

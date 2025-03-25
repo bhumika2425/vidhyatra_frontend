@@ -49,6 +49,8 @@ static const getStudents= "${baseUrl}/api/auth/students";
 // esewa
 static const initializePaymentWithEsewa = "${baseUrl}/api/payFees/initialize-esewa";
 
+//postfees
+  static const postFees = "${baseUrl}/api/collegeFees/fees";
 
 //calender
   static const postEvents = "${baseUrl}/api/eventCalender/postEvents";
