@@ -16,6 +16,10 @@ class LoginController extends GetxController {
   var userId = 0.obs;
   var isPasswordVisible = false.obs;
 
+  // Toggle password visibility
+  void togglePasswordVisibility() {
+    isPasswordVisible.value = !isPasswordVisible.value; // Toggle the value
+  }
   // Login function
   Future<void> loginUser() async {
     if (emailOrID.value.isEmpty || password.value.isEmpty) {

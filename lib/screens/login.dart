@@ -5,6 +5,7 @@ import '../controllers/LoginController.dart';
 class LoginPage extends StatelessWidget {
   final LoginController loginController = Get.put(LoginController());
 
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -70,39 +71,39 @@ class LoginPage extends StatelessWidget {
                       SizedBox(height: 20),
 
                       // Password Field wrapped in Obx for observing password visibility
-                      Obx(() => TextFormField(
-                        decoration: InputDecoration(
-                          labelText: 'Password',
-                          labelStyle: TextStyle(color: Colors.black),
-                          prefixIcon: Icon(Icons.lock_outline, color: Colors.black),
-                          suffixIcon: IconButton(
-                            icon: Icon(
-                              loginController.password.value.isEmpty
-                                  ? Icons.visibility_off
-                                  : Icons.visibility,
-                              color: Colors.black,
+                      Obx(() {
+                        print("🔍 Obx rebuild - isPasswordVisible: ${loginController.isPasswordVisible.value}");
+                        return TextFormField(
+                          decoration: InputDecoration(
+                            labelText: 'Password',
+                            labelStyle: TextStyle(color: Colors.black),
+                            prefixIcon: Icon(Icons.lock_outline, color: Colors.black),
+                            suffixIcon: IconButton(
+                              icon: Icon(
+                                loginController.isPasswordVisible.value
+                                    ? Icons.visibility
+                                    : Icons.visibility_off,
+                                color: Colors.black,
+                              ),
+                              onPressed: () {
+                                loginController.togglePasswordVisibility();
+                              },
                             ),
-                            onPressed: () {
-                              loginController.password.value =
-                              loginController.password.value.isEmpty
-                                  ? 'newpassword'
-                                  : '';
-                            },
+                            border: OutlineInputBorder(
+                              borderRadius: BorderRadius.circular(12.0),
+                              borderSide: BorderSide(color: Colors.black),
+                            ),
+                            focusedBorder: OutlineInputBorder(
+                              borderRadius: BorderRadius.circular(12.0),
+                              borderSide: BorderSide(color: Color(0xFF971F20)),
+                            ),
                           ),
-                          border: OutlineInputBorder(
-                            borderRadius: BorderRadius.circular(12.0),
-                            borderSide: BorderSide(color: Colors.black),
-                          ),
-                          focusedBorder: OutlineInputBorder(
-                            borderRadius: BorderRadius.circular(12.0),
-                            borderSide: BorderSide(color: Color(0xFF971F20)), // Red when focused
-                          ),
-                        ),
-                        style: TextStyle(color: Colors.black),
-                        obscureText: loginController.password.value.isEmpty,
-                        onChanged: (value) => loginController.password.value = value,
-                        validator: (value) => value == null || value.isEmpty ? 'Enter your password' : null,
-                      )),
+                          style: TextStyle(color: Colors.black),
+                          obscureText: !loginController.isPasswordVisible.value, // Should be true (obscured) by default
+                          onChanged: (value) => loginController.password.value = value,
+                          validator: (value) => value == null || value.isEmpty ? 'Enter your password' : null,
+                        );
+                      }),
                       SizedBox(height: 20),
 
                       // Submit Button wrapped in Obx
