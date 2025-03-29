@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:carousel_slider/carousel_slider.dart';
+import 'package:get/get.dart';
 import 'package:vidhyatra_flutter/screens/another_page.dart';
 import 'package:vidhyatra_flutter/screens/login.dart';
+import 'package:vidhyatra_flutter/screens/salesDashborad.dart';
 
 class WelcomeScreen extends StatefulWidget {
   @override
@@ -114,6 +116,11 @@ class _WelcomeScreenState extends State<WelcomeScreen> {
 
                 SizedBox(height: 30),
 
+                TextButton(onPressed: (){
+                  Get.to(SalesDashboard());
+                }, child: Text('try')),
+
+                SizedBox(height: 30),
                 Row(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: List.generate(images.length, (index) {
