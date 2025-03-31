@@ -54,6 +54,7 @@ dependencies:
   get: ^4.6.6
   url_launcher: ^6.3.1
   fl_chart: ^0.70.2
+  google_fonts: ^6.2.1
 
 
 dev_dependencies:
@@ -82,10 +83,8 @@ flutter:
   assets:
     - assets/college_logo.png
     - assets/default_profile.png
+    - assets/login_image.png
     - assets/Vidhyatra.png
-    - assets/homepage1.jpg
-    - assets/homepage2.jpg
-    - assets/homepage3.jpg
     - assets/lock_icon.png
     - assets/forgot_password.png
     - assets/reset_password.png
@@ -93,6 +92,9 @@ flutter:
     - assets/img_1.png
     - assets/img_2.png
     - assets/logo.webp
+    - assets/yayGirl.png
+
+
   #   - images/a_dot_burr.jpeg
   #   - images/a_dot_ham.jpeg
 

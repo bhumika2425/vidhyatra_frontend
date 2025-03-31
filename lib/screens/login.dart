@@ -1,171 +1,248 @@
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:google_fonts/google_fonts.dart';
 import '../controllers/LoginController.dart';
 
 class LoginPage extends StatelessWidget {
   final LoginController loginController = Get.put(LoginController());
 
-
   @override
   Widget build(BuildContext context) {
+    // Get screen size information
+    final screenHeight = MediaQuery.of(context).size.height;
+    final screenWidth = MediaQuery.of(context).size.width;
+
     return Scaffold(
-      body: Container(
-        decoration: BoxDecoration(
-          // gradient: LinearGradient(
-          //   colors: [Colors.white, Color(0xFF971F20)],
-          //
-          //   begin: Alignment.topLeft,
-          //   end: Alignment.bottomRight,
-          // ),
-          color: Colors.white,
-        ),
-        child: Center(
-          child: SingleChildScrollView(
-            child: Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 24.0),
-              child: Padding(
-                padding: const EdgeInsets.all(24.0),
-                child: Form(
-                  child: Column(
-                    mainAxisSize: MainAxisSize.min,
-                    children: [
-                      Image.asset(
-                        'assets/Vidhyatra.png',
-                        height: 120,
-                      ),
-                      SizedBox(height: 10),
-                      Text(
-                        "Welcome to Vidhyatra",
-                        style: TextStyle(
-                          fontSize: 30,
+      backgroundColor: Colors.grey[200],
+      body: SafeArea( // Ensures content respects system UI (notch, status bar)
+        child: SingleChildScrollView(
+          child: Padding(
+            padding: EdgeInsets.symmetric(horizontal: screenWidth * 0.05), // 5% of screen width
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                SizedBox(height: screenHeight * 0.10), // 15% of screen height
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  crossAxisAlignment: CrossAxisAlignment.end,
+                  children: [
+                    Flexible( // Allows text to wrap if needed
+                      child: Text(
+                        'ALREADY\nHAVE\nACCOUNT?',
+                        style: GoogleFonts.poppins(
+                          fontSize: screenWidth * 0.07, // 7% of screen width
                           fontWeight: FontWeight.bold,
-                          color: Color(0xFF971F20),
+                          color: Colors.black,
                         ),
                       ),
-                      SizedBox(height: 5),
-                      Text(
-                        "Login to continue",
-                        style: TextStyle(color: Colors.black87),
+                    ),
+                    Align(
+                      alignment: Alignment.topRight,
+                      child: Image.asset(
+                        'assets/login_image.png',
+                        height: screenHeight * 0.23, // 23% of screen height
+                        width: screenWidth * 0.4, // 40% of screen width
+                        fit: BoxFit.contain,
                       ),
-                      SizedBox(height: 20),
-
-                      // College ID or Email Field
-                      TextFormField(
-                        decoration: InputDecoration(
-                          labelText: 'College ID or Email',
-                          labelStyle: TextStyle(color: Colors.black),
-                          prefixIcon: Icon(Icons.person_outline, color: Colors.black),
-                          border: OutlineInputBorder(
-                            borderRadius: BorderRadius.circular(12.0),
-                            borderSide: BorderSide(color: Colors.black),
-                          ),
-                          focusedBorder: OutlineInputBorder(
-                            borderRadius: BorderRadius.circular(12.0),
-                            borderSide: BorderSide(color: Color(0xFF971F20)), // Red when focused
+                    ),
+                  ],
+                ),
+                SizedBox(height: screenHeight * 0.05), // 5% of screen height
+                Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      'College ID or Email',
+                      style: GoogleFonts.poppins(
+                        fontSize: screenWidth * 0.04, // 4.5% of screen width
+                        color: Colors.grey[600],
+                      ),
+                    ),
+                    // SizedBox(height: screenHeight * 0.01), // 1% of screen height
+                    TextField(
+                      decoration: InputDecoration(
+                        hintText: 'Enter College ID or Email',
+                        hintStyle: TextStyle(
+                          color: Colors.grey[400],
+                          fontFamily: GoogleFonts.poppins().fontFamily,
+                        ),
+                        filled: true,
+                        fillColor: Colors.white,
+                        contentPadding: EdgeInsets.symmetric(
+                          vertical: screenHeight * 0.02, // 2% of screen height
+                          horizontal: screenWidth * 0.05, // 5% of screen width
+                        ),
+                        border: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(12),
+                          borderSide: BorderSide.none,
+                        ),
+                        enabledBorder: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(12),
+                          borderSide: BorderSide.none,
+                        ),
+                        focusedBorder: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(12),
+                          borderSide: BorderSide(
+                            color: Color(0xFF3D7FA4),
+                            width: 2,
                           ),
                         ),
-                        style: TextStyle(color: Colors.black),
-                        onChanged: (value) => loginController.emailOrID.value = value,
-                        validator: (value) => value == null || value.isEmpty ? 'Enter ID or Email' : null,
+                        prefixIcon: Icon(
+                          Icons.person_outline,
+                          color: Colors.grey[400],
+                          size: screenWidth * 0.06, // 6% of screen width
+                        ),
                       ),
-                      SizedBox(height: 20),
-
-                      // Password Field wrapped in Obx for observing password visibility
-                      Obx(() {
-                        print("🔍 Obx rebuild - isPasswordVisible: ${loginController.isPasswordVisible.value}");
-                        return TextFormField(
-                          decoration: InputDecoration(
-                            labelText: 'Password',
-                            labelStyle: TextStyle(color: Colors.black),
-                            prefixIcon: Icon(Icons.lock_outline, color: Colors.black),
-                            suffixIcon: IconButton(
-                              icon: Icon(
-                                loginController.isPasswordVisible.value
-                                    ? Icons.visibility
-                                    : Icons.visibility_off,
-                                color: Colors.black,
+                      cursorColor: Color(0xFF3D7FA4),
+                      onChanged: (value) => loginController.emailOrID.value = value,
+                    ),
+                    SizedBox(height: screenHeight * 0.015), // 1.5% of screen height
+                    Text(
+                      'Password',
+                      style: GoogleFonts.poppins(
+                        fontSize: screenWidth * 0.04, // 4.5% of screen width
+                        color: Colors.grey[600],
+                      ),
+                    ),
+                    // SizedBox(height: screenHeight * 0.01), // 1% of screen height
+                    Obx(() => TextField(
+                      obscureText: !loginController.isPasswordVisible.value,
+                      decoration: InputDecoration(
+                        hintText: 'Enter Password',
+                        hintStyle: TextStyle(
+                          color: Colors.grey[400],
+                          fontFamily: GoogleFonts.poppins().fontFamily,
+                        ),
+                        filled: true,
+                        fillColor: Colors.white,
+                        contentPadding: EdgeInsets.symmetric(
+                          vertical: screenHeight * 0.02, // 2% of screen height
+                          horizontal: screenWidth * 0.05, // 5% of screen width
+                        ),
+                        border: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(12),
+                          borderSide: BorderSide.none,
+                        ),
+                        enabledBorder: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(12),
+                          borderSide: BorderSide.none,
+                        ),
+                        focusedBorder: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(12),
+                          borderSide: BorderSide(
+                            color: Color(0xFF3D7FA4),
+                            width: 2,
+                          ),
+                        ),
+                        prefixIcon: Icon(
+                          Icons.lock_outline,
+                          color: Colors.grey[400],
+                          size: screenWidth * 0.06, // 6% of screen width
+                        ),
+                        suffixIcon: IconButton(
+                          icon: Icon(
+                            loginController.isPasswordVisible.value
+                                ? Icons.visibility
+                                : Icons.visibility_off,
+                            color: Colors.grey[600],
+                            size: screenWidth * 0.06, // 6% of screen width
+                          ),
+                          onPressed: () {
+                            loginController.togglePasswordVisibility();
+                          },
+                        ),
+                      ),
+                      cursorColor: Color(0xFF3D7FA4),
+                      onChanged: (value) => loginController.password.value = value,
+                    )),
+                  ],
+                ),
+                SizedBox(height: screenHeight * 0.03), // 3% of screen height
+                Center(
+                  child: Column(
+                    children: [
+                      Obx(
+                            () => SizedBox(
+                          width: screenWidth * 0.3, // 40% of screen width
+                          child: InkWell(
+                            onTap: loginController.isLoading.value
+                                ? null
+                                : () => loginController.loginUser(),
+                            borderRadius: BorderRadius.circular(30),
+                            child: Container(
+                              padding: EdgeInsets.symmetric(
+                                vertical: screenHeight * 0.02, // 2% of screen height
                               ),
-                              onPressed: () {
-                                loginController.togglePasswordVisibility();
-                              },
-                            ),
-                            border: OutlineInputBorder(
-                              borderRadius: BorderRadius.circular(12.0),
-                              borderSide: BorderSide(color: Colors.black),
-                            ),
-                            focusedBorder: OutlineInputBorder(
-                              borderRadius: BorderRadius.circular(12.0),
-                              borderSide: BorderSide(color: Color(0xFF971F20)),
+                              decoration: BoxDecoration(
+                                color:Color(0xFF186CAC),
+                                borderRadius: BorderRadius.circular(15),
+                              ),
+                              child: Center(
+                                child: Row(
+                                  mainAxisAlignment: MainAxisAlignment.center,
+                                  children: [
+                                    Text(
+                                      'Login',
+                                      style: TextStyle(
+                                        fontSize: screenWidth * 0.05, // 5% of screen width
+                                        color: Colors.white,
+                                        fontWeight: FontWeight.bold,
+                                      ),
+                                    ),
+                                    SizedBox(width: screenWidth * 0.015), // 1.5% of screen width
+                                    // Icon(
+                                    //   CupertinoIcons.right_chevron,
+                                    //   color: Colors.white,
+                                    //   size: screenWidth * 0.06, // 6% of screen width
+                                    // ),
+                                  ],
+                                ),
+                              ),
                             ),
                           ),
-                          style: TextStyle(color: Colors.black),
-                          obscureText: !loginController.isPasswordVisible.value, // Should be true (obscured) by default
-                          onChanged: (value) => loginController.password.value = value,
-                          validator: (value) => value == null || value.isEmpty ? 'Enter your password' : null,
-                        );
-                      }),
-                      SizedBox(height: 20),
-
-                      // Submit Button wrapped in Obx
-                      Obx(() => ElevatedButton(
-                        onPressed: loginController.isLoading.value
-                            ? null
-                            : () {
-                          loginController.loginUser();
-                        },
-                        style: ElevatedButton.styleFrom(
-                          backgroundColor: Color(0xFF971F20),
-                          foregroundColor: Colors.white,
-                          padding: EdgeInsets.symmetric(vertical: 15, horizontal: 50),
-                          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
                         ),
-                        child: loginController.isLoading.value
-                            ? CircularProgressIndicator(color: Colors.white)
-                            : Text('Login', style: TextStyle(fontSize: 18)),
-                      )),
-                      SizedBox(height: 10),
-
-                      // Forgot Password Link
-                      TextButton(
-                        onPressed: () {
-                          Get.toNamed('/forgot_password');
-                        },
+                      ),
+                      SizedBox(height: screenHeight * 0.05), // 5% of screen height
+                      GestureDetector(
+                        onTap: () => Get.toNamed('/forgot_password'),
                         child: Text(
                           'Forgot Password?',
-                          style: TextStyle(
-                            color: Color(0xFF971F20),
-                            fontSize: 14,
+                          style: GoogleFonts.poppins(
+                            fontSize: screenWidth * 0.04, // 4% of screen width
+                            color: Colors.deepOrange,
                           ),
                         ),
                       ),
-
-                      SizedBox(height: 10),
-
-                      // Register Link
+                      SizedBox(height: screenHeight * 0.015), // 1.5% of screen height
                       Row(
                         mainAxisAlignment: MainAxisAlignment.center,
                         children: [
-                          Text("Don't have an account? ",
-                              style: TextStyle(color: Colors.black)),
+                          Text(
+                            'Don’t have an account? ',
+                            style: GoogleFonts.poppins(
+                              fontSize: screenWidth * 0.04, // 4% of screen width
+                              color: Colors.black,
+                            ),
+                          ),
                           GestureDetector(
-                            onTap: () {
-                              Get.toNamed('/register');
-                            },
+                            onTap: () => Get.toNamed('/register'),
                             child: Text(
-                              'Register here',
-                              style: TextStyle(
-                                color: Color(0xFF971F20),
+                              'Register Now',
+                              style: GoogleFonts.poppins(
+                                fontSize: screenWidth * 0.04, // 4% of screen width
+                                color: Colors.deepOrange,
                                 fontWeight: FontWeight.bold,
-                                fontSize: 14,
                               ),
                             ),
                           ),
                         ],
                       ),
+                      SizedBox(height: screenHeight * 0.03), // 3% of screen height
                     ],
                   ),
                 ),
-              ),
+              ],
             ),
           ),
         ),
@@ -173,6 +250,3 @@ class LoginPage extends StatelessWidget {
     );
   }
 }
-
-
-

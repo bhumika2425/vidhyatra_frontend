@@ -5,7 +5,6 @@ import 'package:get/get.dart';
 import 'package:intl/intl.dart'; // Import the intl package for date formatting
 import 'package:table_calendar/table_calendar.dart';
 import 'package:vidhyatra_flutter/controllers/EventController.dart';
-
 import '../models/EventsModel.dart';
 import 'EventDetailsPage.dart';
 
@@ -75,7 +74,7 @@ class _CalendarState extends State<Calendar> {
             },
             borderRadius: BorderRadius.circular(8),
             selectedColor: Colors.white,
-            fillColor: _isSelected[1] ? Colors.green : Color(0xFF971F20),
+            fillColor: _isSelected[1] ? Colors.deepOrange : Color(0xFF3D7FA4),
             color: Colors.black,
             constraints: const BoxConstraints(
               minHeight: 36.0,
@@ -165,21 +164,21 @@ class _CalendarState extends State<Calendar> {
           ),
           calendarStyle: CalendarStyle(
             todayDecoration: BoxDecoration(
-              color: Color(0xFF971F20),
+              color: Colors.green,
               border: Border.all(
-                  color: Color(0xFF971F20), width: 2),
+                  color: Colors.green, width: 2),
             ),
             selectedDecoration: BoxDecoration(
-              color: Color(0xFF971F20),
-              border: Border.all(color: Color(0xFF971F20), width: 2),
+              color: Color(0xFF3D7FA4),
+              border: Border.all(color: Color(0xFF3D7FA4), width: 2),
             ),
             defaultDecoration: BoxDecoration(
               color: Colors.white,
-              border: Border.all(color: Colors.grey, width: 0.5),
+              border: Border.all(color: Colors.grey, width: 1.5),
             ),
             weekendDecoration: BoxDecoration(
               color: Colors.white,
-              border: Border.all(color: Colors.grey, width: 0.5),
+              border: Border.all(color: Colors.grey, width: 1.5),
             ),
             // Highlight event dates in red
             markerDecoration: BoxDecoration(
@@ -251,23 +250,23 @@ class _CalendarState extends State<Calendar> {
           ),
           calendarStyle: CalendarStyle(
             todayDecoration: BoxDecoration(
-              color: Colors.orange,
-              border: Border.all(color: Colors.orange, width: 2),
-            ),
-            selectedDecoration: BoxDecoration(
               color: Colors.green,
               border: Border.all(color: Colors.green, width: 2),
+            ),
+            selectedDecoration: BoxDecoration(
+              color: Colors.deepOrange,
+              border: Border.all(color: Colors.deepOrange, width: 2),
             ),
             selectedTextStyle: const TextStyle(color: Colors.white),
             todayTextStyle: const TextStyle(color: Colors.white),
             // Default decoration for calendar days
             defaultDecoration: BoxDecoration(
               color: Colors.white,
-              border: Border.all(color: Colors.grey, width: 0.5),
+              border: Border.all(color: Colors.grey, width: 1.5),
             ),
             weekendDecoration: BoxDecoration(
               color: Colors.white,
-              border: Border.all(color: Colors.grey, width: 0.5),
+              border: Border.all(color: Colors.grey, width: 1.5),
             ),
             // Highlight event dates in red
             markerDecoration: BoxDecoration(

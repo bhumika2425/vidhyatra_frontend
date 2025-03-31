@@ -32,14 +32,14 @@ class _DashboardState extends State<Dashboard> {
     blogController.fetchBlogs();
     return Scaffold(
       appBar: AppBar(
-        iconTheme: IconThemeData(
-          color: Colors.white, // Set Drawer icon color to white
-        ),
-        backgroundColor: Color(0xFF971F20),
-        title: Text("Vidhyatra", style: TextStyle(color: Colors.white)),
+        // iconTheme: IconThemeData(
+        //   color: Colors.white, // Set Drawer icon color to white
+        // ),
+        // backgroundColor: Colors.grey[200],
+        title: Text("Vidhyatra", style: TextStyle(color: Colors.black)),
         actions: [
           SizedBox(width: 10),
-          Icon(Icons.notifications, color: Colors.white),
+          Icon(Icons.notifications),
           SizedBox(width: 10),
           GestureDetector(
             onTap: () async {
@@ -98,7 +98,7 @@ class _DashboardState extends State<Dashboard> {
                   profileController.profile.value!.profileImageUrl != null
                   ? NetworkImage(profileController.profile.value!.profileImageUrl!) // Load image from URL if available
                   : AssetImage('assets/default_profile.png') as ImageProvider,
-              backgroundColor: Colors.grey.shade200,
+              backgroundColor: Colors.grey.shade400,
               radius: 20, // Ensure the avatar size is appropriate
             ),
           ),
@@ -160,78 +160,81 @@ class _DashboardState extends State<Dashboard> {
         ),
       ),
       body: SingleChildScrollView(
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            // Today's Timeline Section
-            Padding(
-              padding: EdgeInsets.all(16.0),
-              child: Text("Today's Timeline",
-                  style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
-            ),
-            SingleChildScrollView(
-              scrollDirection: Axis.horizontal,
-              child: Row(
-                children: [
-                  _buildTimelineCard(
-                      "04-4:30PM",
-                      "Room Rara",
-                      "CS1234 - Artificial Intelligence",
-                      "ONGOING CLASS",
-                      Colors.green),
-                  _buildTimelineCard("04:40-5:00PM", "Room Everest",
-                      "CS2345 - Data Science", "UPCOMING CLASS", Colors.orange),
-                ],
+        child: Container(
+          // color: Colors.grey[200],
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              // Today's Timeline Section
+              Padding(
+                padding: EdgeInsets.all(16.0),
+                child: Text("Today's Timeline",
+                    style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
               ),
-            ),
-            SizedBox(height: 20),
-            // Latest Blogs Section with grey background
-            Container(
-              color: Colors.grey[200], // Light grey background
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Padding(
-                    padding: EdgeInsets.all(16.0),
-                    child: Text(
-                      "Latest Blogs",
-                      style:
-                      TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+              SingleChildScrollView(
+                scrollDirection: Axis.horizontal,
+                child: Row(
+                  children: [
+                    _buildTimelineCard(
+                        "04-4:30PM",
+                        "Room Rara",
+                        "CS1234 - Artificial Intelligence",
+                        "ONGOING CLASS",
+                        Colors.green),
+                    _buildTimelineCard("04:40-5:00PM", "Room Everest",
+                        "CS2345 - Data Science", "UPCOMING CLASS", Colors.orange),
+                  ],
+                ),
+              ),
+              SizedBox(height: 20),
+              // Latest Blogs Section with grey background
+              Container(
+                // color: Colors.grey[200], // Light grey background
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Padding(
+                      padding: EdgeInsets.all(16.0),
+                      child: Text(
+                        "Latest Blogs",
+                        style:
+                        TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+                      ),
                     ),
-                  ),
-                  Obx(() {
-                    if (blogController.isLoading.value) {
-                      return Center(child: CircularProgressIndicator());
-                    }
+                    Obx(() {
+                      if (blogController.isLoading.value) {
+                        return Center(child: CircularProgressIndicator());
+                      }
 
-                    final blogs = blogController.blogs.value;
+                      final blogs = blogController.blogs.value;
 
-                    if (blogs == null || blogs.isEmpty) {
-                      return Center(child: Text("No blogs available"));
-                    }
+                      if (blogs == null || blogs.isEmpty) {
+                        return Center(child: Text("No blogs available"));
+                      }
 
-                    // Reverse the list of blogs to display the most recent one at the top
-                    final reversedBlogs = blogs.reversed.toList();
+                      // Reverse the list of blogs to display the most recent one at the top
+                      final reversedBlogs = blogs.reversed.toList();
 
-                    // Display the list of blogs
-                    return ListView.builder(
-                      shrinkWrap: true,
-                      // Prevents infinite height issues
-                      physics: NeverScrollableScrollPhysics(),
-                      // Prevents nested scrolling
-                      itemCount: reversedBlogs.length,
-                      // itemCount: blogs.length,
-                      itemBuilder: (context, index) {
-                        final blog = reversedBlogs[index];
-                        // final blog = blogs[index];
-                        return _buildBlogCard(blog);
-                      },
-                    );
-                  }),
-                ],
-              ),
-            )
-          ],
+                      // Display the list of blogs
+                      return ListView.builder(
+                        shrinkWrap: true,
+                        // Prevents infinite height issues
+                        physics: NeverScrollableScrollPhysics(),
+                        // Prevents nested scrolling
+                        itemCount: reversedBlogs.length,
+                        // itemCount: blogs.length,
+                        itemBuilder: (context, index) {
+                          final blog = reversedBlogs[index];
+                          // final blog = blogs[index];
+                          return _buildBlogCard(blog);
+                        },
+                      );
+                    }),
+                  ],
+                ),
+              )
+            ],
+          ),
         ),
       ),
       bottomNavigationBar: BottomAppBar(
@@ -268,7 +271,7 @@ class _DashboardState extends State<Dashboard> {
         onPressed: () {
           Get.toNamed('/new-post');
         },
-        backgroundColor: Color(0xFF971F20),
+        backgroundColor: Color(0xFF3D7FA4),
         child: Icon(Icons.add, color: Colors.white),
       ),
       floatingActionButtonLocation: FloatingActionButtonLocation.centerDocked,
@@ -279,45 +282,67 @@ class _DashboardState extends State<Dashboard> {
       String status, Color statusColor) {
     return Card(
       margin: EdgeInsets.symmetric(horizontal: 8.0),
-      child: Padding(
-        padding: EdgeInsets.all(20.0),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Row(
-              children: [
-                Icon(
-                  CupertinoIcons.time, // Time icon from CupertinoIcons
-                  size: 15, // Adjust the size here (default is 24.0)
-                  color: Colors.grey, // Adjust the color here
+      // elevation: 4, // Optional: adds shadow for depth
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(12), // Rounded corners
+      ),
+      child: Container(
+        decoration: BoxDecoration(
+          gradient: LinearGradient(
+            begin: Alignment.topLeft,
+            end: Alignment.bottomRight,
+            colors: [
+              Color(0xFF3D7FA4), // Starting color (matches your theme)
+              Color(0xFF1E4D6B), // Darker shade for gradient effect
+            ],
+          ),
+          borderRadius: BorderRadius.circular(12), // Match card's border radius
+        ),
+        child: Padding(
+          padding: EdgeInsets.all(20.0),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Row(
+                children: [
+                  Icon(
+                    CupertinoIcons.time,
+                    size: 15,
+                    color: Colors.white, // Changed to white for visibility on gradient
+                  ),
+                  SizedBox(width: 5),
+                  Text(
+                    time,
+                    style: TextStyle(color: Colors.white), // Changed to white
+                  ),
+                  SizedBox(width: 15),
+                  Icon(
+                    Icons.room_outlined,
+                    size: 15,
+                    color: Colors.white, // Changed to white
+                  ),
+                  SizedBox(width: 5),
+                  Text(
+                    location,
+                    style: TextStyle(color: Colors.white), // Changed to white
+                  ),
+                ],
+              ),
+              SizedBox(height: 5),
+              Text(
+                course,
+                style: TextStyle(
+                  fontSize: 16,
+                  color: Colors.white, // Changed to white
                 ),
-                SizedBox(
-                  width: 5,
-                ),
-                Text(time, style: TextStyle(color: Colors.grey)),
-                SizedBox(
-                  width: 15,
-                ),
-                Icon(
-                  Icons.room_outlined, // Time icon from CupertinoIcons
-                  size: 15, // Adjust the size here (default is 24.0)
-                  color: Colors.grey, // Adjust the color here
-                ),
-                SizedBox(
-                  width: 5,
-                ),
-                Text(location, style: TextStyle(color: Colors.grey)),
-              ],
-            ),
-            SizedBox(
-              height: 5,
-            ),
-            Text(course, style: TextStyle(fontSize: 16)),
-            SizedBox(
-              height: 5,
-            ),
-            Text(status, style: TextStyle(color: statusColor)),
-          ],
+              ),
+              SizedBox(height: 5),
+              Text(
+                status,
+                style: TextStyle(color: statusColor),
+              ),
+            ],
+          ),
         ),
       ),
     );
@@ -326,6 +351,12 @@ class _DashboardState extends State<Dashboard> {
   Widget _buildBlogCard(Blog blog) {
     return Card(
       margin: EdgeInsets.symmetric(horizontal: 16.0, vertical: 8.0),
+      color: Colors.white, // Set card background to white
+      elevation: 4, // Adds shadow depth
+      shadowColor: Colors.grey.withOpacity(0.5), // Shadow color with opacity
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(12.0), // Rounded corners for even shadow
+      ),
       child: Padding(
         padding: const EdgeInsets.all(16.0),
         child: Column(
@@ -334,24 +365,22 @@ class _DashboardState extends State<Dashboard> {
             Row(
               children: [
                 CircleAvatar(
-                  radius: 25.0, // Size of the avatar
+                  radius: 25.0,
                   backgroundImage: blog.profileImage.isNotEmpty
                       ? NetworkImage(blog.profileImage)
-                      : AssetImage('assets/default_profile.png'), // Default image if profileImage is empty
-                  backgroundColor: Colors.grey[300], // Background color when no image
+                      : AssetImage('assets/default_profile.png') as ImageProvider,
+                  // backgroundColor: Colors.grey[300], // Removed as it's not needed with image
                 ),
                 SizedBox(width: 8.0),
                 Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Text(
-                      blog.fullName, // Fallback if the username is null
-                      style: TextStyle(
-                          fontWeight: FontWeight.bold, fontSize: 16.0),
+                      blog.fullName,
+                      style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16.0),
                     ),
                     Text(
                       blog.createdAt,
-                      // Fallback if the username is null
                       style: TextStyle(color: Colors.grey, fontSize: 12.0),
                     ),
                   ],
@@ -362,26 +391,21 @@ class _DashboardState extends State<Dashboard> {
             // Blog Description
             Text(
               blog.blogDescription,
-              style: TextStyle(
-                fontSize: 16,
-              ),
+              style: TextStyle(fontSize: 16),
             ),
             SizedBox(height: 8.0),
 
             // Blog Images
             if (blog.imageUrls.isNotEmpty)
-            // Blog Images
               Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  // Display the first two images
                   SingleChildScrollView(
                     scrollDirection: Axis.horizontal,
                     child: Row(
                       children: blog.imageUrls.take(2).map((imageUrl) {
                         return GestureDetector(
                           onTap: () {
-                            // Display the clicked image in fullscreen
                             showDialog(
                               context: context,
                               builder: (context) {
@@ -435,12 +459,9 @@ class _DashboardState extends State<Dashboard> {
                       }).toList(),
                     ),
                   ),
-
-                  // Check if there are more than 2 images
                   if (blog.imageUrls.length > 2)
                     TextButton(
                       onPressed: () {
-                        // Show a dialog with all the images
                         showDialog(
                           context: context,
                           builder: (context) {
@@ -451,7 +472,6 @@ class _DashboardState extends State<Dashboard> {
                               child: Column(
                                 mainAxisSize: MainAxisSize.min,
                                 children: [
-                                  // Close button
                                   Align(
                                     alignment: Alignment.topRight,
                                     child: IconButton(
@@ -459,8 +479,6 @@ class _DashboardState extends State<Dashboard> {
                                       onPressed: () => Navigator.of(context).pop(),
                                     ),
                                   ),
-
-                                  // Title
                                   Padding(
                                     padding: const EdgeInsets.all(8.0),
                                     child: Text(
@@ -471,8 +489,6 @@ class _DashboardState extends State<Dashboard> {
                                       ),
                                     ),
                                   ),
-
-                                  // GridView for images
                                   Expanded(
                                     child: Padding(
                                       padding: const EdgeInsets.symmetric(horizontal: 8.0),
@@ -486,7 +502,6 @@ class _DashboardState extends State<Dashboard> {
                                         itemBuilder: (context, index) {
                                           return GestureDetector(
                                             onTap: () {
-                                              // Display the clicked image in fullscreen
                                               showDialog(
                                                 context: context,
                                                 builder: (context) {
@@ -550,8 +565,6 @@ class _DashboardState extends State<Dashboard> {
                 ],
               ),
 
-
-
             SizedBox(height: 8.0),
 
             // Add Comment and Share buttons at the bottom
@@ -564,30 +577,25 @@ class _DashboardState extends State<Dashboard> {
                     TextButton(
                       onPressed: () {
                         print("like clicked");
-                        // You can navigate to the comment section or open a modal for commenting
                       },
                       child: Row(
-                        mainAxisSize: MainAxisSize.min,  // Ensures that the row takes only as much space as it needs
+                        mainAxisSize: MainAxisSize.min,
                         children: [
                           Icon(
                             Icons.thumb_up_off_alt_outlined,
                             color: Colors.grey[600],
                           ),
-                          SizedBox(width: 5),  // Adds space between the icon and the like count
+                          SizedBox(width: 5),
                           Text(
-                            blog.likes.toString(),  // Example like count, replace with your actual like count variable
-                            style: TextStyle(
-                              color: Colors.grey[600],
-                            ),
+                            blog.likes.toString(),
+                            style: TextStyle(color: Colors.grey[600]),
                           ),
                         ],
                       ),
                     ),
                     TextButton(
                       onPressed: () {
-                        // Handle comment action
                         print("Comment clicked");
-                        // You can navigate to the comment section or open a modal for commenting
                       },
                       child: Icon(
                         Icons.comment,
@@ -598,9 +606,7 @@ class _DashboardState extends State<Dashboard> {
                 ),
                 TextButton(
                   onPressed: () {
-                    // Handle share action
                     print("Share clicked");
-                    // You can implement the sharing logic here
                   },
                   child: Icon(
                     Icons.share,

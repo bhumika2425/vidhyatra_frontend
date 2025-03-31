@@ -1,146 +1,136 @@
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:carousel_slider/carousel_slider.dart';
 import 'package:get/get.dart';
-import 'package:vidhyatra_flutter/screens/another_page.dart';
+import 'package:google_fonts/google_fonts.dart';
 import 'package:vidhyatra_flutter/screens/login.dart';
-import 'package:vidhyatra_flutter/screens/salesDashborad.dart';
 
 class WelcomeScreen extends StatefulWidget {
+  const WelcomeScreen({super.key});
+
   @override
   _WelcomeScreenState createState() => _WelcomeScreenState();
 }
 
 class _WelcomeScreenState extends State<WelcomeScreen> {
-  int _currentIndex = 0;
-  final List<String> images = [
-    'assets/homepage3.jpg',
-    'assets/homepage2.jpg',
-    'assets/homepage1.jpg', // Replace with your image paths
+  bool _isLoading = false; // State to track loading
 
+  void _onGetStarted() {
+    setState(() {
+      _isLoading = true; // Show loading indicator
+    });
 
-  ];
+    Future.delayed(Duration(seconds: 1), () {
+      setState(() {
+        _isLoading = false; // Hide loading indicator
+      });
+
+      Get.to(LoginPage(),
+          transition: Transition.fadeIn, duration: Duration(milliseconds: 600));
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: Stack(
-        children: [
-          // Carousel Slider
-          CarouselSlider(
-            options: CarouselOptions(
-              height: MediaQuery.of(context).size.height,
-              viewportFraction: 1.0,
-              enableInfiniteScroll: true,
-              autoPlay: true,
-              onPageChanged: (index, reason) {
-                setState(() {
-                  _currentIndex = index;
-                });
-              },
-            ),
-            items: images.map((imagePath) {
-              return Container(
-                decoration: BoxDecoration(
-                  image: DecorationImage(
-                    image: AssetImage(imagePath),
-                    fit: BoxFit.cover,
-                  ),
-                ),
-              );
-            }).toList(),
+      body: Container(
+        width: double.infinity,
+        height: double.infinity,
+        decoration: BoxDecoration(
+          image: DecorationImage(
+            image: AssetImage('assets/yayGirl.png'), // Your background image
+            fit: BoxFit.cover, // Makes the image cover the entire screen
+            alignment: Alignment.center, // Keeps the image centered
           ),
-          // Overlay
-          Container(
-            color: Colors.black54,
-          ),
-          // Content
-          Center(
-            child: Column(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                Text(
-                  'Welcome to Vidhyatra',
-                  style: TextStyle(
-                    fontSize: 36,
-                    fontWeight: FontWeight.bold,
-                    color: Colors.white,
-                  ),
-                ),
-                SizedBox(height: 20),
-                Text(
-                  'Simplifying College, Empowering You!',
-                  style: TextStyle(
-                    fontSize: 20,
-                    color: Colors.white,
-                  ),
-                  textAlign: TextAlign.center,
-                ),
-                SizedBox(height: 50),
-                ElevatedButton(
-                  onPressed: () {
-                    Navigator.push(
-                      context,
-                      MaterialPageRoute(builder: (context) => LoginPage()),
-                    );
-                  },
-                  style: ElevatedButton.styleFrom(
-                    padding: EdgeInsets.symmetric(horizontal: 40, vertical: 15),
-                    // backgroundColor: Color(0xFF118AD4),
-                    foregroundColor: Colors.black,
-                    backgroundColor: Colors.white,
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(30),
-                    ),
-                  ),
-                  child: Text('Get Started', style: TextStyle(fontWeight: FontWeight.bold),),
-                ),
-                SizedBox(height: 30),
-                // Dots Indicator
-                ElevatedButton(
-                  onPressed: () {
-                    Navigator.push(
-                      context,
-                      MaterialPageRoute(builder: (context) => TryScreen()),
-                    );
-                  },
-                  style: ElevatedButton.styleFrom(
-                    padding: EdgeInsets.symmetric(horizontal: 40, vertical: 15),
-                    foregroundColor: Colors.white,
-                    backgroundColor: Color(0xFF971F20), // Your deep red theme color
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(30),
-                    ),
-                  ),
-                  child: Text('Explore More', style: TextStyle(fontWeight: FontWeight.bold)),
-                ),
-
-                SizedBox(height: 30),
-
-                TextButton(onPressed: (){
-                  Get.to(SalesDashboard());
-                }, child: Text('try')),
-
-                SizedBox(height: 30),
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: List.generate(images.length, (index) {
-                    return Container(
-                      margin: EdgeInsets.symmetric(horizontal: 5),
-                      width: _currentIndex == index ? 12 : 8,
-                      height: _currentIndex == index ? 12 : 8,
-                      decoration: BoxDecoration(
-                        shape: BoxShape.circle,
-                        color: _currentIndex == index
-                            ? Colors.white
-                            : Colors.white.withOpacity(0.5),
+        ),
+        child: SafeArea(
+          child: Column(
+            children: [
+              Padding(
+                padding: const EdgeInsets.only(top: 130, left: 20, right: 18),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text.rich(
+                      TextSpan(
+                        children: [
+                          TextSpan(
+                            text: 'Welcome To ',
+                            style: GoogleFonts.poppins(
+                              color: Colors.deepOrange,
+                              fontSize: 38,
+                              fontWeight: FontWeight.bold,
+                            ),
+                          ),
+                          TextSpan(
+                            text: 'Vidhyatra',
+                            style: GoogleFonts.poppins(
+                              color: Color(0xFF186CAC),
+                              fontSize: 38,
+                              fontWeight: FontWeight.bold,
+                            ),
+                          ),
+                        ],
                       ),
-                    );
-                  }),
+                    ),
+                    SizedBox(height: 20),
+                    Text(
+                      'Simplifying College, Empowering You',
+                      style: GoogleFonts.poppins(
+                        fontSize: 18,
+                        color: Colors.black,
+                      ),
+                    ),
+                    SizedBox(height: 40),
+
+                    // Button with CircularProgressIndicator
+                    SizedBox(
+                      width: 160,
+                      child: InkWell(
+                        onTap: _isLoading ? null : _onGetStarted,
+                        // Disable button when loading
+                        borderRadius: BorderRadius.circular(30),
+                        child: Container(
+                          padding: EdgeInsets.symmetric(vertical: 15),
+                          decoration: BoxDecoration(
+                            color: Color(0xFF186CAC),
+                            borderRadius: BorderRadius.circular(10),
+                          ),
+                          child: Center(
+                            child: _isLoading
+                                ? SizedBox(
+                              width: 20,
+                              height: 20,
+                              child: CircularProgressIndicator(
+                                color: Colors.white,
+                                strokeWidth: 2,
+                              ),
+                            )
+                                : Row(
+                              mainAxisAlignment: MainAxisAlignment.center,
+                              children: [
+                                Text(
+                                  'Get Started',
+                                  style: GoogleFonts.poppins(
+                                    fontSize: 19,
+                                    color: Colors.white,
+                                    fontWeight: FontWeight.w600,
+                                  ),
+                                ),
+                                SizedBox(width: 5),
+                                Icon(CupertinoIcons.right_chevron,
+                                    color: Colors.white),
+                              ],
+                            ),
+                          ),
+                        ),
+                      ),
+                    ),
+                  ],
                 ),
-              ],
-            ),
+              ),
+            ],
           ),
-        ],
+        ),
       ),
     );
   }

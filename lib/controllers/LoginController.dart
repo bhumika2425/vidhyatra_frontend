@@ -24,7 +24,7 @@ class LoginController extends GetxController {
   Future<void> loginUser() async {
     if (emailOrID.value.isEmpty || password.value.isEmpty) {
       Get.snackbar("Error", "Please fill in all fields",
-          snackPosition: SnackPosition.BOTTOM);
+          snackPosition: SnackPosition.TOP);
       return;
     }
 
@@ -67,7 +67,7 @@ class LoginController extends GetxController {
               "✅ Login Successful - Token: $tokenValue, UserID: $userIdValue, Role: $userRole, isAdmin: $isAdmin");
 
           Get.snackbar("Success", "Logged in successfully!",
-              snackPosition: SnackPosition.BOTTOM);
+              snackPosition: SnackPosition.TOP);
 
           // Debugging role-based navigation
           if (isAdmin) {
@@ -82,30 +82,69 @@ class LoginController extends GetxController {
           } else {
             print("❌ Invalid Role: $userRole");
             Get.snackbar("Error", "Invalid role assigned to user.",
-                snackPosition: SnackPosition.BOTTOM);
+                snackPosition: SnackPosition.TOP);
           }
         } else {
           print("❌ Missing token or user data in response");
           Get.snackbar("Login Error", "Invalid response from server",
-              snackPosition: SnackPosition.BOTTOM);
+              snackPosition: SnackPosition.TOP);
         }
       } else {
         final responseData = jsonDecode(response.body);
         String errorMessage = responseData['message'] ?? "Invalid credentials";
         print("❌ Login failed - Server Response: $errorMessage");
         Get.snackbar(
-            "Login Error", errorMessage, snackPosition: SnackPosition.BOTTOM);
+            "Login Error", errorMessage, snackPosition: SnackPosition.TOP);
       }
     } on http.ClientException catch (e) {
       isLoading.value = false;
       print("❌ Network Error: ${e.toString()}");
       Get.snackbar("Network Error", "Please check your internet connection.",
-          snackPosition: SnackPosition.BOTTOM);
+          snackPosition: SnackPosition.TOP);
     } catch (error) {
       isLoading.value = false;
       print("❌ Unexpected Error: ${error.toString()}");
       Get.snackbar("Error", "An error occurred. Please try again.",
-          snackPosition: SnackPosition.BOTTOM);
+          snackPosition: SnackPosition.TOP);
     }
   }
 }
+
+
+// import 'package:flutter/material.dart';
+// import 'package:get/get.dart';
+//
+// class LoginController extends GetxController {
+//   var email = ''.obs;
+//   var password = ''.obs;
+//
+//   late TextEditingController emailController;
+//   late TextEditingController passwordController;
+//
+//   @override
+//   void onInit() {
+//     super.onInit();
+//     emailController = TextEditingController();
+//     passwordController = TextEditingController();
+//
+//     // Sync TextEditingController with observables
+//     emailController.addListener(() {
+//       email.value = emailController.text;
+//     });
+//     passwordController.addListener(() {
+//       password.value = passwordController.text;
+//     });
+//   }
+//
+//   @override
+//   void onClose() {
+//     emailController.dispose();
+//     passwordController.dispose();
+//     super.onClose();
+//   }
+//
+//   void login() {
+//     // Add your login logic here
+//     print("Email: ${email.value}, Password: ${password.value}");
+//   }
+// }

@@ -28,18 +28,18 @@ class FeesScreen extends StatelessWidget {
     return Scaffold(
       appBar: AppBar(
         iconTheme: IconThemeData(
-          color: Colors.white, // Set Drawer icon color to white
+          color: Colors.black, // Set Drawer icon color to white
         ),
-        backgroundColor: Color(0xFF971F20),
+        backgroundColor: Colors.white,
         title: Text(
           'Fee Management',
-          style: TextStyle(fontWeight: FontWeight.bold, fontSize: 22 * textScale, color: Colors.white),
+          style: TextStyle(fontWeight: FontWeight.bold, fontSize: 22 * textScale, color: Colors.black),
         ),
         elevation: 0,
         actions: [
           Row(
             children: [
-              Text('Pay Now', style: TextStyle(fontWeight: FontWeight.bold, color: Colors.white),),
+              Text('Pay Now', style: TextStyle(fontWeight: FontWeight.bold, color: Colors.black),),
               IconButton(
                 icon: Icon(Icons.payment),
                 onPressed: () {
@@ -48,10 +48,10 @@ class FeesScreen extends StatelessWidget {
                     // Trigger payment for the selected fee
                     Get.snackbar(
                       "Payment",
-                      "Processing payment for ${selectedFee.feeType}...",
-                      snackPosition: SnackPosition.BOTTOM,
-                      backgroundColor: Color(0xFF971F20),
-                      colorText: Colors.white,
+                      "Processing payment for ${selectedFee.feeType}",
+                      snackPosition: SnackPosition.TOP,
+                      // backgroundColor: Color(0xFF971F20),
+                      // colorText: Colors.white,
                     );
 
                     final PaymentController paymentController = Get.find<PaymentController>();
@@ -61,10 +61,10 @@ class FeesScreen extends StatelessWidget {
                     // Show error if no fee is selected
                     Get.snackbar(
                       "Error",
-                      "Please select a fee to pay.",
-                      snackPosition: SnackPosition.BOTTOM,
-                      backgroundColor: Colors.red,
-                      colorText: Colors.white,
+                      "Please select a fee to pay",
+                      snackPosition: SnackPosition.TOP,
+                      // backgroundColor: Colors.red,
+                      // colorText: Colors.white,
                     );
                   }
                 },
@@ -141,7 +141,7 @@ class FeesScreen extends StatelessWidget {
                               style: TextStyle(
                                 fontSize: 18 * textScale,
                                 fontWeight: FontWeight.bold,
-                                color: Color(0xFF971F20),
+                                color: Color(0xFF3D7FA4),
                               ),
                               overflow: TextOverflow.ellipsis,
                             ),
@@ -156,7 +156,7 @@ class FeesScreen extends StatelessWidget {
                                   print("Selected Fee Amount: ${fee.feeAmount}");
                                 }
                               },
-                              activeColor: Color(0xFF971F20), // Color when checkbox is checked
+                              activeColor: Color(0xFF3D7FA4), // Color when checkbox is checked
                               checkColor: Colors.white,
                             );
                           })
@@ -186,15 +186,15 @@ class FeesScreen extends StatelessWidget {
                         style: TextStyle(
                           fontSize: 16 * textScale,
                           fontWeight: FontWeight.bold,
-                          color: Colors.green[900],
+                          color: Color(0xFF3D7FA4),
                         ),
                       ),
                       if (daysRemaining <= 0)
                         Padding(
                           padding: EdgeInsets.symmetric(vertical: screenHeight * 0.015),
                           child: Text(
-                            "⚠️ The due date has passed! No worries, it's not too late to take action. Please visit the Finance Department as soon as possible to settle your fee. We're here to help you stay on track! 💪",
-                            style: TextStyle(fontSize: 14 * textScale, fontWeight: FontWeight.bold, color: Colors.red),
+                            "The due date has passed. Please visit the Finance Department at your earliest convenience to settle your fee.",
+                            style: TextStyle(fontSize: 14 * textScale, fontWeight: FontWeight.bold, color: Colors.deepOrange),
                           ),
                         ),
                     ],
