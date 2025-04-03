@@ -56,7 +56,7 @@ class _WelcomeScreenState extends State<WelcomeScreen> {
                           TextSpan(
                             text: 'Welcome To ',
                             style: GoogleFonts.poppins(
-                              color: Colors.deepOrange,
+                              color: Color(0xFF186CAC),
                               fontSize: 38,
                               fontWeight: FontWeight.bold,
                             ),
@@ -64,7 +64,7 @@ class _WelcomeScreenState extends State<WelcomeScreen> {
                           TextSpan(
                             text: 'Vidhyatra',
                             style: GoogleFonts.poppins(
-                              color: Color(0xFF186CAC),
+                              color: Colors.deepOrange,
                               fontSize: 38,
                               fontWeight: FontWeight.bold,
                             ),
