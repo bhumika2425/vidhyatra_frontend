@@ -194,15 +194,28 @@ class _RegisterPageState extends State<RegisterPage> with SingleTickerProviderSt
                   //     color: Colors.black,
                   //   ),
                   // ),
-                  SizedBox(height: 30),
-                  Text(
-                    "CREATE\n YOUR\n ACCOUNT",
-                    style: GoogleFonts.poppins(
-                      fontSize: screenWidth * 0.07,
-                      fontWeight: FontWeight.bold,
-                      color: Colors.black,
+                  SizedBox(height: 80),
+                  RichText(
+                    text: TextSpan(
+                      text: "CREATE YOUR ",  // The part of the text before "Account" (in black)
+                      style: GoogleFonts.poppins(
+                        fontSize: screenWidth * 0.07,
+                        fontWeight: FontWeight.bold,
+                        color: Colors.black,
+                      ),
+                      children: <TextSpan>[
+                        TextSpan(
+                          text: "ACCOUNT",  // The part you want to make orange
+                          style: GoogleFonts.poppins(
+                            fontSize: screenWidth * 0.07,
+                            fontWeight: FontWeight.bold,
+                            color: Colors.deepOrange,  // Set to orange
+                          ),
+                        ),
+                      ],
                     ),
                   ),
+
                   SizedBox(height: screenHeight * 0.03  ),
                   _buildTextField(
                     label: 'Full Name',
@@ -367,7 +380,7 @@ class _RegisterPageState extends State<RegisterPage> with SingleTickerProviderSt
                       style: GoogleFonts.poppins(
                         fontSize: screenWidth * 0.05,
                         color: Colors.white,
-                        fontWeight: FontWeight.bold,
+                        // fontWeight: FontWeight.bold,
                       ),
                     ),
                   ),

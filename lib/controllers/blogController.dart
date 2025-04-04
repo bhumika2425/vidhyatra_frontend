@@ -10,7 +10,7 @@ import 'LoginController.dart'; // Add import
 
 class BlogController extends GetxController {
   final descriptionController = TextEditingController();
-  RxString labelText = 'Tell your story with us.....'.obs;
+  RxString labelText = 'Share your thoughts'.obs;
   RxBool isButtonEnabled = false.obs;
   final ImagePicker picker = ImagePicker();
   var images = <XFile>[].obs;
@@ -22,7 +22,7 @@ class BlogController extends GetxController {
   final LoginController loginController = Get.find(); // Fetch the LoginController
 
   void onTextFieldChange(String value) {
-    labelText.value = value.isNotEmpty ? '' : 'Tell your story with us.....';
+    labelText.value = value.isNotEmpty ? '' : 'Share your thoughts';
     isButtonEnabled.value = value.isNotEmpty;
   }
 

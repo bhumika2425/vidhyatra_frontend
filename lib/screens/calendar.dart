@@ -74,7 +74,7 @@ class _CalendarState extends State<Calendar> {
             },
             borderRadius: BorderRadius.circular(8),
             selectedColor: Colors.white,
-            fillColor: _isSelected[1] ? Colors.deepOrange : Color(0xFF3D7FA4),
+            fillColor: _isSelected[1] ? Colors.deepOrange : Color(0xFF186CAC),
             color: Colors.black,
             constraints: const BoxConstraints(
               minHeight: 36.0,
@@ -169,8 +169,8 @@ class _CalendarState extends State<Calendar> {
                   color: Colors.green, width: 2),
             ),
             selectedDecoration: BoxDecoration(
-              color: Color(0xFF3D7FA4),
-              border: Border.all(color: Color(0xFF3D7FA4), width: 2),
+              color: Color(0xFF186CAC),
+              border: Border.all(color: Color(0xFF186CAC), width: 2),
             ),
             defaultDecoration: BoxDecoration(
               color: Colors.white,
@@ -182,7 +182,7 @@ class _CalendarState extends State<Calendar> {
             ),
             // Highlight event dates in red
             markerDecoration: BoxDecoration(
-              color: Colors.red, // Event date color
+              color: Colors.deepOrange, // Event date color
               shape: BoxShape.circle,
             ),
             selectedTextStyle: const TextStyle(color: Colors.white),
@@ -190,7 +190,7 @@ class _CalendarState extends State<Calendar> {
           ),
           daysOfWeekStyle: DaysOfWeekStyle(
             weekdayStyle: TextStyle(fontWeight: FontWeight.w500, color: Colors.black),
-            weekendStyle: TextStyle(fontWeight: FontWeight.w300, color: Colors.red),
+            weekendStyle: TextStyle(fontWeight: FontWeight.w300, color: Colors.deepOrange),
           ),
         ),
         const SizedBox(height: 20),
@@ -270,13 +270,13 @@ class _CalendarState extends State<Calendar> {
             ),
             // Highlight event dates in red
             markerDecoration: BoxDecoration(
-              color: Colors.red, // Event date color
+              color: Colors.deepOrange, // Event date color
               shape: BoxShape.circle,
             ),
           ),
           daysOfWeekStyle: DaysOfWeekStyle(
             weekdayStyle: TextStyle(fontWeight: FontWeight.w500, color: Colors.black),
-            weekendStyle: TextStyle(fontWeight: FontWeight.w300, color: Colors.red),
+            weekendStyle: TextStyle(fontWeight: FontWeight.w300, color: Colors.deepOrange),
           ),
           // Function to mark the days with events
           eventLoader: (day) {
@@ -300,7 +300,7 @@ class _CalendarState extends State<Calendar> {
           } else if (eventController.errorMessage.value.isNotEmpty) {
             return Text(
               eventController.errorMessage.value,
-              style: TextStyle(color: Colors.red),
+              style: TextStyle(color: Colors.deepOrange),
             ); // Show error message if something goes wrong
           } else {
             // Filter events to show only upcoming events (events after today's date)

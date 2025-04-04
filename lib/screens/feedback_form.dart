@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:google_fonts/google_fonts.dart';
 import '../controllers/feedback_controller.dart';
-import '../models/feedback_model.dart';
 
 class FeedbackForm extends StatelessWidget {
   final FeedbackController feedbackController = Get.put(FeedbackController());
@@ -10,84 +10,153 @@ class FeedbackForm extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      backgroundColor: Colors.grey[200],
       appBar: AppBar(
-        title: Text("Send Feedback!"),
+        backgroundColor: Colors.grey[200],
+        elevation: 0,
+        title: Text(
+          "Feedback",
+          style: GoogleFonts.poppins(
+            color: Colors.black,
+            fontSize: 22,
+          ),
+        ),
         centerTitle: true,
       ),
       body: SafeArea(
         child: Center(
           child: SingleChildScrollView(
-            child: Padding(
+            child: Container(
               padding: const EdgeInsets.all(24.0),
               child: Form(
                 key: _formKey,
                 child: Column(
                   mainAxisSize: MainAxisSize.min,
                   children: [
-                 
-                    SizedBox(height: 10),
                     Text(
                       "We value your feedback!",
-                      style: TextStyle(
+                      style: GoogleFonts.poppins(
                         fontSize: 26,
                         fontWeight: FontWeight.bold,
-                        color: Color(0xFF971F20),
+                        color: Color(0xFF186CAC),
                       ),
                     ),
                     SizedBox(height: 5),
                     Text(
                       "Please share your thoughts below:",
-                      style: TextStyle(color: Colors.black87),
+                      style: GoogleFonts.poppins(color: Colors.deepOrange),
                     ),
-                    SizedBox(height: 20),
+                    SizedBox(height: 40),
 
-                    // Feedback Type Dropdown
+                    // Feedback Type Label
+                    Align(
+                      alignment: Alignment.centerLeft,
+                      child: Text(
+                        "Feedback Type",
+                        style: GoogleFonts.poppins(
+                          fontSize: 15,
+                          color: Colors.grey[600],
+                        ),
+                      ),
+                    ),
+                    SizedBox(height: 8),
+
+                    // Feedback Type Dropdown (no icons)
                     DropdownButtonFormField<String>(
                       value: feedbackController.selectedType,
-                      items: ['courses', 'app_features', 'facilities']
-                          .map((type) => DropdownMenuItem(value: type, child: Text(type)))
+                      hint: Text(
+                        'Select feedback type',
+                        style: GoogleFonts.poppins(
+                            color: Colors.grey[400], fontSize: 15),
+                      ),
+                      items: [
+                        'Courses',
+                        'App Features',
+                        'Facilities',
+                        'Faculty Behavior',
+                        'Technical Support',
+                        'Bug Report',
+                        'Suggestions',
+                        'Others',
+                      ]
+                          .map((type) => DropdownMenuItem(
+                        value: type.toLowerCase().replaceAll(' ', '_'),
+                        child: Text(
+                          type,
+                          style: GoogleFonts.poppins(fontSize: 15),
+                        ),
+                      ))
                           .toList(),
-                      onChanged: (value) => feedbackController.selectedType = value,
+                      onChanged: (value) =>
+                      feedbackController.selectedType = value,
                       decoration: InputDecoration(
-                        labelText: 'Feedback Type',
-                        labelStyle: TextStyle(color: Colors.black),
-                        prefixIcon: Icon(Icons.feedback, color: Colors.black),
+                        prefixIcon:
+                        Icon(Icons.feedback, color: Colors.grey[400]),
                         border: OutlineInputBorder(
                           borderRadius: BorderRadius.circular(12.0),
-                          borderSide: BorderSide(color: Colors.black),
+                          borderSide: BorderSide.none,
                         ),
                         filled: true,
-                        fillColor: Colors.grey[200],
+                        fillColor: Colors.white,
+                        contentPadding: EdgeInsets.symmetric(
+                            vertical: 12, horizontal: 16),
                       ),
+                      style: GoogleFonts.poppins(color: Colors.black),
                       validator: (value) {
-                        if (value == null) return 'Please select a feedback type';
+                        if (value == null || value.isEmpty)
+                          return 'Please select a feedback type';
                         return null;
                       },
                     ),
+
                     SizedBox(height: 16),
+
+                    // Feedback Content Label
+                    Align(
+                      alignment: Alignment.centerLeft,
+                      child: Text(
+                        "Feedback Content",
+                        style: GoogleFonts.poppins(
+                          fontSize: 15,
+                          color: Colors.grey[600],
+                        ),
+                      ),
+                    ),
+                    SizedBox(height: 8),
 
                     // Feedback Content Text Field
                     TextFormField(
                       controller: feedbackController.feedbackContentController,
                       maxLines: 4,
+                      style: GoogleFonts.poppins(color: Colors.grey[600]),
                       decoration: InputDecoration(
-                        labelText: 'Feedback Content',
-                        labelStyle: TextStyle(color: Colors.black),
-                        prefixIcon: Icon(Icons.text_fields, color: Colors.black),
+                        hintText: 'Write feedback',
+                        hintStyle: GoogleFonts.poppins(
+                            color: Colors.grey[400], fontSize: 15),
+                        prefixIcon: Padding(
+                          padding: EdgeInsets.only(bottom: 70),
+                          child: Icon(Icons.text_fields,
+                              color: Colors.grey[400]),
+                        ),
                         border: OutlineInputBorder(
                           borderRadius: BorderRadius.circular(12.0),
-                          borderSide: BorderSide(color: Colors.black),
+                          borderSide: BorderSide.none,
+                        ),
+                        focusedBorder: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(12.0),
+                          borderSide:
+                          BorderSide(color: Color(0xFF186CAC), width: 1.5),
                         ),
                         filled: true,
-                        fillColor: Colors.grey[200],
+                        fillColor: Colors.white,
                       ),
-                      style: TextStyle(color: Colors.black),
                       validator: (value) {
                         if (value == null || value.isEmpty)
                           return 'Feedback content is required';
                         return null;
                       },
                     ),
+
                     SizedBox(height: 16),
 
                     // Anonymous Checkbox
@@ -96,38 +165,39 @@ class FeedbackForm extends StatelessWidget {
                         Checkbox(
                           value: feedbackController.isAnonymous.value,
                           onChanged: (value) {
-                            feedbackController.isAnonymous.value = value!;
+                            feedbackController.toggleAnonymous(value!);
                           },
-                          activeColor: Color(0xFF971F20),
+                          activeColor: Colors.deepOrange,
                         ),
-                        Text('Submit Anonymously', style: TextStyle(fontSize: 14, color: Colors.black)),
+                        Text(
+                          'Submit Anonymously',
+                          style: GoogleFonts.poppins(
+                              fontSize: 14, color: Colors.black),
+                        ),
                       ],
                     )),
                     SizedBox(height: 20),
 
                     // Submit Button
                     ElevatedButton(
-                      onPressed: () {
-                        if (_formKey.currentState!.validate()) {
-                          final feedback = FeedbackModel(
-                            feedbackType: feedbackController.selectedType!,
-                            feedbackContent: feedbackController.feedbackContentController.text,
-                            isAnonymous: feedbackController.isAnonymous.value,
-                          );
-                          feedbackController.submitFeedback(feedback);
-                        }
-                      },
+                      onPressed: () =>
+                          feedbackController.handleSubmit(_formKey),
                       style: ElevatedButton.styleFrom(
-                        backgroundColor: Color(0xFF971F20),
+                        backgroundColor: Color(0xFF186CAC),
                         foregroundColor: Colors.white,
-                        padding: EdgeInsets.symmetric(vertical: 15, horizontal: 50),
-                        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+                        padding:
+                        EdgeInsets.symmetric(vertical: 15, horizontal: 20),
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(12),
+                        ),
                       ),
                       child: Obx(() => feedbackController.isLoading.value
                           ? CircularProgressIndicator(color: Colors.white)
-                          : Text('Submit Feedback', style: TextStyle(fontSize: 18))),
+                          : Text(
+                        'Submit',
+                        style: GoogleFonts.poppins(fontSize: 18),
+                      )),
                     ),
-
                   ],
                 ),
               ),

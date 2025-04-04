@@ -2,6 +2,7 @@ import 'dart:io';
 
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:google_fonts/google_fonts.dart';
 
 import 'package:provider/provider.dart';
 import 'package:vidhyatra_flutter/controllers/LoginController.dart';
@@ -37,12 +38,16 @@ class _BlogPostingPageState extends State<BlogPostPage> {
     final ProfileController profileController = Get.find<ProfileController>();
 
     return Scaffold(
+      backgroundColor:Colors.grey[200],
       appBar: AppBar(
-        backgroundColor: Colors.grey[100],
+        backgroundColor:Colors.grey[200],
         title: Text(
           'Create Post',
-          style:
-              TextStyle(color: Color(0xFF971F20), fontWeight: FontWeight.bold),
+          style: GoogleFonts.poppins(
+            color: Colors.black,
+            // fontWeight: FontWeight.bold,
+            fontSize: 23, // Set font size to 24
+          ),
         ),
         leading: IconButton(
           icon: Icon(Icons.close, color: Colors.black), // Cross icon
@@ -70,7 +75,7 @@ class _BlogPostingPageState extends State<BlogPostPage> {
                       : null, // Disable button when text is empty
                   style: TextButton.styleFrom(
                     backgroundColor: blogController.isButtonEnabled.value
-                        ? Color(0xFF971F20)
+                        ? Color(0xFF186CAC)
                         : Colors.grey[200],
                     foregroundColor: Colors.white,
                     shape: RoundedRectangleBorder(
@@ -79,7 +84,7 @@ class _BlogPostingPageState extends State<BlogPostPage> {
                   ),
                   child: Text(
                     'Post',
-                    style: TextStyle(color: Colors.white),
+                    style: TextStyle(color: Colors.deepOrange),
                   ),
                 ),
               )),

@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:vidhyatra_flutter/screens/AccountPage.dart';
+import 'package:vidhyatra_flutter/screens/ChangePassword.dart';
 import 'package:vidhyatra_flutter/screens/ClassRoutine.dart';
 import 'package:vidhyatra_flutter/screens/FeesScreen.dart';
 import 'package:vidhyatra_flutter/screens/FriendsScreen.dart';
@@ -67,6 +68,7 @@ class VidhyatraApp extends StatelessWidget {
         GetPage(name: '/classSchedule', page: () => ClassRoutine()),
         GetPage(name: '/manageEvents', page: () => ManageEvent()),
         GetPage(name: '/admin-dashboard', page: () => AdminDashboard()),
+        GetPage(name: '/changePassword', page: () => ChangePassword()),
 
       ],
     );

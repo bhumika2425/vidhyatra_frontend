@@ -84,7 +84,7 @@ class LoginPage extends StatelessWidget {
                         focusedBorder: OutlineInputBorder(
                           borderRadius: BorderRadius.circular(12),
                           borderSide: BorderSide(
-                            color: Color(0xFF3D7FA4),
+                            color: Color(0xFF186CAC),
                             width: 2,
                           ),
                         ),
@@ -94,7 +94,7 @@ class LoginPage extends StatelessWidget {
                           size: screenWidth * 0.06, // 6% of screen width
                         ),
                       ),
-                      cursorColor: Color(0xFF3D7FA4),
+                      cursorColor: Color(0xFF186CAC),
                       onChanged: (value) => loginController.emailOrID.value = value,
                     ),
                     SizedBox(height: screenHeight * 0.015), // 1.5% of screen height
@@ -131,7 +131,7 @@ class LoginPage extends StatelessWidget {
                         focusedBorder: OutlineInputBorder(
                           borderRadius: BorderRadius.circular(12),
                           borderSide: BorderSide(
-                            color: Color(0xFF3D7FA4),
+                            color: Color(0xFF186CAC),
                             width: 2,
                           ),
                         ),
@@ -153,7 +153,7 @@ class LoginPage extends StatelessWidget {
                           },
                         ),
                       ),
-                      cursorColor: Color(0xFF3D7FA4),
+                      cursorColor: Color(0xFF186CAC),
                       onChanged: (value) => loginController.password.value = value,
                     )),
                   ],
@@ -184,13 +184,13 @@ class LoginPage extends StatelessWidget {
                                   children: [
                                     Text(
                                       'Login',
-                                      style: TextStyle(
+                                      style: GoogleFonts.poppins(
                                         fontSize: screenWidth * 0.05, // 5% of screen width
                                         color: Colors.white,
-                                        fontWeight: FontWeight.bold,
+                                        // fontWeight: FontWeight.bold,
                                       ),
                                     ),
-                                    SizedBox(width: screenWidth * 0.015), // 1.5% of screen width
+                                    SizedBox(width: screenWidth * 0.015),
                                     // Icon(
                                     //   CupertinoIcons.right_chevron,
                                     //   color: Colors.white,

@@ -3,6 +3,7 @@ import 'dart:convert';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:google_fonts/google_fonts.dart';
 import 'package:http/http.dart' as http;
 import 'package:vidhyatra_flutter/constants/api_endpoints.dart';
 import 'package:vidhyatra_flutter/controllers/blogController.dart';
@@ -12,7 +13,6 @@ import '../controllers/LoginController.dart';
 import '../controllers/ProfileController.dart';
 import '../models/blogModel.dart';
 
-
 class Dashboard extends StatefulWidget {
   const Dashboard({super.key});
 
@@ -21,7 +21,6 @@ class Dashboard extends StatefulWidget {
 }
 
 class _DashboardState extends State<Dashboard> {
-
   final BlogController blogController = Get.put(BlogController());
 
   @override
@@ -31,12 +30,19 @@ class _DashboardState extends State<Dashboard> {
 
     blogController.fetchBlogs();
     return Scaffold(
+      backgroundColor: Colors.grey[200],
       appBar: AppBar(
         // iconTheme: IconThemeData(
         //   color: Colors.white, // Set Drawer icon color to white
         // ),
-        // backgroundColor: Colors.grey[200],
-        title: Text("Vidhyatra", style: TextStyle(color: Colors.black)),
+        backgroundColor: Colors.grey[200],
+        title: Text(
+            "Vidhyatra",
+            style: GoogleFonts.poppins(
+                color: Colors.black,
+                fontSize: 20
+            )
+        ),
         actions: [
           SizedBox(width: 10),
           Icon(Icons.notifications),
@@ -62,18 +68,29 @@ class _DashboardState extends State<Dashboard> {
                     context: context,
                     builder: (BuildContext context) {
                       return AlertDialog(
-                        title: Text('Create Profile'),
+                        title: Text(
+                          'Create Profile',
+                          style: GoogleFonts.poppins(),
+                        ),
                         content: Text(
-                            'You have not created a profile yet. Would you like to create one now?'),
+                          'You have not created a profile yet. Would you like to create one now?',
+                          style: GoogleFonts.poppins(),
+                        ),
                         actions: <Widget>[
                           TextButton(
-                            child: Text('Cancel'),
+                            child: Text(
+                              'Cancel',
+                              style: GoogleFonts.poppins(),
+                            ),
                             onPressed: () {
                               Navigator.of(context).pop();
                             },
                           ),
                           TextButton(
-                            child: Text('Create Profile'),
+                            child: Text(
+                              'Create Profile',
+                              style: GoogleFonts.poppins(),
+                            ),
                             onPressed: () {
                               Navigator.of(context).pop();
                               Navigator.push(
@@ -96,7 +113,8 @@ class _DashboardState extends State<Dashboard> {
             child: CircleAvatar(
               backgroundImage: profileController.profile.value != null &&
                   profileController.profile.value!.profileImageUrl != null
-                  ? NetworkImage(profileController.profile.value!.profileImageUrl!) // Load image from URL if available
+                  ? NetworkImage(profileController.profile.value!
+                  .profileImageUrl!) // Load image from URL if available
                   : AssetImage('assets/default_profile.png') as ImageProvider,
               backgroundColor: Colors.grey.shade400,
               radius: 20, // Ensure the avatar size is appropriate
@@ -114,8 +132,7 @@ class _DashboardState extends State<Dashboard> {
               margin: EdgeInsets.only(left: 20.0),
               child: Text(
                 'Navigation',
-                style: TextStyle(
-                  // color: Colors.black,
+                style: GoogleFonts.poppins(
                   fontSize: 23,
                   fontWeight: FontWeight.bold,
                 ),
@@ -124,15 +141,20 @@ class _DashboardState extends State<Dashboard> {
             SizedBox(height: 20),
             ListTile(
               leading: Icon(Icons.manage_accounts),
-              title: Text('Account'),
+              title: Text(
+                'Account',
+                style: GoogleFonts.poppins(),
+              ),
               onTap: () {
                 Get.toNamed('/account');
               },
             ),
-
             ListTile(
               leading: Icon(Icons.people),
-              title: Text('Friends'),
+              title: Text(
+                'Friends',
+                style: GoogleFonts.poppins(),
+              ),
               onTap: () {
                 Get.toNamed('/friends');
                 // Navigator.pushNamed(context, '/friends');
@@ -140,22 +162,26 @@ class _DashboardState extends State<Dashboard> {
             ),
             ListTile(
               leading: Icon(Icons.book_online),
-              title: Text('Assignments'),
+              title: Text(
+                'Assignments',
+                style: GoogleFonts.poppins(),
+              ),
               onTap: () {
                 // Get.toNamed('/assignments');
                 // Get.to(AssignmentPage());
-                 Navigator.pushNamed(context, '/assignments');
+                Navigator.pushNamed(context, '/assignments');
               },
             ),
             ListTile(
               leading: Icon(Icons.settings),
-              title: Text('Settings'),
+              title: Text(
+                'Settings',
+                style: GoogleFonts.poppins(),
+              ),
               onTap: () {
                 Get.toNamed("/studentSetting");
               },
             ),
-
-
           ],
         ),
       ),
@@ -168,8 +194,13 @@ class _DashboardState extends State<Dashboard> {
               // Today's Timeline Section
               Padding(
                 padding: EdgeInsets.all(16.0),
-                child: Text("Today's Timeline",
-                    style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
+                child: Text(
+                    "Today's Timeline",
+                    style: GoogleFonts.poppins(
+                        fontSize: 18,
+                        fontWeight: FontWeight.bold
+                    )
+                ),
               ),
               SingleChildScrollView(
                 scrollDirection: Axis.horizontal,
@@ -181,12 +212,16 @@ class _DashboardState extends State<Dashboard> {
                         "CS1234 - Artificial Intelligence",
                         "ONGOING CLASS",
                         Colors.green),
-                    _buildTimelineCard("04:40-5:00PM", "Room Everest",
-                        "CS2345 - Data Science", "UPCOMING CLASS", Colors.orange),
+                    _buildTimelineCard(
+                        "04:40-5:00PM",
+                        "Room Everest",
+                        "CS2345 - Data Science",
+                        "UPCOMING CLASS",
+                        Colors.orange),
                   ],
                 ),
               ),
-              SizedBox(height: 20),
+              SizedBox(height: 10),
               // Latest Blogs Section with grey background
               Container(
                 // color: Colors.grey[200], // Light grey background
@@ -197,8 +232,10 @@ class _DashboardState extends State<Dashboard> {
                       padding: EdgeInsets.all(16.0),
                       child: Text(
                         "Latest Blogs",
-                        style:
-                        TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+                        style: GoogleFonts.poppins(
+                            fontSize: 18,
+                            fontWeight: FontWeight.bold
+                        ),
                       ),
                     ),
                     Obx(() {
@@ -209,7 +246,12 @@ class _DashboardState extends State<Dashboard> {
                       final blogs = blogController.blogs.value;
 
                       if (blogs == null || blogs.isEmpty) {
-                        return Center(child: Text("No blogs available"));
+                        return Center(
+                          child: Text(
+                            "No blogs available",
+                            style: GoogleFonts.poppins(),
+                          ),
+                        );
                       }
 
                       // Reverse the list of blogs to display the most recent one at the top
@@ -237,41 +279,47 @@ class _DashboardState extends State<Dashboard> {
           ),
         ),
       ),
-      bottomNavigationBar: BottomAppBar(
-        shape: CircularNotchedRectangle(),
-        notchMargin: 8.0,
-        child: Row(
-          mainAxisAlignment: MainAxisAlignment.spaceAround,
-          children: [
-            IconButton(
-                icon: Icon(Icons.schedule_outlined),
-                onPressed: () {
-                  Get.toNamed('/classSchedule');
-                }),
-            IconButton(
-                icon: Icon(Icons.payment),
-                onPressed: () {
-                  Get.toNamed('/feesScreen');
-                }),
-            SizedBox(width: 40), // Space for FAB
-            IconButton(
-                icon: Icon(Icons.calendar_month),
-                onPressed: () {
-                  Get.toNamed('/calendar');
-                }),
-            IconButton(
-                icon: Icon(Icons.chat),
-                onPressed: () {
-                  Get.toNamed('/messages');
-                }),
-          ],
+      bottomNavigationBar: Container(
+        child: SizedBox(
+          height: 70, // Reduce this value to make it smaller
+          child: BottomAppBar(
+            color:Colors.grey[200],
+            shape: CircularNotchedRectangle(),
+            notchMargin: 8.0,
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.spaceAround,
+              children: [
+                IconButton(
+                    icon: Icon(Icons.schedule_outlined),
+                    onPressed: () {
+                      Get.toNamed('/classSchedule');
+                    }),
+                IconButton(
+                    icon: Icon(Icons.payment),
+                    onPressed: () {
+                      Get.toNamed('/feesScreen');
+                    }),
+                SizedBox(width: 40), // Space for FAB
+                IconButton(
+                    icon: Icon(Icons.calendar_month),
+                    onPressed: () {
+                      Get.toNamed('/calendar');
+                    }),
+                IconButton(
+                    icon: Icon(Icons.chat),
+                    onPressed: () {
+                      Get.toNamed('/messages');
+                    }),
+              ],
+            ),
+          ),
         ),
       ),
       floatingActionButton: FloatingActionButton(
         onPressed: () {
           Get.toNamed('/new-post');
         },
-        backgroundColor: Color(0xFF3D7FA4),
+        backgroundColor: Color(0xFF186CAC),
         child: Icon(Icons.add, color: Colors.white),
       ),
       floatingActionButtonLocation: FloatingActionButtonLocation.centerDocked,
@@ -292,8 +340,8 @@ class _DashboardState extends State<Dashboard> {
             begin: Alignment.topLeft,
             end: Alignment.bottomRight,
             colors: [
-              Color(0xFF3D7FA4), // Starting color (matches your theme)
-              Color(0xFF1E4D6B), // Darker shade for gradient effect
+              Color(0xFF186CAC), // Starting color (matches your theme)
+            Color(0xFF186CAC), // Darker shade for gradient effect
             ],
           ),
           borderRadius: BorderRadius.circular(12), // Match card's border radius
@@ -313,7 +361,7 @@ class _DashboardState extends State<Dashboard> {
                   SizedBox(width: 5),
                   Text(
                     time,
-                    style: TextStyle(color: Colors.white), // Changed to white
+                    style: GoogleFonts.poppins(color: Colors.white), // Changed to white
                   ),
                   SizedBox(width: 15),
                   Icon(
@@ -324,14 +372,14 @@ class _DashboardState extends State<Dashboard> {
                   SizedBox(width: 5),
                   Text(
                     location,
-                    style: TextStyle(color: Colors.white), // Changed to white
+                    style: GoogleFonts.poppins(color: Colors.white), // Changed to white
                   ),
                 ],
               ),
               SizedBox(height: 5),
               Text(
                 course,
-                style: TextStyle(
+                style: GoogleFonts.poppins(
                   fontSize: 16,
                   color: Colors.white, // Changed to white
                 ),
@@ -339,7 +387,7 @@ class _DashboardState extends State<Dashboard> {
               SizedBox(height: 5),
               Text(
                 status,
-                style: TextStyle(color: statusColor),
+                style: GoogleFonts.poppins(color: statusColor),
               ),
             ],
           ),
@@ -351,11 +399,15 @@ class _DashboardState extends State<Dashboard> {
   Widget _buildBlogCard(Blog blog) {
     return Card(
       margin: EdgeInsets.symmetric(horizontal: 16.0, vertical: 8.0),
-      color: Colors.white, // Set card background to white
-      elevation: 4, // Adds shadow depth
-      shadowColor: Colors.grey.withOpacity(0.5), // Shadow color with opacity
+      color: Colors.white,
+      // Set card background to white
+      elevation: 4,
+      // Adds shadow depth
+      shadowColor: Colors.grey.withOpacity(0.5),
+      // Shadow color with opacity
       shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.circular(12.0), // Rounded corners for even shadow
+        borderRadius:
+        BorderRadius.circular(12.0), // Rounded corners for even shadow
       ),
       child: Padding(
         padding: const EdgeInsets.all(16.0),
@@ -368,7 +420,8 @@ class _DashboardState extends State<Dashboard> {
                   radius: 25.0,
                   backgroundImage: blog.profileImage.isNotEmpty
                       ? NetworkImage(blog.profileImage)
-                      : AssetImage('assets/default_profile.png') as ImageProvider,
+                      : AssetImage('assets/default_profile.png')
+                  as ImageProvider,
                   // backgroundColor: Colors.grey[300], // Removed as it's not needed with image
                 ),
                 SizedBox(width: 8.0),
@@ -377,11 +430,17 @@ class _DashboardState extends State<Dashboard> {
                   children: [
                     Text(
                       blog.fullName,
-                      style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16.0),
+                      style: GoogleFonts.poppins(
+                          fontWeight: FontWeight.bold,
+                          fontSize: 16.0
+                      ),
                     ),
                     Text(
                       blog.createdAt,
-                      style: TextStyle(color: Colors.grey, fontSize: 12.0),
+                      style: GoogleFonts.poppins(
+                          color: Colors.grey,
+                          fontSize: 12.0
+                      ),
                     ),
                   ],
                 ),
@@ -391,7 +450,7 @@ class _DashboardState extends State<Dashboard> {
             // Blog Description
             Text(
               blog.blogDescription,
-              style: TextStyle(fontSize: 16),
+              style: GoogleFonts.poppins(fontSize: 15),
             ),
             SizedBox(height: 8.0),
 
@@ -476,14 +535,15 @@ class _DashboardState extends State<Dashboard> {
                                     alignment: Alignment.topRight,
                                     child: IconButton(
                                       icon: Icon(Icons.close),
-                                      onPressed: () => Navigator.of(context).pop(),
+                                      onPressed: () =>
+                                          Navigator.of(context).pop(),
                                     ),
                                   ),
                                   Padding(
                                     padding: const EdgeInsets.all(8.0),
                                     child: Text(
                                       "All Images",
-                                      style: TextStyle(
+                                      style: GoogleFonts.poppins(
                                         fontSize: 18,
                                         fontWeight: FontWeight.bold,
                                       ),
@@ -491,9 +551,11 @@ class _DashboardState extends State<Dashboard> {
                                   ),
                                   Expanded(
                                     child: Padding(
-                                      padding: const EdgeInsets.symmetric(horizontal: 8.0),
+                                      padding: const EdgeInsets.symmetric(
+                                          horizontal: 8.0),
                                       child: GridView.builder(
-                                        gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+                                        gridDelegate:
+                                        SliverGridDelegateWithFixedCrossAxisCount(
                                           crossAxisCount: 2,
                                           crossAxisSpacing: 8.0,
                                           mainAxisSpacing: 8.0,
@@ -506,16 +568,22 @@ class _DashboardState extends State<Dashboard> {
                                                 context: context,
                                                 builder: (context) {
                                                   return Dialog(
-                                                    backgroundColor: Colors.black,
-                                                    insetPadding: EdgeInsets.zero,
+                                                    backgroundColor:
+                                                    Colors.black,
+                                                    insetPadding:
+                                                    EdgeInsets.zero,
                                                     child: Stack(
                                                       children: [
                                                         Center(
                                                           child: Hero(
-                                                            tag: blog.imageUrls[index],
-                                                            child: Image.network(
-                                                              blog.imageUrls[index],
-                                                              fit: BoxFit.contain,
+                                                            tag: blog.imageUrls[
+                                                            index],
+                                                            child:
+                                                            Image.network(
+                                                              blog.imageUrls[
+                                                              index],
+                                                              fit: BoxFit
+                                                                  .contain,
                                                             ),
                                                           ),
                                                         ),
@@ -525,11 +593,14 @@ class _DashboardState extends State<Dashboard> {
                                                           child: IconButton(
                                                             icon: Icon(
                                                               Icons.close,
-                                                              color: Colors.white,
+                                                              color:
+                                                              Colors.white,
                                                               size: 30,
                                                             ),
                                                             onPressed: () {
-                                                              Navigator.of(context).pop();
+                                                              Navigator.of(
+                                                                  context)
+                                                                  .pop();
                                                             },
                                                           ),
                                                         ),
@@ -540,7 +611,8 @@ class _DashboardState extends State<Dashboard> {
                                               );
                                             },
                                             child: ClipRRect(
-                                              borderRadius: BorderRadius.circular(8.0),
+                                              borderRadius:
+                                              BorderRadius.circular(8.0),
                                               child: Hero(
                                                 tag: blog.imageUrls[index],
                                                 child: Image.network(
@@ -560,7 +632,10 @@ class _DashboardState extends State<Dashboard> {
                           },
                         );
                       },
-                      child: Text("+${blog.imageUrls.length - 2} more images"),
+                      child: Text(
+                        "+${blog.imageUrls.length - 2} more images",
+                        style: GoogleFonts.poppins(),
+                      ),
                     ),
                 ],
               ),
@@ -579,16 +654,17 @@ class _DashboardState extends State<Dashboard> {
                         print("like clicked");
                       },
                       child: Row(
-                        mainAxisSize: MainAxisSize.min,
+                        mainAxisSize: MainAxisSize.max,
                         children: [
                           Icon(
                             Icons.thumb_up_off_alt_outlined,
                             color: Colors.grey[600],
+                            size: 25,
                           ),
                           SizedBox(width: 5),
                           Text(
                             blog.likes.toString(),
-                            style: TextStyle(color: Colors.grey[600]),
+                            style: GoogleFonts.poppins(color: Colors.grey[600]),
                           ),
                         ],
                       ),
@@ -600,18 +676,10 @@ class _DashboardState extends State<Dashboard> {
                       child: Icon(
                         Icons.comment,
                         color: Colors.grey[600],
+                        size: 24,
                       ),
                     ),
                   ],
-                ),
-                TextButton(
-                  onPressed: () {
-                    print("Share clicked");
-                  },
-                  child: Icon(
-                    Icons.share,
-                    color: Colors.grey[600],
-                  ),
                 ),
               ],
             ),

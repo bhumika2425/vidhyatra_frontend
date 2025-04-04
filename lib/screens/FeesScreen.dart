@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:google_fonts/google_fonts.dart';
 import 'package:vidhyatra_flutter/controllers/PaymentController.dart';
 import '../controllers/FeeController.dart';
 import '../models/FeesModel.dart';
@@ -26,15 +27,19 @@ class FeesScreen extends StatelessWidget {
 
 
     return Scaffold(
+      backgroundColor: Colors.grey[200],
       appBar: AppBar(
         iconTheme: IconThemeData(
           color: Colors.black, // Set Drawer icon color to white
         ),
-        backgroundColor: Colors.white,
+        backgroundColor: Colors.grey[200],
         title: Text(
-          'Fee Management',
-          style: TextStyle(fontWeight: FontWeight.bold, fontSize: 22 * textScale, color: Colors.black),
-        ),
+          "Fee Management",
+          style: GoogleFonts.poppins(
+              color: Colors.black,
+              fontSize: 22
+          )
+      ),
         elevation: 0,
         actions: [
           Row(
@@ -129,7 +134,7 @@ class FeesScreen extends StatelessWidget {
                           padding: EdgeInsets.symmetric(vertical: screenHeight * 0.015),
                           child: Text(
                             "⏳ Just $daysRemaining day(s) left! Make sure to complete your payment on time and stay ahead of your finances. Your timely payment keeps everything running smoothly. You've got this! 💪",
-                            style: TextStyle(fontSize: 14 * textScale, fontWeight: FontWeight.bold, color: Colors.orange),
+                            style: TextStyle(fontSize: 14 * textScale, fontWeight: FontWeight.bold, color: Colors.deepOrange),
                           ),
                         ),
                       Row(
@@ -141,7 +146,7 @@ class FeesScreen extends StatelessWidget {
                               style: TextStyle(
                                 fontSize: 18 * textScale,
                                 fontWeight: FontWeight.bold,
-                                color: Color(0xFF3D7FA4),
+                                color: Color(0xFF186CAC),
                               ),
                               overflow: TextOverflow.ellipsis,
                             ),
@@ -156,7 +161,7 @@ class FeesScreen extends StatelessWidget {
                                   print("Selected Fee Amount: ${fee.feeAmount}");
                                 }
                               },
-                              activeColor: Color(0xFF3D7FA4), // Color when checkbox is checked
+                              activeColor: Color(0xFF186CAC), // Color when checkbox is checked
                               checkColor: Colors.white,
                             );
                           })
@@ -186,7 +191,7 @@ class FeesScreen extends StatelessWidget {
                         style: TextStyle(
                           fontSize: 16 * textScale,
                           fontWeight: FontWeight.bold,
-                          color: Color(0xFF3D7FA4),
+                          color: Color(0xFF186CAC),
                         ),
                       ),
                       if (daysRemaining <= 0)
