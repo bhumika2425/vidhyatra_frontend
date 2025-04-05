@@ -20,6 +20,9 @@ class ApiEndPoints{
 
   static const forgotPassword = "${baseUrl}/api/auth/forgot-password";
 
+  //change password
+  static const changePassword = "${baseUrl}/api/auth/change-password";
+
   static const passwordReset = "${baseUrl}api/auth/reset-password";
 //profile creation and update
   static const profileCreation = "${baseUrl}/api/profile/create";
@@ -55,5 +58,6 @@ static const initializePaymentWithEsewa = "${baseUrl}/api/payFees/initialize-ese
 //calender
   static const postEvents = "${baseUrl}/api/eventCalender/postEvents";
 static const getEvents = "${baseUrl}/api/eventCalender/getEvents";
+
 
 }

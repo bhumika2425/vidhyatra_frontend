@@ -8,241 +8,243 @@ import '../controllers/ProfileController.dart';
 class StudentProfilePage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
-    // Get the ProfileController instance
     final ProfileController profileController = Get.put(ProfileController());
-
-    // Assuming token is fetched from the user provider or storage
-    final token = Get.find<LoginController>().token.value;   // Replace this with the actual token
-
-    // Fetch the profile data on page load
+    final token = Get.find<LoginController>().token.value;
     profileController.fetchProfileData(token);
+    final screenHeight = MediaQuery.of(context).size.height;
+    final imageHeight = screenHeight * 0.35;
 
     return Scaffold(
+      backgroundColor: Colors.grey[100],
       appBar: AppBar(
-        title: Text('Profile'),
+        title: Text(
+          'Student Profile',
+          style: TextStyle(
+            fontWeight: FontWeight.bold,
+            fontSize: 22,
+            color: Colors.black87,
+          ),
+        ),
+        backgroundColor: Colors.white,
+        elevation: 2,
+        actions: [
+          IconButton(
+            icon: Icon(Icons.edit, color: Colors.blueAccent),
+            onPressed: () {},
+          ),
+        ],
       ),
       body: Obx(() {
-        // Reactive UI: The body updates when `isLoading` or `profile` changes
         if (profileController.isLoading.value) {
-          return Center(child: CircularProgressIndicator());
+          return Center(
+            child: CircularProgressIndicator(color: Colors.blueAccent),
+          );
         }
-
         if (profileController.profile.value != null) {
           final profile = profileController.profile.value!;
           return SingleChildScrollView(
-            padding: const EdgeInsets.all(16.0),
             child: Column(
-              crossAxisAlignment: CrossAxisAlignment.center,
+              crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Column(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    CircleAvatar(
-                      radius: 70,
-                      backgroundImage: profile.profileImageUrl != null
+                // Profile Header
+                Container(
+                  height: imageHeight,
+                  width: double.infinity,
+                  decoration: BoxDecoration(
+                    image: DecorationImage(
+                      image: profile.profileImageUrl != null
                           ? NetworkImage(profile.profileImageUrl!)
-                          : AssetImage('assets/default_profile.png')
-                      as ImageProvider,
+                          : AssetImage('assets/default_profile.png') as ImageProvider,
+                      fit: BoxFit.cover,
                     ),
-                    SizedBox(height: 20),
-                    Text(
-                      profile.fullname ?? 'N/A',
-                      style: TextStyle(
-                        fontSize: 30,
-                        fontWeight: FontWeight.bold,
+                    boxShadow: [
+                      BoxShadow(
+                        color: Colors.black26,
+                        blurRadius: 10,
+                        offset: Offset(0, 2),
                       ),
-                      textAlign: TextAlign.center,
-                    ),
-                    SizedBox(height: 20),
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
-                        // Edit Profile Button
-                        OutlinedButton(
-                          style: OutlinedButton.styleFrom(
-                            side: BorderSide(color: Colors.black),
-                            shape: RoundedRectangleBorder(
-                                borderRadius: BorderRadius.circular(12)),
-                            padding: EdgeInsets.symmetric(vertical: 12, horizontal: 24),
-                          ),
-                          onPressed: () {
-                            // Navigate to update profile page
-                            // Get.to(() => StudentProfileUpdate());
-                          },
-                          child: Row(
-                            mainAxisSize: MainAxisSize.min,
-                            children: [
-                              Icon(Icons.edit, color: Colors.black),
-                              SizedBox(width: 8),
-                              Text(
-                                'Edit Profile',
-                                style: TextStyle(color: Colors.black, fontSize: 14),
-                              ),
-                            ],
-                          ),
-                        ),
-                        SizedBox(width: 20),
-                        // Share Profile Button
-                        OutlinedButton(
-                          style: OutlinedButton.styleFrom(
-                            side: BorderSide(color: Colors.black),
-                            shape: RoundedRectangleBorder(
-                                borderRadius: BorderRadius.circular(12)),
-                            padding: EdgeInsets.symmetric(vertical: 12, horizontal: 24),
-                          ),
-                          onPressed: () {
-                            // Implement share profile functionality
-                            _shareProfile();
-                          },
-                          child: Row(
-                            mainAxisSize: MainAxisSize.min,
-                            children: [
-                              Icon(Icons.share, color: Colors.black),
-                              SizedBox(width: 8),
-                              Text(
-                                'Share Profile',
-                                style: TextStyle(color: Colors.black, fontSize: 14),
-                              ),
-                            ],
-                          ),
-                        ),
-                      ],
-                    ),
-                  ],
-                ),
-                SizedBox(height: 20),
-                Card(
-                  elevation: 4,
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(12),
+                    ],
                   ),
-                  margin: const EdgeInsets.symmetric(vertical: 10),
-                  child: Padding(
-                    padding: const EdgeInsets.all(16.0),
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Align(
-                          alignment: Alignment.centerLeft,
-                          child: Text(
-                            'Personal Details',
+                  child: Container(
+                    decoration: BoxDecoration(
+                      gradient: LinearGradient(
+                        colors: [
+                          Colors.black.withOpacity(0.7),
+                          Colors.transparent,
+                        ],
+                        begin: Alignment.bottomCenter,
+                        end: Alignment.topCenter,
+                      ),
+                    ),
+                    child: Padding(
+                      padding: EdgeInsets.all(20),
+                      child: Column(
+                        mainAxisAlignment: MainAxisAlignment.end,
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text(
+                            profile.fullname ?? 'John Doe',
                             style: TextStyle(
-                              fontSize: 23,
+                              fontSize: 32,
                               fontWeight: FontWeight.bold,
-                              color: Colors.black87,
+                              color: Colors.white,
                             ),
                           ),
-                        ),
-                        SizedBox(height: 10),
-                        ProfileDetailRow(
-                          icon: FontAwesomeIcons.calendarAlt,
-                          label: 'Date of Birth',
-                          value: profile.dateOfBirth != null
-                              ? profile.dateOfBirth!.toLocal().toString().split(' ')[0]
-                              : 'N/A',
-                        ),
-                        ProfileDetailRow(
-                          icon: FontAwesomeIcons.mapMarkerAlt,
-                          label: 'Location',
-                          value: profile.location ?? 'N/A',
-                        ),
-                        ProfileDetailRow(
-                          icon: FontAwesomeIcons.graduationCap,
-                          label: 'Department',
-                          value: profile.department ?? 'N/A',
-                        ),
-                        ProfileDetailRow(
-                          icon: FontAwesomeIcons.timeline,
-                          label: 'Year',
-                          value: profile.year ?? 'N/A',
-                        ),
-                        ProfileDetailRow(
-                          icon: FontAwesomeIcons.graduationCap,
-                          label: 'Semester',
-                          value: profile.semester ?? 'N/A',
-                        ),
-                      ],
+                          SizedBox(height: 5),
+                          Text(
+                            profile.department ?? 'Computer Science',
+                            style: TextStyle(
+                              fontSize: 18,
+                              color: Colors.white70,
+                            ),
+                          ),
+                        ],
+                      ),
                     ),
                   ),
                 ),
-                SizedBox(height: 30),
+
+                // Profile Content
+                Padding(
+                  padding: EdgeInsets.all(20),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      // Personal Details Section
+                      _buildSectionTitle('Personal Details'),
+                      _buildInfoCard([
+                        _buildInfoRow(FontAwesomeIcons.calendar, 'Date of Birth',
+                            profile.dateOfBirth?.toString() ?? '1998-05-15'),
+                        _buildInfoRow(FontAwesomeIcons.mapMarkerAlt, 'Location',
+                            profile.location ?? 'New York, USA'),
+                        _buildInfoRow(FontAwesomeIcons.university, 'Department',
+                            profile.department ?? 'Computer Science'),
+                        _buildInfoRow(FontAwesomeIcons.graduationCap, 'Year',
+                            profile.year ?? '3rd Year'),
+                        _buildInfoRow(FontAwesomeIcons.book, 'Semester',
+                            profile.semester ?? '6th Semester'),
+                      ]),
+
+                      SizedBox(height: 20),
+
+                      // Bio Section
+                      _buildSectionTitle('Bio'),
+                      _buildInfoCard([
+                        Text(
+                          'A passionate computer science student with a keen interest in developing innovative solutions. Always eager to learn and explore new technologies.',
+                          style: TextStyle(fontSize: 16, color: Colors.grey[800]),
+                        ),
+                      ]),
+
+                      SizedBox(height: 20),
+
+                      // Interests Section
+                      _buildSectionTitle('Interests'),
+                      _buildInfoCard([
+                        Wrap(
+                          spacing: 10,
+                          children: [
+                            _buildInterestChip('Machine Learning'),
+                            _buildInterestChip('Web Development'),
+                            _buildInterestChip('Mobile Apps'),
+                            _buildInterestChip('Artificial Intelligence'),
+                          ],
+                        ),
+                      ]),
+                    ],
+                  ),
+                ),
               ],
             ),
           );
         } else {
-          return Center(child: Text('Profile not found'));
+          return Center(
+            child: Text(
+              'Profile not found',
+              style: TextStyle(fontSize: 18, color: Colors.grey),
+            ),
+          );
         }
       }),
     );
   }
 
-  void _shareProfile() {
-    // You can use a package like 'share' to share the profile data.
-    showDialog(
-      context: Get.context!,
-      builder: (BuildContext context) {
-        return AlertDialog(
-          title: Text("Share Profile"),
-          content: Text("Profile shared successfully!"),
-          actions: [
-            TextButton(
-              child: Text('OK'),
-              onPressed: () {
-                Navigator.of(context).pop();
-              },
-            ),
-          ],
-        );
-      },
+  Widget _buildSectionTitle(String title) {
+    return Padding(
+      padding: EdgeInsets.only(bottom: 10),
+      child: Text(
+        title,
+        style: TextStyle(
+          fontSize: 22,
+          fontWeight: FontWeight.bold,
+          color: Colors.blueAccent,
+        ),
+      ),
     );
   }
-}
 
-class ProfileDetailRow extends StatelessWidget {
-  final IconData icon;
-  final String label;
-  final String value;
-
-  const ProfileDetailRow({
-    required this.icon,
-    required this.label,
-    required this.value,
-  });
-
-  @override
-  Widget build(BuildContext context) {
-    return Padding(
-      padding: const EdgeInsets.symmetric(vertical: 8.0),
-      child: Row(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Icon(icon, color: Color(0xFF971F20)),
-          SizedBox(width: 15),
-          Expanded(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(
-                  label,
-                  style: TextStyle(
-                    fontSize: 16,
-                    color: Colors.black54,
-                  ),
-                ),
-                SizedBox(height: 4),
-                Text(
-                  value,
-                  style: TextStyle(
-                    fontSize: 18,
-                    fontWeight: FontWeight.bold,
-                    color: Colors.black87,
-                  ),
-                ),
-              ],
-            ),
+  Widget _buildInfoCard(List<Widget> children) {
+    return Container(
+      width: double.infinity,
+      padding: EdgeInsets.all(15),
+      decoration: BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(12),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black12,
+            blurRadius: 8,
+            offset: Offset(0, 2),
           ),
         ],
       ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: children,
+      ),
+    );
+  }
+
+  Widget _buildInfoRow(IconData icon, String label, String value) {
+    return Padding(
+      padding: EdgeInsets.symmetric(vertical: 8),
+      child: Row(
+        children: [
+          FaIcon(icon, size: 20, color: Colors.blueAccent),
+          SizedBox(width: 15),
+          Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text(
+                label,
+                style: TextStyle(
+                  fontSize: 14,
+                  color: Colors.grey[600],
+                ),
+              ),
+              Text(
+                value,
+                style: TextStyle(
+                  fontSize: 16,
+                  color: Colors.black87,
+                  fontWeight: FontWeight.w500,
+                ),
+              ),
+            ],
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildInterestChip(String interest) {
+    return Chip(
+      label: Text(
+        interest,
+        style: TextStyle(color: Colors.white),
+      ),
+      backgroundColor: Colors.blueAccent,
+      padding: EdgeInsets.symmetric(horizontal: 8),
     );
   }
 }

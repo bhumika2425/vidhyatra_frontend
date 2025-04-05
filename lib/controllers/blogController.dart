@@ -61,6 +61,11 @@ class BlogController extends GetxController {
 
       var response = await request.send();
 
+// Read the response body as string
+      final respStr = await response.stream.bytesToString();
+      print("Response status: ${response.statusCode}");
+      print("Response body: $respStr");
+
       if (response.statusCode == 201) {
         descriptionController.clear();
         images.clear();
@@ -68,8 +73,9 @@ class BlogController extends GetxController {
         fetchBlogs(); // Fetch blogs again after posting the new one
         Get.snackbar("Success", "Blog posted successfully!");
       } else {
-        Get.snackbar("Error", "Failed to post blog");
+        Get.snackbar("Error", "Failed to post blog: $respStr");
       }
+
     } catch (e) {
       Get.snackbar("Error", "Error posting blog: $e");
       print('$e');

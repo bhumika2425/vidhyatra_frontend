@@ -25,23 +25,16 @@ class _DashboardState extends State<Dashboard> {
 
   @override
   Widget build(BuildContext context) {
-    // Get the ProfileController
     final ProfileController profileController = Get.find<ProfileController>();
 
     blogController.fetchBlogs();
     return Scaffold(
       backgroundColor: Colors.grey[200],
       appBar: AppBar(
-        // iconTheme: IconThemeData(
-        //   color: Colors.white, // Set Drawer icon color to white
-        // ),
         backgroundColor: Colors.grey[200],
         title: Text(
-            "Vidhyatra",
-            style: GoogleFonts.poppins(
-                color: Colors.black,
-                fontSize: 20
-            )
+          "Vidhyatra",
+          style: GoogleFonts.poppins(color: Colors.black, fontSize: 20),
         ),
         actions: [
           SizedBox(width: 10),
@@ -50,13 +43,9 @@ class _DashboardState extends State<Dashboard> {
           GestureDetector(
             onTap: () async {
               final token = Get.find<LoginController>().token.value;
-
-              // Send request to check if the profile exists
               final response = await http.get(
                 Uri.parse(ApiEndPoints.checkIfProfileExist),
-                headers: {
-                  'Authorization': 'Bearer $token',
-                },
+                headers: {'Authorization': 'Bearer $token'},
               );
 
               if (response.statusCode == 200) {
@@ -68,36 +57,23 @@ class _DashboardState extends State<Dashboard> {
                     context: context,
                     builder: (BuildContext context) {
                       return AlertDialog(
-                        title: Text(
-                          'Create Profile',
-                          style: GoogleFonts.poppins(),
-                        ),
+                        title: Text('Create Profile', style: GoogleFonts.poppins()),
                         content: Text(
                           'You have not created a profile yet. Would you like to create one now?',
                           style: GoogleFonts.poppins(),
                         ),
                         actions: <Widget>[
                           TextButton(
-                            child: Text(
-                              'Cancel',
-                              style: GoogleFonts.poppins(),
-                            ),
-                            onPressed: () {
-                              Navigator.of(context).pop();
-                            },
+                            child: Text('Cancel', style: GoogleFonts.poppins()),
+                            onPressed: () => Navigator.of(context).pop(),
                           ),
                           TextButton(
-                            child: Text(
-                              'Create Profile',
-                              style: GoogleFonts.poppins(),
-                            ),
+                            child: Text('Create Profile', style: GoogleFonts.poppins()),
                             onPressed: () {
                               Navigator.of(context).pop();
                               Navigator.push(
                                 context,
-                                MaterialPageRoute(
-                                    builder: (context) =>
-                                        ProfileCreationPage()),
+                                MaterialPageRoute(builder: (context) => ProfileCreationPage()),
                               );
                             },
                           ),
@@ -113,11 +89,10 @@ class _DashboardState extends State<Dashboard> {
             child: CircleAvatar(
               backgroundImage: profileController.profile.value != null &&
                   profileController.profile.value!.profileImageUrl != null
-                  ? NetworkImage(profileController.profile.value!
-                  .profileImageUrl!) // Load image from URL if available
+                  ? NetworkImage(profileController.profile.value!.profileImageUrl!)
                   : AssetImage('assets/default_profile.png') as ImageProvider,
               backgroundColor: Colors.grey.shade400,
-              radius: 20, // Ensure the avatar size is appropriate
+              radius: 20,
             ),
           ),
           SizedBox(width: 10),
@@ -132,193 +107,124 @@ class _DashboardState extends State<Dashboard> {
               margin: EdgeInsets.only(left: 20.0),
               child: Text(
                 'Navigation',
-                style: GoogleFonts.poppins(
-                  fontSize: 23,
-                  fontWeight: FontWeight.bold,
-                ),
+                style: GoogleFonts.poppins(fontSize: 23, fontWeight: FontWeight.bold),
               ),
             ),
             SizedBox(height: 20),
             ListTile(
               leading: Icon(Icons.manage_accounts),
-              title: Text(
-                'Account',
-                style: GoogleFonts.poppins(),
-              ),
-              onTap: () {
-                Get.toNamed('/account');
-              },
+              title: Text('Account', style: GoogleFonts.poppins()),
+              onTap: () => Get.toNamed('/account'),
             ),
             ListTile(
               leading: Icon(Icons.people),
-              title: Text(
-                'Friends',
-                style: GoogleFonts.poppins(),
-              ),
-              onTap: () {
-                Get.toNamed('/friends');
-                // Navigator.pushNamed(context, '/friends');
-              },
+              title: Text('Friends', style: GoogleFonts.poppins()),
+              onTap: () => Get.toNamed('/friends'),
             ),
             ListTile(
               leading: Icon(Icons.book_online),
-              title: Text(
-                'Assignments',
-                style: GoogleFonts.poppins(),
-              ),
-              onTap: () {
-                // Get.toNamed('/assignments');
-                // Get.to(AssignmentPage());
-                Navigator.pushNamed(context, '/assignments');
-              },
+              title: Text('Assignments', style: GoogleFonts.poppins()),
+              onTap: () => Navigator.pushNamed(context, '/assignments'),
             ),
             ListTile(
               leading: Icon(Icons.settings),
-              title: Text(
-                'Settings',
-                style: GoogleFonts.poppins(),
-              ),
-              onTap: () {
-                Get.toNamed("/studentSetting");
-              },
+              title: Text('Settings', style: GoogleFonts.poppins()),
+              onTap: () => Get.toNamed("/studentSetting"),
             ),
           ],
         ),
       ),
-      body: SingleChildScrollView(
-        child: Container(
-          // color: Colors.grey[200],
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              // Today's Timeline Section
-              Padding(
-                padding: EdgeInsets.all(16.0),
-                child: Text(
-                    "Today's Timeline",
-                    style: GoogleFonts.poppins(
-                        fontSize: 18,
-                        fontWeight: FontWeight.bold
-                    )
+      body: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          // Today's Timeline Section (Non-scrollable)
+          Padding(
+            padding: EdgeInsets.all(16.0),
+            child: Text(
+              "Today's Timeline",
+              style: GoogleFonts.poppins(fontSize: 18, fontWeight: FontWeight.bold),
+            ),
+          ),
+          SingleChildScrollView(
+            scrollDirection: Axis.horizontal,
+            child: Row(
+              children: [
+                _buildTimelineCard("04-4:30PM", "Room Rara", "CS1234 - Artificial Intelligence",
+                    "ONGOING CLASS", Colors.green),
+                _buildTimelineCard("04:40-5:00PM", "Room Everest", "CS2345 - Data Science",
+                    "UPCOMING CLASS", Colors.orange),
+              ],
+            ),
+          ),
+          SizedBox(height: 10),
+          // Latest Blogs Section (Scrollable)
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Padding(
+                  padding: EdgeInsets.all(16.0),
+                  child: Text(
+                    "Latest Blogs",
+                    style: GoogleFonts.poppins(fontSize: 18, fontWeight: FontWeight.bold),
+                  ),
                 ),
-              ),
-              SingleChildScrollView(
-                scrollDirection: Axis.horizontal,
-                child: Row(
-                  children: [
-                    _buildTimelineCard(
-                        "04-4:30PM",
-                        "Room Rara",
-                        "CS1234 - Artificial Intelligence",
-                        "ONGOING CLASS",
-                        Colors.green),
-                    _buildTimelineCard(
-                        "04:40-5:00PM",
-                        "Room Everest",
-                        "CS2345 - Data Science",
-                        "UPCOMING CLASS",
-                        Colors.orange),
-                  ],
-                ),
-              ),
-              SizedBox(height: 10),
-              // Latest Blogs Section with grey background
-              Container(
-                // color: Colors.grey[200], // Light grey background
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Padding(
-                      padding: EdgeInsets.all(16.0),
-                      child: Text(
-                        "Latest Blogs",
-                        style: GoogleFonts.poppins(
-                            fontSize: 18,
-                            fontWeight: FontWeight.bold
-                        ),
-                      ),
-                    ),
-                    Obx(() {
-                      if (blogController.isLoading.value) {
-                        return Center(child: CircularProgressIndicator());
-                      }
+                Expanded(
+                  child: Obx(() {
+                    if (blogController.isLoading.value) {
+                      return Center(child: CircularProgressIndicator());
+                    }
 
-                      final blogs = blogController.blogs.value;
+                    final blogs = blogController.blogs.value;
 
-                      if (blogs == null || blogs.isEmpty) {
-                        return Center(
-                          child: Text(
-                            "No blogs available",
-                            style: GoogleFonts.poppins(),
-                          ),
-                        );
-                      }
+                    if (blogs == null || blogs.isEmpty) {
+                      return Center(
+                        child: Text("No blogs available", style: GoogleFonts.poppins()),
+                      );
+                    }
 
-                      // Reverse the list of blogs to display the most recent one at the top
-                      final reversedBlogs = blogs.reversed.toList();
+                    final reversedBlogs = blogs.reversed.toList();
 
-                      // Display the list of blogs
-                      return ListView.builder(
+                    return SingleChildScrollView(
+                      child: ListView.builder(
                         shrinkWrap: true,
-                        // Prevents infinite height issues
                         physics: NeverScrollableScrollPhysics(),
-                        // Prevents nested scrolling
                         itemCount: reversedBlogs.length,
-                        // itemCount: blogs.length,
                         itemBuilder: (context, index) {
                           final blog = reversedBlogs[index];
-                          // final blog = blogs[index];
                           return _buildBlogCard(blog);
                         },
-                      );
-                    }),
-                  ],
+                      ),
+                    );
+                  }),
                 ),
-              )
-            ],
+              ],
+            ),
           ),
-        ),
+        ],
       ),
       bottomNavigationBar: Container(
         child: SizedBox(
-          height: 70, // Reduce this value to make it smaller
+          height: 70,
           child: BottomAppBar(
-            color:Colors.grey[200],
+            color: Colors.grey[200],
             shape: CircularNotchedRectangle(),
             notchMargin: 8.0,
             child: Row(
               mainAxisAlignment: MainAxisAlignment.spaceAround,
               children: [
-                IconButton(
-                    icon: Icon(Icons.schedule_outlined),
-                    onPressed: () {
-                      Get.toNamed('/classSchedule');
-                    }),
-                IconButton(
-                    icon: Icon(Icons.payment),
-                    onPressed: () {
-                      Get.toNamed('/feesScreen');
-                    }),
-                SizedBox(width: 40), // Space for FAB
-                IconButton(
-                    icon: Icon(Icons.calendar_month),
-                    onPressed: () {
-                      Get.toNamed('/calendar');
-                    }),
-                IconButton(
-                    icon: Icon(Icons.chat),
-                    onPressed: () {
-                      Get.toNamed('/messages');
-                    }),
+                IconButton(icon: Icon(Icons.schedule_outlined), onPressed: () => Get.toNamed('/classSchedule')),
+                IconButton(icon: Icon(Icons.payment), onPressed: () => Get.toNamed('/feesScreen')),
+                SizedBox(width: 40),
+                IconButton(icon: Icon(Icons.calendar_month), onPressed: () => Get.toNamed('/calendar')),
+                IconButton(icon: Icon(Icons.chat), onPressed: () => Get.toNamed('/messages')),
               ],
             ),
           ),
         ),
       ),
       floatingActionButton: FloatingActionButton(
-        onPressed: () {
-          Get.toNamed('/new-post');
-        },
+        onPressed: () => Get.toNamed('/new-post'),
         backgroundColor: Color(0xFF186CAC),
         child: Icon(Icons.add, color: Colors.white),
       ),
@@ -326,25 +232,18 @@ class _DashboardState extends State<Dashboard> {
     );
   }
 
-  Widget _buildTimelineCard(String time, String location, String course,
-      String status, Color statusColor) {
+  Widget _buildTimelineCard(String time, String location, String course, String status, Color statusColor) {
     return Card(
       margin: EdgeInsets.symmetric(horizontal: 8.0),
-      // elevation: 4, // Optional: adds shadow for depth
-      shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.circular(12), // Rounded corners
-      ),
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
       child: Container(
         decoration: BoxDecoration(
           gradient: LinearGradient(
             begin: Alignment.topLeft,
             end: Alignment.bottomRight,
-            colors: [
-              Color(0xFF186CAC), // Starting color (matches your theme)
-            Color(0xFF186CAC), // Darker shade for gradient effect
-            ],
+            colors: [Color(0xFF186CAC), Color(0xFF186CAC)],
           ),
-          borderRadius: BorderRadius.circular(12), // Match card's border radius
+          borderRadius: BorderRadius.circular(12),
         ),
         child: Padding(
           padding: EdgeInsets.all(20.0),
@@ -353,42 +252,19 @@ class _DashboardState extends State<Dashboard> {
             children: [
               Row(
                 children: [
-                  Icon(
-                    CupertinoIcons.time,
-                    size: 15,
-                    color: Colors.white, // Changed to white for visibility on gradient
-                  ),
+                  Icon(CupertinoIcons.time, size: 15, color: Colors.white),
                   SizedBox(width: 5),
-                  Text(
-                    time,
-                    style: GoogleFonts.poppins(color: Colors.white), // Changed to white
-                  ),
+                  Text(time, style: GoogleFonts.poppins(color: Colors.white)),
                   SizedBox(width: 15),
-                  Icon(
-                    Icons.room_outlined,
-                    size: 15,
-                    color: Colors.white, // Changed to white
-                  ),
+                  Icon(Icons.room_outlined, size: 15, color: Colors.white),
                   SizedBox(width: 5),
-                  Text(
-                    location,
-                    style: GoogleFonts.poppins(color: Colors.white), // Changed to white
-                  ),
+                  Text(location, style: GoogleFonts.poppins(color: Colors.white)),
                 ],
               ),
               SizedBox(height: 5),
-              Text(
-                course,
-                style: GoogleFonts.poppins(
-                  fontSize: 16,
-                  color: Colors.white, // Changed to white
-                ),
-              ),
+              Text(course, style: GoogleFonts.poppins(fontSize: 16, color: Colors.white)),
               SizedBox(height: 5),
-              Text(
-                status,
-                style: GoogleFonts.poppins(color: statusColor),
-              ),
+              Text(status, style: GoogleFonts.poppins(color: statusColor)),
             ],
           ),
         ),
@@ -400,15 +276,9 @@ class _DashboardState extends State<Dashboard> {
     return Card(
       margin: EdgeInsets.symmetric(horizontal: 16.0, vertical: 8.0),
       color: Colors.white,
-      // Set card background to white
       elevation: 4,
-      // Adds shadow depth
       shadowColor: Colors.grey.withOpacity(0.5),
-      // Shadow color with opacity
-      shape: RoundedRectangleBorder(
-        borderRadius:
-        BorderRadius.circular(12.0), // Rounded corners for even shadow
-      ),
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12.0)),
       child: Padding(
         padding: const EdgeInsets.all(16.0),
         child: Column(
@@ -420,41 +290,23 @@ class _DashboardState extends State<Dashboard> {
                   radius: 25.0,
                   backgroundImage: blog.profileImage.isNotEmpty
                       ? NetworkImage(blog.profileImage)
-                      : AssetImage('assets/default_profile.png')
-                  as ImageProvider,
-                  // backgroundColor: Colors.grey[300], // Removed as it's not needed with image
+                      : AssetImage('assets/default_profile.png') as ImageProvider,
                 ),
                 SizedBox(width: 8.0),
                 Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    Text(
-                      blog.fullName,
-                      style: GoogleFonts.poppins(
-                          fontWeight: FontWeight.bold,
-                          fontSize: 16.0
-                      ),
-                    ),
-                    Text(
-                      blog.createdAt,
-                      style: GoogleFonts.poppins(
-                          color: Colors.grey,
-                          fontSize: 12.0
-                      ),
-                    ),
+                    Text(blog.fullName,
+                        style: GoogleFonts.poppins(fontWeight: FontWeight.bold, fontSize: 16.0)),
+                    Text(blog.createdAt,
+                        style: GoogleFonts.poppins(color: Colors.grey, fontSize: 12.0)),
                   ],
                 ),
               ],
             ),
             SizedBox(height: 8.0),
-            // Blog Description
-            Text(
-              blog.blogDescription,
-              style: GoogleFonts.poppins(fontSize: 15),
-            ),
+            Text(blog.blogDescription, style: GoogleFonts.poppins(fontSize: 15)),
             SizedBox(height: 8.0),
-
-            // Blog Images
             if (blog.imageUrls.isNotEmpty)
               Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
@@ -476,24 +328,15 @@ class _DashboardState extends State<Dashboard> {
                                       Center(
                                         child: Hero(
                                           tag: imageUrl,
-                                          child: Image.network(
-                                            imageUrl,
-                                            fit: BoxFit.contain,
-                                          ),
+                                          child: Image.network(imageUrl, fit: BoxFit.contain),
                                         ),
                                       ),
                                       Positioned(
                                         top: 20,
                                         right: 20,
                                         child: IconButton(
-                                          icon: Icon(
-                                            Icons.close,
-                                            color: Colors.white,
-                                            size: 30,
-                                          ),
-                                          onPressed: () {
-                                            Navigator.of(context).pop();
-                                          },
+                                          icon: Icon(Icons.close, color: Colors.white, size: 30),
+                                          onPressed: () => Navigator.of(context).pop(),
                                         ),
                                       ),
                                     ],
@@ -506,12 +349,7 @@ class _DashboardState extends State<Dashboard> {
                             padding: const EdgeInsets.only(right: 8.0),
                             child: Hero(
                               tag: imageUrl,
-                              child: Image.network(
-                                imageUrl,
-                                height: 150,
-                                width: 150,
-                                fit: BoxFit.cover,
-                              ),
+                              child: Image.network(imageUrl, height: 150, width: 150, fit: BoxFit.cover),
                             ),
                           ),
                         );
@@ -525,9 +363,7 @@ class _DashboardState extends State<Dashboard> {
                           context: context,
                           builder: (context) {
                             return Dialog(
-                              shape: RoundedRectangleBorder(
-                                borderRadius: BorderRadius.circular(12.0),
-                              ),
+                              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12.0)),
                               child: Column(
                                 mainAxisSize: MainAxisSize.min,
                                 children: [
@@ -535,27 +371,20 @@ class _DashboardState extends State<Dashboard> {
                                     alignment: Alignment.topRight,
                                     child: IconButton(
                                       icon: Icon(Icons.close),
-                                      onPressed: () =>
-                                          Navigator.of(context).pop(),
+                                      onPressed: () => Navigator.of(context).pop(),
                                     ),
                                   ),
                                   Padding(
                                     padding: const EdgeInsets.all(8.0),
-                                    child: Text(
-                                      "All Images",
-                                      style: GoogleFonts.poppins(
-                                        fontSize: 18,
-                                        fontWeight: FontWeight.bold,
-                                      ),
-                                    ),
+                                    child: Text("All Images",
+                                        style: GoogleFonts.poppins(
+                                            fontSize: 18, fontWeight: FontWeight.bold)),
                                   ),
                                   Expanded(
                                     child: Padding(
-                                      padding: const EdgeInsets.symmetric(
-                                          horizontal: 8.0),
+                                      padding: const EdgeInsets.symmetric(horizontal: 8.0),
                                       child: GridView.builder(
-                                        gridDelegate:
-                                        SliverGridDelegateWithFixedCrossAxisCount(
+                                        gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
                                           crossAxisCount: 2,
                                           crossAxisSpacing: 8.0,
                                           mainAxisSpacing: 8.0,
@@ -568,40 +397,25 @@ class _DashboardState extends State<Dashboard> {
                                                 context: context,
                                                 builder: (context) {
                                                   return Dialog(
-                                                    backgroundColor:
-                                                    Colors.black,
-                                                    insetPadding:
-                                                    EdgeInsets.zero,
+                                                    backgroundColor: Colors.black,
+                                                    insetPadding: EdgeInsets.zero,
                                                     child: Stack(
                                                       children: [
                                                         Center(
                                                           child: Hero(
-                                                            tag: blog.imageUrls[
-                                                            index],
-                                                            child:
-                                                            Image.network(
-                                                              blog.imageUrls[
-                                                              index],
-                                                              fit: BoxFit
-                                                                  .contain,
-                                                            ),
+                                                            tag: blog.imageUrls[index],
+                                                            child: Image.network(
+                                                                blog.imageUrls[index], fit: BoxFit.contain),
                                                           ),
                                                         ),
                                                         Positioned(
                                                           top: 20,
                                                           right: 20,
                                                           child: IconButton(
-                                                            icon: Icon(
-                                                              Icons.close,
-                                                              color:
-                                                              Colors.white,
-                                                              size: 30,
-                                                            ),
-                                                            onPressed: () {
-                                                              Navigator.of(
-                                                                  context)
-                                                                  .pop();
-                                                            },
+                                                            icon: Icon(Icons.close,
+                                                                color: Colors.white, size: 30),
+                                                            onPressed: () =>
+                                                                Navigator.of(context).pop(),
                                                           ),
                                                         ),
                                                       ],
@@ -611,14 +425,10 @@ class _DashboardState extends State<Dashboard> {
                                               );
                                             },
                                             child: ClipRRect(
-                                              borderRadius:
-                                              BorderRadius.circular(8.0),
+                                              borderRadius: BorderRadius.circular(8.0),
                                               child: Hero(
                                                 tag: blog.imageUrls[index],
-                                                child: Image.network(
-                                                  blog.imageUrls[index],
-                                                  fit: BoxFit.cover,
-                                                ),
+                                                child: Image.network(blog.imageUrls[index], fit: BoxFit.cover),
                                               ),
                                             ),
                                           );
@@ -632,17 +442,12 @@ class _DashboardState extends State<Dashboard> {
                           },
                         );
                       },
-                      child: Text(
-                        "+${blog.imageUrls.length - 2} more images",
-                        style: GoogleFonts.poppins(),
-                      ),
+                      child: Text("+${blog.imageUrls.length - 2} more images",
+                          style: GoogleFonts.poppins()),
                     ),
                 ],
               ),
-
             SizedBox(height: 8.0),
-
-            // Add Comment and Share buttons at the bottom
             SizedBox(height: 16.0),
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -650,34 +455,20 @@ class _DashboardState extends State<Dashboard> {
                 Row(
                   children: [
                     TextButton(
-                      onPressed: () {
-                        print("like clicked");
-                      },
+                      onPressed: () => print("like clicked"),
                       child: Row(
                         mainAxisSize: MainAxisSize.max,
                         children: [
-                          Icon(
-                            Icons.thumb_up_off_alt_outlined,
-                            color: Colors.grey[600],
-                            size: 25,
-                          ),
+                          Icon(Icons.thumb_up_off_alt_outlined, color: Colors.grey[600], size: 25),
                           SizedBox(width: 5),
-                          Text(
-                            blog.likes.toString(),
-                            style: GoogleFonts.poppins(color: Colors.grey[600]),
-                          ),
+                          Text(blog.likes.toString(),
+                              style: GoogleFonts.poppins(color: Colors.grey[600])),
                         ],
                       ),
                     ),
                     TextButton(
-                      onPressed: () {
-                        print("Comment clicked");
-                      },
-                      child: Icon(
-                        Icons.comment,
-                        color: Colors.grey[600],
-                        size: 24,
-                      ),
+                      onPressed: () => print("Comment clicked"),
+                      child: Icon(Icons.comment, color: Colors.grey[600], size: 24),
                     ),
                   ],
                 ),
