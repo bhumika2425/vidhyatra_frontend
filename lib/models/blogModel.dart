@@ -6,7 +6,7 @@ class Blog {
   final String blogDescription;
   final List<String> imageUrls;
   final int userId;
-  final String createdAt;
+  final DateTime createdAt;
   final String profileImage;
   final String fullName;
   final int likes;
@@ -29,7 +29,7 @@ class Blog {
       blogDescription: json['blog_description'],
       imageUrls: List<String>.from(json['image_urls'] ?? []),
       userId: json['user_id'],
-      createdAt: json['createdAt'],
+        createdAt: DateTime.parse(json['createdAt']),
       profileImage: json['profileImageUrl'] ?? '',
       fullName: json['full_name'] ?? '',
       likes: json['likes']

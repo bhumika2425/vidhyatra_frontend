@@ -16,10 +16,8 @@ class _RegisterPageState extends State<RegisterPage> with SingleTickerProviderSt
   String email = '';
   String collegeId = '';
   String password = '';
-  String confirmPassword = '';
-  String role = 'Student';
+  String role = 'student';
   bool _obscurePassword = true;
-  bool _obscureConfirmPassword = true;
   late AnimationController _animationController;
 
   @override
@@ -40,6 +38,15 @@ class _RegisterPageState extends State<RegisterPage> with SingleTickerProviderSt
 
   Future<void> registerStudent() async {
     if (_formKey.currentState!.validate()) {
+      print('Form validation passed');
+      print('Preparing data for registration...');
+      print('collegeId: $collegeId');
+      print('name: $name');
+      print('email: $email');
+      print('password: $password');
+      print('role: $role');
+      print('API Endpoint: ${ApiEndPoints.register}');
+
       try {
         final response = await http.post(
           Uri.parse(ApiEndPoints.register),
@@ -52,19 +59,28 @@ class _RegisterPageState extends State<RegisterPage> with SingleTickerProviderSt
             'role': role,
           }),
         );
+
+        print('Request sent to: ${ApiEndPoints.register}');
+        print('Response status code: ${response.statusCode}');
+        print('Response body: ${response.body}');
+
         if (response.statusCode == 201) {
+          print('Registration successful');
           Navigator.pushNamed(context, '/login');
           Get.snackbar('Registration Successful', 'You have been registered to the app successfully');
         } else {
           final responseData = jsonDecode(response.body);
+          print('Registration failed: ${responseData['message']}');
           _showErrorDialog(responseData['message']);
         }
       } catch (error) {
+        print('Error during registration: $error');
         _showErrorDialog('An error occurred. Please try again.');
       }
+    } else {
+      print('Form validation failed');
     }
   }
-
   void _showErrorDialog(String message) {
     showDialog(
       context: context,
@@ -146,7 +162,7 @@ class _RegisterPageState extends State<RegisterPage> with SingleTickerProviderSt
             color: Colors.grey[600],
           ),
         ),
-        SizedBox(height: screenHeight * 0.002), // Reduced from 0.005 to 0.002
+        SizedBox(height: screenHeight * 0.002),
         SlideTransition(
           position: Tween<Offset>(begin: Offset(0, 1), end: Offset(0, 0))
               .animate(_animationController),
@@ -185,19 +201,10 @@ class _RegisterPageState extends State<RegisterPage> with SingleTickerProviderSt
               child: Column(
                 mainAxisSize: MainAxisSize.min,
                 children: [
-                  // SizedBox(height: screenHeight * 0.08),
-                  // Text(
-                  //   "Register for Vidhyatra",
-                  //   style: GoogleFonts.poppins(
-                  //     fontSize: screenWidth * 0.07,
-                  //     fontWeight: FontWeight.bold,
-                  //     color: Colors.black,
-                  //   ),
-                  // ),
                   SizedBox(height: 80),
                   RichText(
                     text: TextSpan(
-                      text: "CREATE YOUR ",  // The part of the text before "Account" (in black)
+                      text: "CREATE YOUR ",
                       style: GoogleFonts.poppins(
                         fontSize: screenWidth * 0.07,
                         fontWeight: FontWeight.bold,
@@ -205,18 +212,17 @@ class _RegisterPageState extends State<RegisterPage> with SingleTickerProviderSt
                       ),
                       children: <TextSpan>[
                         TextSpan(
-                          text: "ACCOUNT",  // The part you want to make orange
+                          text: "ACCOUNT",
                           style: GoogleFonts.poppins(
                             fontSize: screenWidth * 0.07,
                             fontWeight: FontWeight.bold,
-                            color: Colors.deepOrange,  // Set to orange
+                            color: Colors.deepOrange,
                           ),
                         ),
                       ],
                     ),
                   ),
-
-                  SizedBox(height: screenHeight * 0.03  ),
+                  SizedBox(height: screenHeight * 0.03),
                   _buildTextField(
                     label: 'Full Name',
                     hintText: 'Enter Full Name',
@@ -272,7 +278,7 @@ class _RegisterPageState extends State<RegisterPage> with SingleTickerProviderSt
                             color: Colors.grey[600],
                           ),
                         ),
-                        SizedBox(height: screenHeight * 0.002), // Reduced from 0.005 to 0.002
+                        SizedBox(height: screenHeight * 0.002),
                         DropdownButtonFormField<String>(
                           value: role,
                           decoration: _buildInputDecoration(
@@ -282,7 +288,7 @@ class _RegisterPageState extends State<RegisterPage> with SingleTickerProviderSt
                             screenWidth: screenWidth,
                           ),
                           style: GoogleFonts.poppins(color: Colors.black),
-                          items: ['Student', 'Teacher']
+                          items: ['student', 'teacher']
                               .map((roleValue) => DropdownMenuItem<String>(
                             value: roleValue,
                             child: Text(roleValue, style: GoogleFonts.poppins()),
@@ -331,44 +337,13 @@ class _RegisterPageState extends State<RegisterPage> with SingleTickerProviderSt
                     screenHeight: screenHeight,
                     screenWidth: screenWidth,
                   ),
-                  // SizedBox(height: screenHeight * 0.015),
-                  // _buildTextField(
-                  //   label: 'Confirm Password',
-                  //   hintText: 'Confirm Password',
-                  //   prefixIcon: Icons.lock_outline,
-                  //   suffixIcon: IconButton(
-                  //     icon: Icon(
-                  //       _obscureConfirmPassword ? Icons.visibility_off : Icons.visibility,
-                  //       color: Colors.grey[600],
-                  //       size: screenWidth * 0.06,
-                  //     ),
-                  //     onPressed: () {
-                  //       setState(() {
-                  //         _obscureConfirmPassword = !_obscureConfirmPassword;
-                  //       });
-                  //     },
-                  //   ),
-                  //   obscureText: _obscureConfirmPassword,
-                  //   onChanged: (value) => confirmPassword = value,
-                  //   validator: (value) {
-                  //     if (value == null || value.isEmpty) {
-                  //       return 'Please confirm your password';
-                  //     }
-                  //     if (value != password) {
-                  //       return 'Passwords do not match';
-                  //     }
-                  //     return null;
-                  //   },
-                  //   screenHeight: screenHeight,
-                  //   screenWidth: screenWidth,
-                  // ),
                   SizedBox(height: screenHeight * 0.03),
                   ElevatedButton(
                     onPressed: registerStudent,
                     style: ElevatedButton.styleFrom(
-                      backgroundColor: Color(0xFF186CAC), // Match Login button color
+                      backgroundColor: Color(0xFF186CAC),
                       shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(15), // Match Login button radius
+                        borderRadius: BorderRadius.circular(15),
                       ),
                       padding: EdgeInsets.symmetric(
                         vertical: screenHeight * 0.02,
@@ -380,7 +355,6 @@ class _RegisterPageState extends State<RegisterPage> with SingleTickerProviderSt
                       style: GoogleFonts.poppins(
                         fontSize: screenWidth * 0.05,
                         color: Colors.white,
-                        // fontWeight: FontWeight.bold,
                       ),
                     ),
                   ),

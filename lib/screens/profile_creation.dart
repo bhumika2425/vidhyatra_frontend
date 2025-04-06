@@ -4,13 +4,9 @@ import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:image_picker/image_picker.dart';
-import 'package:provider/provider.dart';
-
 import 'package:http/http.dart' as http;
 import 'package:vidhyatra_flutter/constants/api_endpoints.dart';
-
 import '../controllers/LoginController.dart';
-import '../models/profile.dart';
 
 class ProfileCreationPage extends StatefulWidget {
   @override
@@ -28,8 +24,17 @@ class _ProfileCreationPageState extends State<ProfileCreationPage> {
 
   final ImagePicker _picker = ImagePicker();
   final TextEditingController _dateOfBirthController = TextEditingController();
-  final LoginController loginController =
-  Get.find<LoginController>(); // Access user controller
+  final LoginController loginController = Get.find<LoginController>();
+
+  // Dropdown options
+  final List<String> _yearOptions = ['1st Year', '2nd Year', '3rd Year'];
+  final List<String> _semesterOptions = ['Semester 1', 'Semester 2'];
+
+  // Color theme
+  final Color primaryColor = Color(0xFF186CAC);
+  final Color secondaryColor = Color(0xFF186CAC).withOpacity(0.1);
+  final Color lightBlue = Color(0xFFE6F2FF);
+  final Color textColor = Color(0xFF333333);
 
   @override
   void dispose() {
@@ -49,9 +54,21 @@ class _ProfileCreationPageState extends State<ProfileCreationPage> {
   Future<void> _selectDate(BuildContext context) async {
     final DateTime? pickedDate = await showDatePicker(
       context: context,
-      initialDate: DateTime.now(),
+      initialDate: DateTime.now().subtract(Duration(days: 365 * 18)), // Default to 18 years ago
       firstDate: DateTime(1900),
       lastDate: DateTime.now(),
+      builder: (context, child) {
+        return Theme(
+          data: Theme.of(context).copyWith(
+            colorScheme: ColorScheme.light(
+              primary: primaryColor,
+              onPrimary: Colors.white,
+              onSurface: textColor,
+            ),
+          ),
+          child: child!,
+        );
+      },
     );
     if (pickedDate != null) {
       setState(() {
@@ -89,16 +106,13 @@ class _ProfileCreationPageState extends State<ProfileCreationPage> {
         final response = await request.send();
 
         if (response.statusCode == 201) {
-          final responseData = await response.stream.bytesToString();
-          final responseJson = json.decode(responseData);
-          // final profile = Profile.fromJson(responseJson['data']);
-          //
-          // Provider.of<ProfileProvider>(context, listen: false).setProfile(profile);
-
           ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(content: Text('Profile created successfully')),
+            SnackBar(
+              content: Text('Profile created successfully'),
+              backgroundColor: primaryColor,
+              behavior: SnackBarBehavior.floating,
+            ),
           );
-
           Navigator.pop(context);
         } else {
           final responseData = await response.stream.bytesToString();
@@ -106,206 +120,360 @@ class _ProfileCreationPageState extends State<ProfileCreationPage> {
           final errorMessage = errorData['message'] ?? 'Profile creation failed';
 
           ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(content: Text(errorMessage)),
+            SnackBar(
+              content: Text(errorMessage),
+              backgroundColor: Colors.red,
+              behavior: SnackBarBehavior.floating,
+            ),
           );
         }
       } catch (error) {
-        print('Error creating profile: $error');
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Error creating profile: $error')),
+          SnackBar(
+            content: Text('Error creating profile. Please try again.'),
+            backgroundColor: Colors.red,
+            behavior: SnackBarBehavior.floating,
+          ),
         );
       }
     }
   }
 
-  void _removeImage() {
-    setState(() {
-      _profileImage = null;
-    });
-  }
-
   @override
   Widget build(BuildContext context) {
+    String? userName = loginController.user.value?.name;
 
     return Scaffold(
+      backgroundColor: Colors.white,
       appBar: AppBar(
-        backgroundColor: Color(0xFF971F20),
+        elevation: 0,
+        backgroundColor: primaryColor,
         title: Text(
-          'Create Profile, ${loginController.user.value?.name}',
-          style: TextStyle(color: Colors.white),
-        ),
-      ),
-      body: Container(
-        decoration: BoxDecoration(
-          gradient: LinearGradient(
-            colors: [
-              Color(0xFF971F20), // Blue for the top half
-              Colors.white, // White for the bottom half
-            ],
-            begin: Alignment.topCenter,
-            end: Alignment.bottomCenter,
-            stops: [0.3, 0.7], // Defines the split point for the gradient
+          'Create Profile',
+          style: TextStyle(
+            color: Colors.white,
+            fontWeight: FontWeight.w500,
           ),
         ),
-        child: Padding(
-          padding: const EdgeInsets.all(16.0),
-          child: Form(
-            key: _formKey,
-            child: SingleChildScrollView(
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Center(
-                    child: Stack(
-                      children: [
-                        GestureDetector(
-                          onTap: _pickImage,
-                          child: CircleAvatar(
-                            radius: 70,
-                            backgroundImage: _profileImage != null
-                                ? FileImage(File(_profileImage!.path))
-                                : AssetImage('assets/default_profile.png')
-                            as ImageProvider,
-                            child: _profileImage == null
-                                ? Icon(
-                              Icons.camera_alt,
-                              size: 50,
-                              color: Colors.white,
-                            )
-                                : null,
-                          ),
-                        ),
-                        if (_profileImage != null)
-                          Positioned(
-                            right: -3,
-                            top: -3,
-                            child: IconButton(
-                              icon: Icon(Icons.cancel, color: Colors.red),
-                              onPressed: _removeImage,
-                            ),
-                          ),
-                      ],
+        centerTitle: true,
+      ),
+      body: SafeArea(
+        child: Container(
+          color: Colors.white,
+          child: SingleChildScrollView(
+            child: Column(
+              children: [
+                // Colored top section with profile image
+                Container(
+                  width: double.infinity,
+                  decoration: BoxDecoration(
+                    color: primaryColor,
+                    borderRadius: BorderRadius.only(
+                      bottomLeft: Radius.circular(30),
+                      bottomRight: Radius.circular(30),
                     ),
                   ),
-                  SizedBox(height: 20),
-                  Card(
-                    color: Color(0xFFE7E3E3),
-                    elevation: 15.0,
-                    shadowColor: Colors.black.withOpacity(1),
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(1.0),
-                    ),
-                    child: Padding(
-                      padding: const EdgeInsets.all(16.0),
-                      child: Column(
+                  child: Column(
+                    children: [
+                      Padding(
+                        padding: const EdgeInsets.only(top: 10, bottom: 20),
+                        child: Column(
+                          children: [
+                            if (userName != null)
+                              Text(
+                                'Hello, $userName!',
+                                style: TextStyle(
+                                  color: Colors.white,
+                                  fontSize: 16,
+                                ),
+                              ),
+                            SizedBox(height: 5),
+                            Text(
+                              'Let\'s set up your profile',
+                              style: TextStyle(
+                                color: Colors.white.withOpacity(0.9),
+                                fontSize: 14,
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                      // Profile image picker
+                      Stack(
+                        alignment: Alignment.center,
                         children: [
-                          Text(
-                            "Personal Details",
-                            style: TextStyle(
-                                fontWeight: FontWeight.bold, fontSize: 25),
-                          ),
-                          SizedBox(height: 30),
-                          _buildTextFormField(
-                            label: 'Nickname',
-                            icon: Icons.person,
-                            onSaved: (value) => _fullname = value,
-                            validator: (value) {
-                              if (value == null || value.isEmpty) {
-                                return 'Please enter your full name';
-                              }
-                              return null;
-                            },
-                          ),
-                          SizedBox(height: 16),
-                          GestureDetector(
-                            onTap: () => _selectDate(context),
-                            child: AbsorbPointer(
-                              child: _buildTextFormField(
-                                label: 'Date of Birth',
-                                icon: Icons.calendar_today,
-                                controller: _dateOfBirthController,
-                                validator: (value) {
-                                  if (value == null || value.isEmpty) {
-                                    return 'Please enter your date of birth';
-                                  }
-                                  return null;
-                                },
+                          Container(
+                            decoration: BoxDecoration(
+                              color: Colors.white,
+                              shape: BoxShape.circle,
+                              boxShadow: [
+                                BoxShadow(
+                                  color: Colors.black.withOpacity(0.2),
+                                  blurRadius: 10,
+                                  spreadRadius: 2,
+                                ),
+                              ],
+                            ),
+                            child: CircleAvatar(
+                              radius: 65,
+                              backgroundColor: Colors.white,
+                              child: CircleAvatar(
+                                radius: 60,
+                                backgroundColor: lightBlue,
+                                backgroundImage: _profileImage != null
+                                    ? FileImage(File(_profileImage!.path))
+                                    : null,
+                                child: _profileImage == null
+                                    ? Icon(
+                                  Icons.person,
+                                  size: 60,
+                                  color: primaryColor.withOpacity(0.7),
+                                )
+                                    : null,
                               ),
                             ),
                           ),
-                          SizedBox(height: 16),
-                          _buildTextFormField(
-                            label: 'Location',
-                            icon: Icons.location_on,
-                            onSaved: (value) => _location = value,
-                            validator: (value) {
-                              if (value == null || value.isEmpty) {
-                                return 'Please enter your location';
-                              }
-                              return null;
-                            },
-                          ),
-                          SizedBox(height: 16),
-                          _buildTextFormField(
-                            label: 'Department',
-                            icon: Icons.school,
-                            onSaved: (value) => _department = value,
-                            validator: (value) {
-                              if (value == null || value.isEmpty) {
-                                return 'Please enter your department';
-                              }
-                              return null;
-                            },
-                          ),
-                          SizedBox(height: 16),
-                          _buildTextFormField(
-                            label: 'Year',
-                            icon: Icons.timeline,
-                            onSaved: (value) => _year = value,
-                            validator: (value) {
-                              if (value == null || value.isEmpty) {
-                                return 'Please enter your year';
-                              }
-                              return null;
-                            },
-                          ),
-                          SizedBox(height: 16),
-                          _buildTextFormField(
-                            label: 'Semester',
-                            icon: Icons.grade,
-                            onSaved: (value) => _semester = value,
-                            validator: (value) {
-                              if (value == null || value.isEmpty) {
-                                return 'Please enter your semester';
-                              }
-                              return null;
-                            },
-                          ),
-                          SizedBox(height: 20),
-                          Container(
-                            width: MediaQuery.of(context).size.width / 2,
-                            child: ElevatedButton(
-                              onPressed: _submitForm,
-                              style: ElevatedButton.styleFrom(
-                                backgroundColor: Color(0xFFBD0606),
-                                padding: EdgeInsets.symmetric(vertical: 16.0),
-                                shape: RoundedRectangleBorder(
-                                  borderRadius: BorderRadius.circular(15.0),
+                          Positioned(
+                            bottom: 0,
+                            right: 0,
+                            child: GestureDetector(
+                              onTap: _pickImage,
+                              child: Container(
+                                padding: EdgeInsets.all(8),
+                                decoration: BoxDecoration(
+                                  color: Colors.white,
+                                  shape: BoxShape.circle,
+                                  boxShadow: [
+                                    BoxShadow(
+                                      color: Colors.black.withOpacity(0.2),
+                                      blurRadius: 5,
+                                      spreadRadius: 1,
+                                    ),
+                                  ],
                                 ),
-                              ),
-                              child: Text(
-                                'Save Profile',
-                                style: TextStyle(
-                                    fontSize: 16, color: Colors.white),
+                                child: Icon(
+                                  Icons.camera_alt,
+                                  color: primaryColor,
+                                  size: 22,
+                                ),
                               ),
                             ),
                           ),
                         ],
                       ),
+                      SizedBox(height: 30),
+                    ],
+                  ),
+                ),
+
+                // Form section
+                Padding(
+                  padding: const EdgeInsets.fromLTRB(20, 25, 20, 30),
+                  child: Form(
+                    key: _formKey,
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          'Personal Information',
+                          style: TextStyle(
+                            fontSize: 18,
+                            fontWeight: FontWeight.bold,
+                            color: primaryColor,
+                          ),
+                        ),
+                        SizedBox(height: 20),
+                        _buildInputField(
+                          label: 'Nickname',
+                          icon: Icons.person_outline,
+                          onSaved: (value) => _fullname = value,
+                          validator: (value) {
+                            if (value == null || value.isEmpty) {
+                              return 'Please enter your nickname';
+                            }
+                            return null;
+                          },
+                        ),
+                        SizedBox(height: 16),
+                        GestureDetector(
+                          onTap: () => _selectDate(context),
+                          child: AbsorbPointer(
+                            child: _buildInputField(
+                              label: 'Date of Birth',
+                              icon: Icons.calendar_today_outlined,
+                              controller: _dateOfBirthController,
+                              validator: (value) {
+                                if (value == null || value.isEmpty) {
+                                  return 'Please select your date of birth';
+                                }
+                                return null;
+                              },
+                            ),
+                          ),
+                        ),
+                        SizedBox(height: 16),
+                        _buildInputField(
+                          label: 'Location',
+                          icon: Icons.location_on_outlined,
+                          onSaved: (value) => _location = value,
+                          validator: (value) {
+                            if (value == null || value.isEmpty) {
+                              return 'Please enter your location';
+                            }
+                            return null;
+                          },
+                        ),
+
+                        SizedBox(height: 30),
+                        Text(
+                          'Academic Information',
+                          style: TextStyle(
+                            fontSize: 18,
+                            fontWeight: FontWeight.bold,
+                            color: primaryColor,
+                          ),
+                        ),
+                        SizedBox(height: 20),
+                        _buildInputField(
+                          label: 'Department',
+                          icon: Icons.school_outlined,
+                          onSaved: (value) => _department = value,
+                          validator: (value) {
+                            if (value == null || value.isEmpty) {
+                              return 'Please enter your department';
+                            }
+                            return null;
+                          },
+                        ),
+                        SizedBox(height: 16),
+                        Row(
+                          children: [
+                            Expanded(
+                              child: DropdownButtonFormField<String>(
+                                decoration: InputDecoration(
+                                  labelText: 'Year',
+                                  prefixIcon: Icon(Icons.calendar_view_month_outlined, color: primaryColor, size: 22),
+                                  contentPadding: EdgeInsets.symmetric(vertical: 16, horizontal: 16),
+                                  border: OutlineInputBorder(
+                                    borderRadius: BorderRadius.circular(12),
+                                    borderSide: BorderSide(color: Colors.grey.shade300, width: 1),
+                                  ),
+                                  enabledBorder: OutlineInputBorder(
+                                    borderRadius: BorderRadius.circular(12),
+                                    borderSide: BorderSide(color: Colors.grey.shade300, width: 1),
+                                  ),
+                                  focusedBorder: OutlineInputBorder(
+                                    borderRadius: BorderRadius.circular(12),
+                                    borderSide: BorderSide(color: primaryColor, width: 1.5),
+                                  ),
+                                  errorBorder: OutlineInputBorder(
+                                    borderRadius: BorderRadius.circular(12),
+                                    borderSide: BorderSide(color: Colors.red.shade400, width: 1),
+                                  ),
+                                  filled: true,
+                                  fillColor: Colors.grey.shade50,
+                                  labelStyle: TextStyle(color: Colors.grey.shade600),
+                                ),
+                                value: _year,
+                                items: _yearOptions.map((String year) {
+                                  return DropdownMenuItem<String>(
+                                    value: year,
+                                    child: Text(year, style: TextStyle(color: textColor)),
+                                  );
+                                }).toList(),
+                                onChanged: (String? newValue) {
+                                  setState(() {
+                                    _year = newValue;
+                                  });
+                                },
+                                validator: (value) {
+                                  if (value == null) {
+                                    return 'Please select your year';
+                                  }
+                                  return null;
+                                },
+                                onSaved: (value) => _year = value,
+                              ),
+                            ),
+                            SizedBox(width: 16),
+                            Expanded(
+                              child: DropdownButtonFormField<String>(
+                                decoration: InputDecoration(
+                                  labelText: 'Semester',
+                                  prefixIcon: Icon(Icons.access_time_outlined, color: primaryColor, size: 22),
+                                  contentPadding: EdgeInsets.symmetric(vertical: 16, horizontal: 16),
+                                  border: OutlineInputBorder(
+                                    borderRadius: BorderRadius.circular(12),
+                                    borderSide: BorderSide(color: Colors.grey.shade300, width: 1),
+                                  ),
+                                  enabledBorder: OutlineInputBorder(
+                                    borderRadius: BorderRadius.circular(12),
+                                    borderSide: BorderSide(color: Colors.grey.shade300, width: 1),
+                                  ),
+                                  focusedBorder: OutlineInputBorder(
+                                    borderRadius: BorderRadius.circular(12),
+                                    borderSide: BorderSide(color: primaryColor, width: 1.5),
+                                  ),
+                                  errorBorder: OutlineInputBorder(
+                                    borderRadius: BorderRadius.circular(12),
+                                    borderSide: BorderSide(color: Colors.red.shade400, width: 1),
+                                  ),
+                                  filled: true,
+                                  fillColor: Colors.grey.shade50,
+                                  labelStyle: TextStyle(color: Colors.grey.shade600),
+                                ),
+                                value: _semester,
+                                items: _semesterOptions.map((String semester) {
+                                  return DropdownMenuItem<String>(
+                                    value: semester,
+                                    child: Text(semester, style: TextStyle(color: textColor)),
+                                  );
+                                }).toList(),
+                                onChanged: (String? newValue) {
+                                  setState(() {
+                                    _semester = newValue;
+                                  });
+                                },
+                                validator: (value) {
+                                  if (value == null) {
+                                    return 'Please select your semester';
+                                  }
+                                  return null;
+                                },
+                                onSaved: (value) => _semester = value,
+                              ),
+                            ),
+                          ],
+                        ),
+                        SizedBox(height: 40),
+                        SizedBox(
+                          width: double.infinity,
+                          height: 55,
+                          child: ElevatedButton(
+                            onPressed: _submitForm,
+                            style: ElevatedButton.styleFrom(
+                              backgroundColor: primaryColor,
+                              foregroundColor: Colors.white,
+                              elevation: 2,
+                              shape: RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(12),
+                              ),
+                            ),
+                            child: Text(
+                              'CREATE PROFILE',
+                              style: TextStyle(
+                                fontSize: 16,
+                                fontWeight: FontWeight.bold,
+                                letterSpacing: 1,
+                              ),
+                            ),
+                          ),
+                        ),
+                      ],
                     ),
                   ),
-                ],
-              ),
+                ),
+              ],
             ),
           ),
         ),
@@ -313,7 +481,7 @@ class _ProfileCreationPageState extends State<ProfileCreationPage> {
     );
   }
 
-  Widget _buildTextFormField({
+  Widget _buildInputField({
     required String label,
     required IconData icon,
     String? Function(String?)? validator,
@@ -324,14 +492,31 @@ class _ProfileCreationPageState extends State<ProfileCreationPage> {
       controller: controller,
       decoration: InputDecoration(
         labelText: label,
-        prefixIcon: Icon(icon, color: Colors.blueGrey),
+        prefixIcon: Icon(icon, color: primaryColor, size: 22),
+        contentPadding: EdgeInsets.symmetric(vertical: 16, horizontal: 16),
         border: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(15),  // This makes the border curved
-          borderSide: BorderSide.none, // Removes the border color
+          borderRadius: BorderRadius.circular(12),
+          borderSide: BorderSide(color: Colors.grey.shade300, width: 1),
+        ),
+        enabledBorder: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(12),
+          borderSide: BorderSide(color: Colors.grey.shade300, width: 1),
+        ),
+        focusedBorder: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(12),
+          borderSide: BorderSide(color: primaryColor, width: 1.5),
+        ),
+        errorBorder: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(12),
+          borderSide: BorderSide(color: Colors.red.shade400, width: 1),
         ),
         filled: true,
-        fillColor: Colors.white,
-        labelStyle: TextStyle(color: Colors.blueGrey),
+        fillColor: Colors.grey.shade50,
+        labelStyle: TextStyle(color: Colors.grey.shade600),
+      ),
+      style: TextStyle(
+        fontSize: 16,
+        color: textColor,
       ),
       validator: validator,
       onSaved: onSaved,

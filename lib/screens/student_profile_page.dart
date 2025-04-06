@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
+import 'package:intl/intl.dart';
 import 'package:vidhyatra_flutter/screens/student_profile_update.dart';
 import '../controllers/LoginController.dart';
 import '../controllers/ProfileController.dart';
@@ -54,7 +55,8 @@ class StudentProfilePage extends StatelessWidget {
                     image: DecorationImage(
                       image: profile.profileImageUrl != null
                           ? NetworkImage(profile.profileImageUrl!)
-                          : AssetImage('assets/default_profile.png') as ImageProvider,
+                          : AssetImage('assets/default_profile.png')
+                              as ImageProvider,
                       fit: BoxFit.cover,
                     ),
                     boxShadow: [
@@ -110,33 +112,70 @@ class StudentProfilePage extends StatelessWidget {
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
+                      // _buildSectionTitle('Bio'),
+                      _buildInfoCard([
+                        Text(
+                          'A passionate computer science student with a keen interest in developing innovative solutions. Always eager to learn and explore new technologies.',
+                          style:
+                              TextStyle(fontSize: 16, color: Colors.grey[800]),
+                        ),
+                      ]),
+                      SizedBox(height: 20),
                       // Personal Details Section
                       _buildSectionTitle('Personal Details'),
                       _buildInfoCard([
-                        _buildInfoRow(FontAwesomeIcons.calendar, 'Date of Birth',
-                            profile.dateOfBirth?.toString() ?? '1998-05-15'),
-                        _buildInfoRow(FontAwesomeIcons.mapMarkerAlt, 'Location',
-                            profile.location ?? 'New York, USA'),
-                        _buildInfoRow(FontAwesomeIcons.university, 'Department',
-                            profile.department ?? 'Computer Science'),
-                        _buildInfoRow(FontAwesomeIcons.graduationCap, 'Year',
-                            profile.year ?? '3rd Year'),
-                        _buildInfoRow(FontAwesomeIcons.book, 'Semester',
-                            profile.semester ?? '6th Semester'),
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          children: [
+                            Expanded(
+                              child: _buildInfoRow(
+                                FontAwesomeIcons.calendar,
+                                'Date of Birth',
+                                profile.dateOfBirth != null
+                                    ? DateFormat('yyyy-MM-dd')
+                                        .format(profile.dateOfBirth!)
+                                    : '1998-05-15',
+                              ),
+                            ),
+                            SizedBox(width: 16),
+                            // Add some spacing between the two items
+                            Expanded(
+                              child: _buildInfoRow(
+                                FontAwesomeIcons.mapMarkerAlt,
+                                'Location',
+                                profile.location ?? 'New York, USA',
+                              ),
+                            ),
+                          ],
+                        ),
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          children: [
+                            Expanded(
+                              child: _buildInfoRow(
+                                FontAwesomeIcons.graduationCap,
+                                'Year',
+                                profile.year ?? '3rd Year',
+                              ),
+                            ),
+                            SizedBox(width: 16),
+                            // Add some spacing between the two items
+                            Expanded(
+                              child: _buildInfoRow(
+                                FontAwesomeIcons.book,
+                                'Semester',
+                                profile.semester ?? '6th Semester',
+                              ),
+                            ),
+                          ],
+                        ),
                       ]),
 
                       SizedBox(height: 20),
 
                       // Bio Section
-                      _buildSectionTitle('Bio'),
-                      _buildInfoCard([
-                        Text(
-                          'A passionate computer science student with a keen interest in developing innovative solutions. Always eager to learn and explore new technologies.',
-                          style: TextStyle(fontSize: 16, color: Colors.grey[800]),
-                        ),
-                      ]),
 
-                      SizedBox(height: 20),
+                      // SizedBox(height: 20),
 
                       // Interests Section
                       _buildSectionTitle('Interests'),
@@ -212,25 +251,27 @@ class StudentProfilePage extends StatelessWidget {
         children: [
           FaIcon(icon, size: 20, color: Colors.blueAccent),
           SizedBox(width: 15),
-          Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Text(
-                label,
-                style: TextStyle(
-                  fontSize: 14,
-                  color: Colors.grey[600],
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  label,
+                  style: TextStyle(
+                    fontSize: 14,
+                    color: Colors.grey[600],
+                  ),
                 ),
-              ),
-              Text(
-                value,
-                style: TextStyle(
-                  fontSize: 16,
-                  color: Colors.black87,
-                  fontWeight: FontWeight.w500,
+                Text(
+                  value,
+                  style: TextStyle(
+                    fontSize: 16,
+                    color: Colors.black87,
+                    fontWeight: FontWeight.w500,
+                  ),
                 ),
-              ),
-            ],
+              ],
+            ),
           ),
         ],
       ),
