@@ -2,12 +2,13 @@ import 'dart:convert';
 import 'package:get/get.dart';
 import 'package:http/http.dart' as http;
 import 'package:vidhyatra_flutter/constants/api_endpoints.dart';
+import 'package:vidhyatra_flutter/controllers/LoginController.dart';
 import 'package:vidhyatra_flutter/models/deadline_model.dart';
 
 class DeadlineController extends GetxController {
   var deadlines = <Deadline>[].obs;
   var isLoading = true.obs;
-
+  var showAll = false.obs;
   @override
   void onInit() {
     fetchDeadlines();
@@ -15,9 +16,16 @@ class DeadlineController extends GetxController {
   }
 
   Future<void> fetchDeadlines() async {
+    final LoginController loginController= Get.find();
     try {
       isLoading(true);
-      final response = await http.get(Uri.parse('${ApiEndPoints.baseUrl}/api/deadlines'));
+      final response = await http.get(
+        Uri.parse('${ApiEndPoints.baseUrl}/api/deadlines'),
+        headers: {
+          'Authorization': 'Bearer ${loginController.token.value}',
+          'Content-Type': 'application/json',
+        },
+      );
       if (response.statusCode == 200) {
         final List<dynamic> data = jsonDecode(response.body);
         deadlines.assignAll(data.map((json) => Deadline.fromJson(json)).toList());

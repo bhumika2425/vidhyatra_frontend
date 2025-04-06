@@ -39,20 +39,7 @@ class _DashboardState extends State<Dashboard>
     'CS3456': 78.0,
   };
 
-  final List<Map<String, dynamic>> upcomingDeadlines = [
-    {
-      'title': 'AI Project',
-      'course': 'CS1234',
-      'deadline': DateTime.now().add(Duration(days: 3)),
-      'completed': false
-    },
-    {
-      'title': 'Data Science Quiz',
-      'course': 'CS2345',
-      'deadline': DateTime.now().add(Duration(days: 1)),
-      'completed': false
-    },
-  ];
+
 
   final List<Map<String, dynamic>> announcements = [
     {
@@ -312,86 +299,109 @@ class _DashboardState extends State<Dashboard>
 
   Widget _buildUpcomingDeadlines() {
     return Obx(() => Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Row(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                Text("Upcoming Deadlines",
-                    style: GoogleFonts.poppins(
-                        fontSize: 18, fontWeight: FontWeight.bold)),
-                TextButton(
-                  onPressed: () => Get.toNamed('/assignments'),
-                  child: Text("View All",
-                      style:
-                          GoogleFonts.poppins(color: const Color(0xFF186CAC))),
+            Text("Upcoming Deadlines",
+                style: GoogleFonts.poppins(
+                    fontSize: 18, fontWeight: FontWeight.bold)),
+            if (deadlineController.deadlines.length > 2)
+              Align(
+                alignment: Alignment.centerRight,
+                child: TextButton(
+                  onPressed: () => deadlineController.showAll.toggle(),
+                  child: Text(
+                    deadlineController.showAll.value
+                        ? 'View Less'
+                        : 'View All',
+                    style: const TextStyle(color: Color(0xFF186CAC)),
+                  ),
                 ),
-              ],
-            ),
-            deadlineController.isLoading.value
-                ? const Center(
-                    child: CircularProgressIndicator(color: Color(0xFF186CAC)))
-                : deadlineController.deadlines.isEmpty
-                    ? const Center(
-                        child: Text('No deadlines available',
-                            style: TextStyle(color: Colors.grey)))
-                    : ListView.builder(
-                        shrinkWrap: true,
-                        physics: const NeverScrollableScrollPhysics(),
-                        itemCount: deadlineController.deadlines.length,
-                        itemBuilder: (context, index) {
-                          final deadline = deadlineController.deadlines[index];
-                          final timeLeft =
-                              deadline.deadline.difference(DateTime.now());
-                          final timeLeftText = timeLeft.inDays > 0
-                              ? '${timeLeft.inDays} days left'
-                              : timeLeft.inHours > 0
-                                  ? '${timeLeft.inHours} hours left'
-                                  : '${timeLeft.inMinutes} mins left';
-
-                          Color urgencyColor = Colors.green;
-                          if (timeLeft.inDays < 1) {
-                            urgencyColor = Colors.red;
-                          } else if (timeLeft.inDays < 3) {
-                            urgencyColor = Colors.orange;
-                          }
-
-                          return Card(
-                            margin: const EdgeInsets.only(bottom: 8),
-                            child: ListTile(
-                              leading: Container(
-                                padding: EdgeInsets.all(8),
-                                decoration: BoxDecoration(
-                                  color: urgencyColor.withOpacity(0.1),
-                                  shape: BoxShape.circle,
-                                ),
-                                child: Icon(Icons.assignment_outlined,
-                                    color: urgencyColor),
-                              ),
-                              title: Text(deadline.title,
-                                  style: GoogleFonts.poppins(
-                                      fontWeight: FontWeight.bold)),
-                              subtitle: Text(
-                                  '${deadline.course} • $timeLeftText',
-                                  style:
-                                      GoogleFonts.poppins(color: Colors.grey)),
-                              trailing: Checkbox(
-                                activeColor: Color(0xFF186CAC),
-                                value: deadline.isCompleted,
-                                onChanged: (value) {
-                                  if (value != null) {
-                                    deadlineController.markDeadlineCompleted(
-                                        deadline.id, value);
-                                  }
-                                },
-                              ),
-                            ),
-                          );
-                        },
-                      ),
+              )
+            // TextButton(
+            //   onPressed: () => Get.toNamed('/assignments'),
+            //   child: Text("View All",
+            //       style: GoogleFonts.poppins(color: const Color(0xFF186CAC))),
+            // ),
           ],
-        ));
+        ),
+        deadlineController.isLoading.value
+            ? const Center(
+            child: CircularProgressIndicator(color: Color(0xFF186CAC)))
+            : deadlineController.deadlines.isEmpty
+            ? const Center(
+            child: Text('No deadlines available',
+                style: TextStyle(color: Colors.grey)))
+            : Column(
+          children: [
+            ListView.builder(
+              shrinkWrap: true,
+              physics: const NeverScrollableScrollPhysics(),
+              itemCount: deadlineController.showAll.value
+                  ? deadlineController.deadlines.length
+                  : (deadlineController.deadlines.length > 2
+                  ? 2
+                  : deadlineController.deadlines.length),
+              itemBuilder: (context, index) {
+                final deadline = deadlineController.deadlines[index];
+                final timeLeft = deadline.deadline.difference(DateTime.now());
+                final timeLeftText = timeLeft.inDays > 0
+                    ? '${timeLeft.inDays} days left'
+                    : timeLeft.inHours > 0
+                    ? '${timeLeft.inHours} hours left'
+                    : '${timeLeft.inMinutes} mins left';
+
+                Color urgencyColor = Colors.green;
+                if (timeLeft.inDays < 1) {
+                  urgencyColor = Colors.red;
+                } else if (timeLeft.inDays < 3) {
+                  urgencyColor = Colors.orange;
+                }
+
+                return Card(
+                  margin: const EdgeInsets.only(bottom: 8),
+                  child: ListTile(
+                    leading: Container(
+                      padding: const EdgeInsets.all(8),
+                      decoration: BoxDecoration(
+                        color: urgencyColor.withOpacity(0.1),
+                        shape: BoxShape.circle,
+                      ),
+                      child: Icon(Icons.assignment_outlined,
+                          color: urgencyColor),
+                    ),
+                    title: Text(deadline.title,
+                        style: GoogleFonts.poppins(
+                            fontWeight: FontWeight.bold)),
+                    subtitle: Text(
+                        '${deadline.course} • $timeLeftText',
+                        style:
+                        GoogleFonts.poppins(color: Colors.grey)),
+                    trailing: Checkbox(
+                      activeColor: const Color(0xFF186CAC),
+                      value: deadline.isCompleted,
+                      onChanged: (value) {
+                        if (value != null) {
+                          deadlineController.markDeadlineCompleted(
+                              deadline.id, value);
+                        }
+                      },
+                    ),
+                  ),
+                );
+              },
+            ),
+
+            // SEE MORE / SEE LESS BUTTON
+
+          ],
+        ),
+      ],
+    ));
   }
+
 
   Widget _buildWelcomeCard(String today) {
     final hour = DateTime.now().hour;
