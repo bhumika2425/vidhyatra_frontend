@@ -31,8 +31,11 @@ class StudentProfilePage extends StatelessWidget {
         actions: [
           IconButton(
             icon: Icon(Icons.edit, color: Colors.blueAccent),
-            onPressed: () {},
+            onPressed: () {
+              Get.to(() => StudentProfileUpdatePage());
+            },
           ),
+
         ],
       ),
       body: Obx(() {
@@ -56,7 +59,7 @@ class StudentProfilePage extends StatelessWidget {
                       image: profile.profileImageUrl != null
                           ? NetworkImage(profile.profileImageUrl!)
                           : AssetImage('assets/default_profile.png')
-                              as ImageProvider,
+                      as ImageProvider,
                       fit: BoxFit.cover,
                     ),
                     boxShadow: [
@@ -112,15 +115,16 @@ class StudentProfilePage extends StatelessWidget {
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      // _buildSectionTitle('Bio'),
+                      // Bio Section
+                      _buildSectionTitle('Bio'),
                       _buildInfoCard([
                         Text(
-                          'A passionate computer science student with a keen interest in developing innovative solutions. Always eager to learn and explore new technologies.',
-                          style:
-                              TextStyle(fontSize: 16, color: Colors.grey[800]),
+                          profile.bio ?? 'No bio available', // Display bio if available or fallback to 'No bio available'
+                          style: TextStyle(fontSize: 16, color: Colors.grey[800]),
                         ),
                       ]),
                       SizedBox(height: 20),
+
                       // Personal Details Section
                       _buildSectionTitle('Personal Details'),
                       _buildInfoCard([
@@ -133,7 +137,7 @@ class StudentProfilePage extends StatelessWidget {
                                 'Date of Birth',
                                 profile.dateOfBirth != null
                                     ? DateFormat('yyyy-MM-dd')
-                                        .format(profile.dateOfBirth!)
+                                    .format(profile.dateOfBirth!)
                                     : '1998-05-15',
                               ),
                             ),
@@ -173,21 +177,17 @@ class StudentProfilePage extends StatelessWidget {
 
                       SizedBox(height: 20),
 
-                      // Bio Section
-
-                      // SizedBox(height: 20),
-
                       // Interests Section
                       _buildSectionTitle('Interests'),
                       _buildInfoCard([
                         Wrap(
                           spacing: 10,
-                          children: [
-                            _buildInterestChip('Machine Learning'),
-                            _buildInterestChip('Web Development'),
-                            _buildInterestChip('Mobile Apps'),
-                            _buildInterestChip('Artificial Intelligence'),
-                          ],
+                          children: profile.interest != null
+                              ? profile.interest!
+                              .split(',')
+                              .map((interest) => _buildInterestChip(interest)) // Create a chip for each interest
+                              .toList()
+                              : [Text('No interests listed')], // Fallback message if no interests
                         ),
                       ]),
                     ],

@@ -8,6 +8,8 @@ class Profile {
   final String year;
   final String semester;
   final String? profileImageUrl;
+  final String? bio; // Add bio field
+  final String? interest; // Add interest field
 
   Profile({
     required this.profileId,
@@ -19,6 +21,8 @@ class Profile {
     required this.year,
     required this.semester,
     this.profileImageUrl,
+    this.bio, // Initialize bio
+    this.interest, // Initialize interest
   });
 
   factory Profile.fromJson(Map<String, dynamic> json) {
@@ -32,6 +36,8 @@ class Profile {
       year: json['year'],
       semester: json['semester'],
       profileImageUrl: json['profileImageUrl'],
+      bio: json['bio'], // Assign bio from the JSON response
+      interest: json['interest'], // Assign interest from the JSON response
     );
   }
 }

@@ -1,6 +1,6 @@
 import 'dart:convert';
 import 'dart:io';
-
+import 'package:google_fonts/google_fonts.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:image_picker/image_picker.dart';
@@ -21,6 +21,8 @@ class _ProfileCreationPageState extends State<ProfileCreationPage> {
   String? _year;
   String? _semester;
   XFile? _profileImage;
+  String? _bio;
+  String? _interest;
 
   final ImagePicker _picker = ImagePicker();
   final TextEditingController _dateOfBirthController = TextEditingController();
@@ -91,7 +93,10 @@ class _ProfileCreationPageState extends State<ProfileCreationPage> {
         ..fields['location'] = _location ?? ''
         ..fields['department'] = _department ?? ''
         ..fields['year'] = _year ?? ''
-        ..fields['semester'] = _semester ?? '';
+        ..fields['semester'] = _semester ?? ''
+        ..fields['bio'] = _bio ?? ''
+        ..fields['interest'] = _interest ?? '';
+
 
       if (_profileImage != null) {
         request.files.add(
@@ -144,13 +149,14 @@ class _ProfileCreationPageState extends State<ProfileCreationPage> {
     String? userName = loginController.user.value?.name;
 
     return Scaffold(
-      backgroundColor: Colors.white,
+      backgroundColor: Colors.grey[200],
       appBar: AppBar(
         elevation: 0,
         backgroundColor: primaryColor,
         title: Text(
           'Create Profile',
           style: TextStyle(
+            fontFamily: 'Poppins',
             color: Colors.white,
             fontWeight: FontWeight.w500,
           ),
@@ -159,31 +165,30 @@ class _ProfileCreationPageState extends State<ProfileCreationPage> {
       ),
       body: SafeArea(
         child: Container(
-          color: Colors.white,
+          color: Colors.grey[200],
           child: SingleChildScrollView(
             child: Column(
               children: [
-                // Colored top section with profile image
+                // Header section with profile image
                 Container(
                   width: double.infinity,
-                  decoration: BoxDecoration(
-                    color: primaryColor,
-                    borderRadius: BorderRadius.only(
-                      bottomLeft: Radius.circular(30),
-                      bottomRight: Radius.circular(30),
-                    ),
-                  ),
+                  padding: EdgeInsets.only(bottom: 30),
+                  color: Colors.white,
                   child: Column(
                     children: [
-                      Padding(
-                        padding: const EdgeInsets.only(top: 10, bottom: 20),
+                      // Small colored top accent
+                      Container(
+                        width: double.infinity,
+                        color: Colors.grey[200],
+                        padding: EdgeInsets.symmetric(vertical: 15),
                         child: Column(
                           children: [
                             if (userName != null)
                               Text(
                                 'Hello, $userName!',
                                 style: TextStyle(
-                                  color: Colors.white,
+                                  fontFamily: 'Poppins',
+                                  color: Colors.black,
                                   fontSize: 16,
                                 ),
                               ),
@@ -191,20 +196,22 @@ class _ProfileCreationPageState extends State<ProfileCreationPage> {
                             Text(
                               'Let\'s set up your profile',
                               style: TextStyle(
-                                color: Colors.white.withOpacity(0.9),
+                                fontFamily: 'Poppins',
+                                color: Colors.black.withOpacity(0.9),
                                 fontSize: 14,
                               ),
                             ),
                           ],
                         ),
                       ),
+                      SizedBox(height: 30),
                       // Profile image picker
                       Stack(
                         alignment: Alignment.center,
                         children: [
                           Container(
                             decoration: BoxDecoration(
-                              color: Colors.white,
+                              color: Colors.grey[200],
                               shape: BoxShape.circle,
                               boxShadow: [
                                 BoxShadow(
@@ -219,7 +226,7 @@ class _ProfileCreationPageState extends State<ProfileCreationPage> {
                               backgroundColor: Colors.white,
                               child: CircleAvatar(
                                 radius: 60,
-                                backgroundColor: lightBlue,
+                                backgroundColor: Colors.grey[200],
                                 backgroundImage: _profileImage != null
                                     ? FileImage(File(_profileImage!.path))
                                     : null,
@@ -243,9 +250,13 @@ class _ProfileCreationPageState extends State<ProfileCreationPage> {
                                 decoration: BoxDecoration(
                                   color: Colors.white,
                                   shape: BoxShape.circle,
+                                  border: Border.all(
+                                    color: Colors.grey[400]!,
+                                    width: 1,
+                                  ),
                                   boxShadow: [
                                     BoxShadow(
-                                      color: Colors.black.withOpacity(0.2),
+                                      color: Colors.black.withOpacity(0.1),
                                       blurRadius: 5,
                                       spreadRadius: 1,
                                     ),
@@ -253,7 +264,7 @@ class _ProfileCreationPageState extends State<ProfileCreationPage> {
                                 ),
                                 child: Icon(
                                   Icons.camera_alt,
-                                  color: primaryColor,
+                                  color: Colors.grey[400],
                                   size: 22,
                                 ),
                               ),
@@ -261,13 +272,14 @@ class _ProfileCreationPageState extends State<ProfileCreationPage> {
                           ),
                         ],
                       ),
-                      SizedBox(height: 30),
                     ],
                   ),
                 ),
 
                 // Form section
-                Padding(
+                Container(
+                  color:Colors.grey[200],
+                  margin: EdgeInsets.only(top: 10),
                   padding: const EdgeInsets.fromLTRB(20, 25, 20, 30),
                   child: Form(
                     key: _formKey,
@@ -277,9 +289,10 @@ class _ProfileCreationPageState extends State<ProfileCreationPage> {
                         Text(
                           'Personal Information',
                           style: TextStyle(
+                            fontFamily: 'Poppins',
                             fontSize: 18,
                             fontWeight: FontWeight.bold,
-                            color: primaryColor,
+                            color: textColor,
                           ),
                         ),
                         SizedBox(height: 20),
@@ -323,14 +336,31 @@ class _ProfileCreationPageState extends State<ProfileCreationPage> {
                             return null;
                           },
                         ),
+                        SizedBox(height: 16),
+                        _buildTextAreaField(
+                          label: 'Bio',
+                          icon: Icons.description_outlined,
+                          maxLines: 3,
+                          onSaved: (value) => _bio = value,
+                          hintText: 'Tell us a bit about yourself...',
+                        ),
+                        SizedBox(height: 16),
+                        _buildTextAreaField(
+                          label: 'Interests',
+                          icon: Icons.interests_outlined,
+                          maxLines: 2,
+                          onSaved: (value) => _interest = value,
+                          hintText: 'Reading, Sports, Music, etc.',
+                        ),
 
                         SizedBox(height: 30),
                         Text(
                           'Academic Information',
                           style: TextStyle(
+                            fontFamily: 'Poppins',
                             fontSize: 18,
                             fontWeight: FontWeight.bold,
-                            color: primaryColor,
+                            color: textColor,
                           ),
                         ),
                         SizedBox(height: 20),
@@ -349,38 +379,11 @@ class _ProfileCreationPageState extends State<ProfileCreationPage> {
                         Row(
                           children: [
                             Expanded(
-                              child: DropdownButtonFormField<String>(
-                                decoration: InputDecoration(
-                                  labelText: 'Year',
-                                  prefixIcon: Icon(Icons.calendar_view_month_outlined, color: primaryColor, size: 22),
-                                  contentPadding: EdgeInsets.symmetric(vertical: 16, horizontal: 16),
-                                  border: OutlineInputBorder(
-                                    borderRadius: BorderRadius.circular(12),
-                                    borderSide: BorderSide(color: Colors.grey.shade300, width: 1),
-                                  ),
-                                  enabledBorder: OutlineInputBorder(
-                                    borderRadius: BorderRadius.circular(12),
-                                    borderSide: BorderSide(color: Colors.grey.shade300, width: 1),
-                                  ),
-                                  focusedBorder: OutlineInputBorder(
-                                    borderRadius: BorderRadius.circular(12),
-                                    borderSide: BorderSide(color: primaryColor, width: 1.5),
-                                  ),
-                                  errorBorder: OutlineInputBorder(
-                                    borderRadius: BorderRadius.circular(12),
-                                    borderSide: BorderSide(color: Colors.red.shade400, width: 1),
-                                  ),
-                                  filled: true,
-                                  fillColor: Colors.grey.shade50,
-                                  labelStyle: TextStyle(color: Colors.grey.shade600),
-                                ),
+                              child: _buildDropdownField(
+                                label: 'Year',
+                                icon: Icons.calendar_view_month_outlined,
                                 value: _year,
-                                items: _yearOptions.map((String year) {
-                                  return DropdownMenuItem<String>(
-                                    value: year,
-                                    child: Text(year, style: TextStyle(color: textColor)),
-                                  );
-                                }).toList(),
+                                items: _yearOptions,
                                 onChanged: (String? newValue) {
                                   setState(() {
                                     _year = newValue;
@@ -388,7 +391,7 @@ class _ProfileCreationPageState extends State<ProfileCreationPage> {
                                 },
                                 validator: (value) {
                                   if (value == null) {
-                                    return 'Please select your year';
+                                    return 'Please select';
                                   }
                                   return null;
                                 },
@@ -397,38 +400,11 @@ class _ProfileCreationPageState extends State<ProfileCreationPage> {
                             ),
                             SizedBox(width: 16),
                             Expanded(
-                              child: DropdownButtonFormField<String>(
-                                decoration: InputDecoration(
-                                  labelText: 'Semester',
-                                  prefixIcon: Icon(Icons.access_time_outlined, color: primaryColor, size: 22),
-                                  contentPadding: EdgeInsets.symmetric(vertical: 16, horizontal: 16),
-                                  border: OutlineInputBorder(
-                                    borderRadius: BorderRadius.circular(12),
-                                    borderSide: BorderSide(color: Colors.grey.shade300, width: 1),
-                                  ),
-                                  enabledBorder: OutlineInputBorder(
-                                    borderRadius: BorderRadius.circular(12),
-                                    borderSide: BorderSide(color: Colors.grey.shade300, width: 1),
-                                  ),
-                                  focusedBorder: OutlineInputBorder(
-                                    borderRadius: BorderRadius.circular(12),
-                                    borderSide: BorderSide(color: primaryColor, width: 1.5),
-                                  ),
-                                  errorBorder: OutlineInputBorder(
-                                    borderRadius: BorderRadius.circular(12),
-                                    borderSide: BorderSide(color: Colors.red.shade400, width: 1),
-                                  ),
-                                  filled: true,
-                                  fillColor: Colors.grey.shade50,
-                                  labelStyle: TextStyle(color: Colors.grey.shade600),
-                                ),
+                              child: _buildDropdownField(
+                                label: 'Semester',
+                                icon: Icons.access_time_outlined,
                                 value: _semester,
-                                items: _semesterOptions.map((String semester) {
-                                  return DropdownMenuItem<String>(
-                                    value: semester,
-                                    child: Text(semester, style: TextStyle(color: textColor)),
-                                  );
-                                }).toList(),
+                                items: _semesterOptions,
                                 onChanged: (String? newValue) {
                                   setState(() {
                                     _semester = newValue;
@@ -436,7 +412,7 @@ class _ProfileCreationPageState extends State<ProfileCreationPage> {
                                 },
                                 validator: (value) {
                                   if (value == null) {
-                                    return 'Please select your semester';
+                                    return 'Please select';
                                   }
                                   return null;
                                 },
@@ -454,14 +430,15 @@ class _ProfileCreationPageState extends State<ProfileCreationPage> {
                             style: ElevatedButton.styleFrom(
                               backgroundColor: primaryColor,
                               foregroundColor: Colors.white,
-                              elevation: 2,
+                              elevation: 1,
                               shape: RoundedRectangleBorder(
-                                borderRadius: BorderRadius.circular(12),
+                                borderRadius: BorderRadius.circular(8),
                               ),
                             ),
                             child: Text(
                               'CREATE PROFILE',
                               style: TextStyle(
+                                fontFamily: 'Poppins',
                                 fontSize: 16,
                                 fontWeight: FontWeight.bold,
                                 letterSpacing: 1,
@@ -492,34 +469,148 @@ class _ProfileCreationPageState extends State<ProfileCreationPage> {
       controller: controller,
       decoration: InputDecoration(
         labelText: label,
-        prefixIcon: Icon(icon, color: primaryColor, size: 22),
+        prefixIcon: Icon(icon, color: Colors.grey[400], size: 22),
         contentPadding: EdgeInsets.symmetric(vertical: 16, horizontal: 16),
         border: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(12),
-          borderSide: BorderSide(color: Colors.grey.shade300, width: 1),
+          borderRadius: BorderRadius.circular(8),
+          borderSide: BorderSide(color: Colors.grey[400]!, width: 1),
         ),
         enabledBorder: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(12),
-          borderSide: BorderSide(color: Colors.grey.shade300, width: 1),
+          borderRadius: BorderRadius.circular(8),
+          borderSide: BorderSide(color: Colors.grey[400]!, width: 1),
         ),
         focusedBorder: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(12),
+          borderRadius: BorderRadius.circular(8),
           borderSide: BorderSide(color: primaryColor, width: 1.5),
         ),
         errorBorder: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(12),
+          borderRadius: BorderRadius.circular(8),
           borderSide: BorderSide(color: Colors.red.shade400, width: 1),
         ),
         filled: true,
-        fillColor: Colors.grey.shade50,
-        labelStyle: TextStyle(color: Colors.grey.shade600),
+        fillColor: Colors.white,
+        labelStyle: TextStyle(
+          fontFamily: 'Poppins',
+          color: Colors.grey[600],
+        ),
       ),
       style: TextStyle(
+        fontFamily: 'Poppins',
         fontSize: 16,
-        color: textColor,
+        color: Colors.grey[600],
       ),
       validator: validator,
       onSaved: onSaved,
     );
   }
-}
+
+  Widget _buildTextAreaField({
+    required String label,
+    required IconData icon,
+    required int maxLines,
+    Function(String?)? onSaved,
+    String? hintText,
+  }) {
+    return TextFormField(
+      maxLines: maxLines,
+      decoration: InputDecoration(
+        labelText: label,
+        hintText: hintText,
+        prefixIcon: Padding(
+          padding: const EdgeInsets.only(bottom: 0, top: 16, left: 12, right: 0),
+          child: Icon(icon, color: Colors.grey[400], size: 22),
+        ),
+        alignLabelWithHint: true,
+        contentPadding: EdgeInsets.symmetric(vertical: 16, horizontal: 16),
+        border: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(8),
+          borderSide: BorderSide(color: Colors.grey[400]!, width: 1),
+        ),
+        enabledBorder: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(8),
+          borderSide: BorderSide(color: Colors.grey[400]!, width: 1),
+        ),
+        focusedBorder: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(8),
+          borderSide: BorderSide(color: primaryColor, width: 1.5),
+        ),
+        filled: true,
+        fillColor: Colors.white,
+        labelStyle: TextStyle(
+          fontFamily: 'Poppins',
+          color: Colors.grey[600],
+        ),
+        hintStyle: TextStyle(
+          fontFamily: 'Poppins',
+          color: Colors.grey[400],
+        ),
+      ),
+      style: TextStyle(
+        fontFamily: 'Poppins',
+        fontSize: 16,
+        color: Colors.grey[600],
+      ),
+      onSaved: onSaved,
+    );
+  }
+
+  Widget _buildDropdownField({
+    required String label,
+    required IconData icon,
+    required String? value,
+    required List<String> items,
+    required Function(String?) onChanged,
+    required String? Function(String?)? validator,
+    required Function(String?)? onSaved,
+  }) {
+    return DropdownButtonFormField<String>(
+      decoration: InputDecoration(
+        labelText: label,
+        prefixIcon: Icon(icon, color: Colors.grey[400], size: 22),
+        contentPadding: EdgeInsets.symmetric(vertical: 16, horizontal: 16),
+        border: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(8),
+          borderSide: BorderSide(color: Colors.grey[400]!, width: 1),
+        ),
+        enabledBorder: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(8),
+          borderSide: BorderSide(color: Colors.grey[400]!, width: 1),
+        ),
+        focusedBorder: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(8),
+          borderSide: BorderSide(color: primaryColor, width: 1.5),
+        ),
+        errorBorder: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(8),
+          borderSide: BorderSide(color: Colors.red.shade400, width: 1),
+        ),
+        filled: true,
+        fillColor: Colors.white,
+        labelStyle: TextStyle(
+          fontFamily: 'Poppins',
+          color: Colors.grey[600],
+        ),
+      ),
+      style: TextStyle(
+        fontFamily: 'Poppins',
+        fontSize: 16,
+        color: Colors.grey[600],
+      ),
+      value: value,
+      items: items.map((String item) {
+        return DropdownMenuItem<String>(
+          value: item,
+          child: Text(
+              item,
+              style: TextStyle(
+                fontFamily: 'Poppins',
+                color: Colors.grey[600],
+              )
+          ),
+        );
+      }).toList(),
+      onChanged: onChanged,
+      validator: validator,
+      onSaved: onSaved,
+    );
+  }}

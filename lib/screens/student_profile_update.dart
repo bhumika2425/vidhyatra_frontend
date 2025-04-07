@@ -1,387 +1,704 @@
-// import 'dart:convert';
-// import 'dart:io';
-//
-// import 'package:flutter/material.dart';
-// import 'package:get/get.dart';
-// import 'package:image_picker/image_picker.dart';
-// import 'package:http/http.dart' as http;
-// import 'package:provider/provider.dart';
-// import 'package:vidhyatra_flutter/constants/api_endpoints.dart';
-//
-// import '../controllers/LoginController.dart';
-// import '../models/profile.dart';
-//
-// class StudentProfileUpdate extends StatefulWidget {
-//   const StudentProfileUpdate({super.key});
-//
-//   @override
-//   State<StudentProfileUpdate> createState() => _StudentProfileUpdateState();
-// }
-//
-// class _StudentProfileUpdateState extends State<StudentProfileUpdate> {
-//   final _formKey = GlobalKey<FormState>();
-//   String? _fullname;
-//   String? _location;
-//   String? _department;
-//   String? _year;
-//   String? _semester;
-//   XFile? _profileImage;
-//
-//   final ImagePicker _picker = ImagePicker();
-//   final TextEditingController _dateOfBirthController = TextEditingController();
-//
-//   bool _isLoading = true;
-//
-//   @override
-//   void initState() {
-//     super.initState();
-//
-//     final profileProvider = Provider.of<ProfileProvider>(context, listen: false);
-//     final token = Get.find<LoginController>().token.value;
-//
-//     if (token != null) {
-//       profileProvider.fetchProfileData(token).then((_) {
-//         // After fetching profile data, populate the text fields
-//         _populateProfileFields(profileProvider.profile);
-//         setState(() {
-//           _isLoading = false;
-//         });
-//       }).catchError((error) {
-//         print('Error fetching profile: $error');
-//         setState(() {
-//           _isLoading = false;
-//         });
-//       });
-//     } else {
-//       print('Token is null, unable to fetch profile data.');
-//       setState(() {
-//         _isLoading = false;
-//       });
-//     }
-//   }
-//
-//   // Method to populate the text fields with fetched profile data
-//   void _populateProfileFields(Profile? profile) {
-//     if (profile != null) {
-//       setState(() {
-//         _fullname = profile.fullname;
-//         _location = profile.location;
-//         _department = profile.department;
-//         _year = profile.year;
-//         _semester = profile.semester;
-//         _dateOfBirthController.text = profile.dateOfBirth.toLocal().toString().split(' ')[0]; // Format date
-//       });
-//     }
-//   }
-//
-//   void _removeImage() {
-//     setState(() {
-//       _profileImage = null;
-//     });
-//   }
-//
-//   @override
-//   void dispose() {
-//     _dateOfBirthController.dispose();
-//     super.dispose();
-//   }
-//
-//   Future<void> _pickImage() async {
-//     final pickedFile = await _picker.pickImage(source: ImageSource.gallery);
-//     if (pickedFile != null) {
-//       setState(() {
-//         _profileImage = pickedFile;
-//       });
-//     }
-//   }
-//
-//
-//
-//   Future<void> _selectDate(BuildContext context) async {
-//     final DateTime? pickedDate = await showDatePicker(
-//       context: context,
-//       initialDate: DateTime.now(),
-//       firstDate: DateTime(1900),
-//       lastDate: DateTime.now(),
-//     );
-//     if (pickedDate != null) {
-//       setState(() {
-//         _dateOfBirthController.text = "${pickedDate.toLocal()}".split(' ')[0];
-//       });
-//     }
-//   }
-//
-//   Future<void> _submitForm() async {
-//     if (_formKey.currentState?.validate() ?? false) {
-//       _formKey.currentState?.save();
-//
-//       setState(() {
-//         _isLoading = true;
-//       });
-//
-//       try {
-//         final token = Get.find<LoginController>().token.value;
-//
-//         // Prepare request body
-//         final Map<String, dynamic> body = {
-//           'full_name': _fullname,
-//           'date_of_birth': _dateOfBirthController.text,
-//           'location': _location,
-//           'department': _department,
-//           'year': _year,
-//           'semester': _semester,
-//         };
-//
-//         // Add profile image if it exists
-//         if (_profileImage != null) {
-//           // Use multipart for image upload
-//           var request = http.MultipartRequest(
-//             'PUT',
-//             Uri.parse(ApiEndPoints.updateStudentProfileImage),
-//           );
-//
-//           request.headers['Authorization'] = 'Bearer $token';
-//           request.fields.addAll(body.map((key, value) => MapEntry(key, value.toString())));
-//           request.files.add(await http.MultipartFile.fromPath(
-//             'profileImage',
-//             _profileImage!.path,
-//           ));
-//
-//           final response = await request.send();
-//           if (response.statusCode == 200) {
-//             // Handle success
-//             final responseBody = await response.stream.bytesToString();
-//             final data = json.decode(responseBody);
-//             Provider.of<ProfileProvider>(context, listen: false)
-//                 .setProfile(Profile.fromJson(data['profile']));
-//             ScaffoldMessenger.of(context).showSnackBar(
-//               SnackBar(content: Text('Profile updated successfully')),
-//             );
-//             Navigator.pop(context);
-//           } else {
-//             throw Exception('Failed to update profile');
-//           }
-//         } else {
-//           // Standard JSON request if no image
-//           final response = await http.put(
-//             Uri.parse(ApiEndPoints.studentProfileUpdate),
-//             headers: {
-//               'Authorization': 'Bearer $token',
-//               'Content-Type': 'application/json',
-//             },
-//             body: json.encode(body),
-//           );
-//
-//           if (response.statusCode == 200) {
-//             final data = json.decode(response.body);
-//             Provider.of<ProfileProvider>(context, listen: false)
-//                 .setProfile(Profile.fromJson(data['profile']));
-//             ScaffoldMessenger.of(context).showSnackBar(
-//               SnackBar(content: Text('Profile updated successfully')),
-//             );
-//           } else {
-//             throw Exception('Failed to update profile');
-//           }
-//         }
-//       } catch (error) {
-//         print('Error updating profile: $error');
-//         ScaffoldMessenger.of(context).showSnackBar(
-//           SnackBar(content: Text('Error: $error')),
-//         );
-//       } finally {
-//         setState(() {
-//           _isLoading = false;
-//         });
-//       }
-//     }
-//   }
-//
-//   @override
-//   Widget build(BuildContext context) {
-//     final user = Provider.of<UserProvider>(context).user;
-//     final profile = Provider.of<ProfileProvider>(context).profile;
-//
-//     return Scaffold(
-//       appBar: AppBar(
-//         backgroundColor: Color(0xFF971F20),
-//         title: Text(
-//           'Update Profile, ${user?.name}',
-//           style: TextStyle(color: Colors.white),
-//         ),
-//       ),
-//       body: _isLoading
-//           ? Center(child: CircularProgressIndicator())
-//           : Container(
-//         decoration: BoxDecoration(
-//           gradient: LinearGradient(
-//             colors: [
-//               Color(0xFF971F20),
-//               Colors.white,
-//             ],
-//             begin: Alignment.topCenter,
-//             end: Alignment.bottomCenter,
-//             stops: [0.3, 0.7],
-//           ),
-//         ),
-//         child: Padding(
-//           padding: const EdgeInsets.all(16.0),
-//           child: Form(
-//             key: _formKey,
-//             child: SingleChildScrollView(
-//               child: Column(
-//                 crossAxisAlignment: CrossAxisAlignment.start,
-//                 children: [
-//                   Center(
-//                     child: Stack(
-//                       children: [
-//                         GestureDetector(
-//                           onTap: _pickImage,
-//                           child: CircleAvatar(
-//                             radius: 70,
-//                             backgroundImage: _profileImage != null
-//                                 ? FileImage(File(_profileImage!.path))
-//                                 : (profile?.profileImageUrl != null
-//                                 ? NetworkImage(profile!.profileImageUrl!)
-//                                 : AssetImage('assets/default_profile.png')) as ImageProvider,
-//                             child: _profileImage == null && profile?.profileImageUrl == null
-//                                 ? Icon(
-//                               Icons.camera_alt,
-//                               size: 50,
-//                               color: Colors.white,
-//                             )
-//                                 : null,
-//                           ),
-//                         ),
-//                         if (_profileImage != null)
-//                           Positioned(
-//                             right: -3,
-//                             top: -3,
-//                             child: IconButton(
-//                               icon: Icon(Icons.cancel, color: Colors.red),
-//                               onPressed: _removeImage,
-//                             ),
-//                           ),
-//                       ],
-//                     ),
-//                   ),
-//                   SizedBox(height: 20),
-//                   Card(
-//                     color: Color(0xFFE7E3E3),
-//                     elevation: 15.0,
-//                     shadowColor: Colors.black.withOpacity(1),
-//                     shape: RoundedRectangleBorder(
-//                       borderRadius: BorderRadius.circular(1.0),
-//                     ),
-//                     child: Padding(
-//                       padding: const EdgeInsets.all(16.0),
-//                       child: Column(
-//                         children: [
-//                           Text(
-//                             "Personal Details",
-//                             style: TextStyle(fontWeight: FontWeight.bold, fontSize: 25),
-//                           ),
-//                           SizedBox(height: 30),
-//                           _buildTextFormField(
-//                             label: 'Full name',
-//                             icon: Icons.person,
-//                             initialValue: _fullname,
-//                             onSaved: (value) => _fullname = value,
-//                             validator: (value) => value!.isEmpty ? 'Please enter full name' : null,
-//                           ),
-//                           SizedBox(height: 15),
-//                           GestureDetector(
-//                             onTap: () => _selectDate(context),
-//                             child: AbsorbPointer(
-//                               child: TextFormField(
-//                                 controller: _dateOfBirthController,
-//                                 decoration: InputDecoration(
-//                                   labelText: "Date of Birth",
-//                                   prefixIcon: Icon(Icons.calendar_today),
-//                                 ),
-//                                 validator: (value) => value!.isEmpty ? 'Please select a date' : null,
-//                               ),
-//                             ),
-//                           ),
-//                           SizedBox(height: 15),
-//                           _buildTextFormField(
-//                             label: 'Location',
-//                             icon: Icons.location_city,
-//                             initialValue: _location,
-//                             onSaved: (value) => _location = value,
-//                             validator: (value) => value!.isEmpty ? 'Please enter location' : null,
-//                           ),
-//                           SizedBox(height: 15),
-//                           _buildTextFormField(
-//                             label: 'Department',
-//                             icon: Icons.work,
-//                             initialValue: _department,
-//                             onSaved: (value) => _department = value,
-//                             validator: (value) => value!.isEmpty ? 'Please enter department' : null,
-//                           ),
-//                           SizedBox(height: 15),
-//                           _buildTextFormField(
-//                             label: 'Year',
-//                             icon: Icons.calendar_today,
-//                             initialValue: _year,
-//                             onSaved: (value) => _year = value,
-//                             validator: (value) => value!.isEmpty ? 'Please enter year' : null,
-//                           ),
-//                           SizedBox(height: 15),
-//                           _buildTextFormField(
-//                             label: 'Semester',
-//                             icon: Icons.date_range,
-//                             initialValue: _semester,
-//                             onSaved: (value) => _semester = value,
-//                             validator: (value) => value!.isEmpty ? 'Please enter semester' : null,
-//                           ),
-//
-//                           SizedBox(height: 30),
-//                           Container(
-//                             width: MediaQuery.of(context).size.width / 2,
-//                             child: ElevatedButton(
-//                               onPressed: _submitForm,
-//                               style: ElevatedButton.styleFrom(
-//                                 backgroundColor: Color(0xFF971F20),
-//                                 padding: EdgeInsets.symmetric(vertical: 16.0),
-//                                 shape: RoundedRectangleBorder(
-//                                   borderRadius: BorderRadius.circular(15.0),
-//                                 ),
-//                               ),
-//                               child: Text(
-//                                 'Save Profile',
-//                                 style: TextStyle(fontSize: 16, color: Colors.white),
-//                               ),
-//                             ),
-//                           ),
-//                         ],
-//                       ),
-//                     ),
-//                   ),
-//                 ],
-//               ),
-//             ),
-//           ),
-//         ),
-//       ),
-//     );
-//   }
-//
-//   TextFormField _buildTextFormField({
-//     required String label,
-//     required IconData icon,
-//     String? initialValue,
-//     required FormFieldSetter<String> onSaved,
-//     String? Function(String?)? validator,
-//   }) {
-//     return TextFormField(
-//       initialValue: initialValue,
-//       decoration: InputDecoration(
-//         labelText: label,
-//         prefixIcon: Icon(icon),
-//       ),
-//       onSaved: onSaved,
-//       validator: validator,
-//     );
-//   }
-// }
-//
+import 'dart:convert';
+import 'dart:io';
+import 'package:flutter/material.dart';
+import 'package:get/get.dart';
+import 'package:image_picker/image_picker.dart';
+import 'package:http/http.dart' as http;
+import 'package:vidhyatra_flutter/constants/api_endpoints.dart';
+import '../controllers/LoginController.dart';
+
+class StudentProfileUpdatePage extends StatefulWidget {
+  @override
+  _StudentProfileUpdatePageState createState() => _StudentProfileUpdatePageState();
+}
+
+class _StudentProfileUpdatePageState extends State<StudentProfileUpdatePage> {
+  final _formKey = GlobalKey<FormState>();
+  String? _fullname;
+  String? _location;
+  String? _department;
+  String? _year;
+  String? _semester;
+  XFile? _profileImage;
+  String? _existingProfileImageUrl;
+  bool _isImageChanged = false;
+  String? _bio;
+  String? _interest;
+  bool _isLoading = true;
+
+  final ImagePicker _picker = ImagePicker();
+  final TextEditingController _fullnameController = TextEditingController();
+  final TextEditingController _dateOfBirthController = TextEditingController();
+  final TextEditingController _locationController = TextEditingController();
+  final TextEditingController _departmentController = TextEditingController();
+  final TextEditingController _bioController = TextEditingController();
+  final TextEditingController _interestController = TextEditingController();
+  final LoginController loginController = Get.find<LoginController>();
+
+  // Dropdown options
+  final List<String> _yearOptions = ['1st Year', '2nd Year', '3rd Year'];
+  final List<String> _semesterOptions = ['Semester 1', 'Semester 2'];
+
+  // Color theme
+  final Color primaryColor = Color(0xFF186CAC);
+  final Color secondaryColor = Color(0xFF186CAC).withOpacity(0.1);
+  final Color lightBlue = Color(0xFFE6F2FF);
+  final Color textColor = Color(0xFF333333);
+
+  @override
+  void initState() {
+    super.initState();
+    _fetchUserProfile();
+  }
+
+  @override
+  void dispose() {
+    _fullnameController.dispose();
+    _dateOfBirthController.dispose();
+    _locationController.dispose();
+    _departmentController.dispose();
+    _bioController.dispose();
+    _interestController.dispose();
+    super.dispose();
+  }
+
+  Future<void> _fetchUserProfile() async {
+    setState(() {
+      _isLoading = true;
+    });
+
+    try {
+      final token = Get.find<LoginController>().token.value;
+      final response = await http.get(
+        Uri.parse(ApiEndPoints.studentProfileUpdate),
+        headers: {
+          'Authorization': 'Bearer $token',
+        },
+      );
+
+      if (response.statusCode == 200) {
+        final data = json.decode(response.body)['data'];
+
+        setState(() {
+          _fullnameController.text = data['full_name'] ?? '';
+          _dateOfBirthController.text = data['date_of_birth'] ?? '';
+          _locationController.text = data['location'] ?? '';
+          _departmentController.text = data['department'] ?? '';
+          _year = data['year'];
+          _semester = data['semester'];
+          _bioController.text = data['bio'] ?? '';
+          _interestController.text = data['interest'] ?? '';
+          _existingProfileImageUrl = data['profile_image'];
+
+          _isLoading = false;
+        });
+      } else {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text('Failed to load profile data'),
+            backgroundColor: Colors.red,
+            behavior: SnackBarBehavior.floating,
+          ),
+        );
+        setState(() {
+          _isLoading = false;
+        });
+      }
+    } catch (error) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text('Error loading profile. Please try again.'),
+          backgroundColor: Colors.red,
+          behavior: SnackBarBehavior.floating,
+        ),
+      );
+      setState(() {
+        _isLoading = false;
+      });
+    }
+  }
+
+  Future<void> _pickImage() async {
+    final pickedFile = await _picker.pickImage(source: ImageSource.gallery);
+    if (pickedFile != null) {
+      setState(() {
+        _profileImage = pickedFile;
+        _isImageChanged = true;
+      });
+    }
+  }
+
+  Future<void> _selectDate(BuildContext context) async {
+    final DateTime? pickedDate = await showDatePicker(
+      context: context,
+      initialDate: _dateOfBirthController.text.isNotEmpty
+          ? DateTime.parse(_dateOfBirthController.text)
+          : DateTime.now().subtract(Duration(days: 365 * 18)),
+      firstDate: DateTime(1900),
+      lastDate: DateTime.now(),
+      builder: (context, child) {
+        return Theme(
+          data: Theme.of(context).copyWith(
+            colorScheme: ColorScheme.light(
+              primary: primaryColor,
+              onPrimary: Colors.white,
+              onSurface: textColor,
+            ),
+          ),
+          child: child!,
+        );
+      },
+    );
+    if (pickedDate != null) {
+      setState(() {
+        _dateOfBirthController.text = "${pickedDate.toLocal()}".split(' ')[0];
+      });
+    }
+  }
+
+  Future<void> _updateProfile() async {
+    if (_formKey.currentState!.validate()) {
+      _formKey.currentState!.save();
+
+      setState(() {
+        _isLoading = true;
+      });
+
+      final token = Get.find<LoginController>().token.value;
+
+      final uri = Uri.parse(ApiEndPoints.studentProfileUpdate);
+      final request = http.MultipartRequest('PUT', uri)
+        ..headers['Authorization'] = 'Bearer $token'
+        ..fields['full_name'] = _fullnameController.text
+        ..fields['date_of_birth'] = _dateOfBirthController.text
+        ..fields['location'] = _locationController.text
+        ..fields['department'] = _departmentController.text
+        ..fields['year'] = _year ?? ''
+        ..fields['semester'] = _semester ?? ''
+        ..fields['bio'] = _bioController.text
+        ..fields['interest'] = _interestController.text;
+
+      if (_isImageChanged && _profileImage != null) {
+        request.files.add(
+          await http.MultipartFile.fromPath(
+            'profileImage',
+            _profileImage!.path,
+          ),
+        );
+      }
+
+      try {
+        final response = await request.send();
+
+        setState(() {
+          _isLoading = false;
+        });
+
+        if (response.statusCode == 200) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(
+              content: Text('Profile updated successfully'),
+              backgroundColor: primaryColor,
+              behavior: SnackBarBehavior.floating,
+            ),
+          );
+          Navigator.pop(context, true); // Return true to indicate successful update
+        } else {
+          final responseData = await response.stream.bytesToString();
+          final errorData = json.decode(responseData);
+          final errorMessage = errorData['message'] ?? 'Profile update failed';
+
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(
+              content: Text(errorMessage),
+              backgroundColor: Colors.red,
+              behavior: SnackBarBehavior.floating,
+            ),
+          );
+        }
+      } catch (error) {
+        setState(() {
+          _isLoading = false;
+        });
+
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text('Error updating profile. Please try again.'),
+            backgroundColor: Colors.red,
+            behavior: SnackBarBehavior.floating,
+          ),
+        );
+      }
+    }
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      backgroundColor: Colors.grey[200],
+      appBar: AppBar(
+        elevation: 0,
+        backgroundColor: primaryColor,
+        title: Text(
+          'Update Profile',
+          style: TextStyle(
+            fontFamily: 'Poppins',
+            color: Colors.white,
+            fontWeight: FontWeight.w500,
+          ),
+        ),
+        centerTitle: true,
+      ),
+      body: _isLoading
+          ? Center(
+        child: CircularProgressIndicator(
+          color: primaryColor,
+        ),
+      )
+          : SafeArea(
+        child: Container(
+          color: Colors.grey[200],
+          child: SingleChildScrollView(
+            child: Column(
+              children: [
+                // Header section with profile image
+                Container(
+                  width: double.infinity,
+                  padding: EdgeInsets.only(bottom: 30),
+                  color: Colors.white,
+                  child: Column(
+                    children: [
+                      // Small colored top accent
+                      Container(
+                        width: double.infinity,
+                        color: Colors.grey[200],
+                        padding: EdgeInsets.symmetric(vertical: 15),
+                        child: Column(
+                          children: [
+                            Text(
+                              'Edit Your Profile',
+                              style: TextStyle(
+                                fontFamily: 'Poppins',
+                                color: Colors.black,
+                                fontSize: 16,
+                              ),
+                            ),
+                            SizedBox(height: 5),
+                            Text(
+                              'Update your information',
+                              style: TextStyle(
+                                fontFamily: 'Poppins',
+                                color: Colors.black.withOpacity(0.9),
+                                fontSize: 14,
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                      SizedBox(height: 30),
+                      // Profile image picker
+                      Stack(
+                        alignment: Alignment.center,
+                        children: [
+                          Container(
+                            decoration: BoxDecoration(
+                              color: Colors.grey[200],
+                              shape: BoxShape.circle,
+                              boxShadow: [
+                                BoxShadow(
+                                  color: Colors.black.withOpacity(0.2),
+                                  blurRadius: 10,
+                                  spreadRadius: 2,
+                                ),
+                              ],
+                            ),
+                            child: CircleAvatar(
+                              radius: 65,
+                              backgroundColor: Colors.white,
+                              child: CircleAvatar(
+                                radius: 60,
+                                backgroundColor: Colors.grey[200],
+                                backgroundImage: _isImageChanged && _profileImage != null
+                                    ? FileImage(File(_profileImage!.path))
+                                    : _existingProfileImageUrl != null && _existingProfileImageUrl!.isNotEmpty
+                                    ? NetworkImage(_existingProfileImageUrl!) as ImageProvider
+                                    : null,
+                                child: (_profileImage == null && (_existingProfileImageUrl == null || _existingProfileImageUrl!.isEmpty))
+                                    ? Icon(
+                                  Icons.person,
+                                  size: 60,
+                                  color: primaryColor.withOpacity(0.7),
+                                )
+                                    : null,
+                              ),
+                            ),
+                          ),
+                          Positioned(
+                            bottom: 0,
+                            right: 0,
+                            child: GestureDetector(
+                              onTap: _pickImage,
+                              child: Container(
+                                padding: EdgeInsets.all(8),
+                                decoration: BoxDecoration(
+                                  color: Colors.white,
+                                  shape: BoxShape.circle,
+                                  border: Border.all(
+                                    color: Colors.grey[400]!,
+                                    width: 1,
+                                  ),
+                                  boxShadow: [
+                                    BoxShadow(
+                                      color: Colors.black.withOpacity(0.1),
+                                      blurRadius: 5,
+                                      spreadRadius: 1,
+                                    ),
+                                  ],
+                                ),
+                                child: Icon(
+                                  Icons.camera_alt,
+                                  color: Colors.grey[400],
+                                  size: 22,
+                                ),
+                              ),
+                            ),
+                          ),
+                        ],
+                      ),
+                    ],
+                  ),
+                ),
+
+                // Form section
+                Container(
+                  color: Colors.grey[200],
+                  margin: EdgeInsets.only(top: 10),
+                  padding: const EdgeInsets.fromLTRB(20, 25, 20, 30),
+                  child: Form(
+                    key: _formKey,
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          'Personal Information',
+                          style: TextStyle(
+                            fontFamily: 'Poppins',
+                            fontSize: 18,
+                            fontWeight: FontWeight.bold,
+                            color: textColor,
+                          ),
+                        ),
+                        SizedBox(height: 20),
+                        _buildInputField(
+                          label: 'Nickname',
+                          icon: Icons.person_outline,
+                          controller: _fullnameController,
+                          validator: (value) {
+                            if (value == null || value.isEmpty) {
+                              return 'Please enter your nickname';
+                            }
+                            return null;
+                          },
+                        ),
+                        SizedBox(height: 16),
+                        GestureDetector(
+                          onTap: () => _selectDate(context),
+                          child: AbsorbPointer(
+                            child: _buildInputField(
+                              label: 'Date of Birth',
+                              icon: Icons.calendar_today_outlined,
+                              controller: _dateOfBirthController,
+                              validator: (value) {
+                                if (value == null || value.isEmpty) {
+                                  return 'Please select your date of birth';
+                                }
+                                return null;
+                              },
+                            ),
+                          ),
+                        ),
+                        SizedBox(height: 16),
+                        _buildInputField(
+                          label: 'Location',
+                          icon: Icons.location_on_outlined,
+                          controller: _locationController,
+                          validator: (value) {
+                            if (value == null || value.isEmpty) {
+                              return 'Please enter your location';
+                            }
+                            return null;
+                          },
+                        ),
+                        SizedBox(height: 16),
+                        _buildTextAreaField(
+                          label: 'Bio',
+                          icon: Icons.description_outlined,
+                          maxLines: 3,
+                          controller: _bioController,
+                          hintText: 'Tell us a bit about yourself...',
+                        ),
+                        SizedBox(height: 16),
+                        _buildTextAreaField(
+                          label: 'Interests',
+                          icon: Icons.interests_outlined,
+                          maxLines: 2,
+                          controller: _interestController,
+                          hintText: 'Reading, Sports, Music, etc.',
+                        ),
+
+                        SizedBox(height: 30),
+                        Text(
+                          'Academic Information',
+                          style: TextStyle(
+                            fontFamily: 'Poppins',
+                            fontSize: 18,
+                            fontWeight: FontWeight.bold,
+                            color: textColor,
+                          ),
+                        ),
+                        SizedBox(height: 20),
+                        _buildInputField(
+                          label: 'Department',
+                          icon: Icons.school_outlined,
+                          controller: _departmentController,
+                          validator: (value) {
+                            if (value == null || value.isEmpty) {
+                              return 'Please enter your department';
+                            }
+                            return null;
+                          },
+                        ),
+                        SizedBox(height: 16),
+                        Row(
+                          children: [
+                            Expanded(
+                              child: _buildDropdownField(
+                                label: 'Year',
+                                icon: Icons.calendar_view_month_outlined,
+                                value: _year,
+                                items: _yearOptions,
+                                onChanged: (String? newValue) {
+                                  setState(() {
+                                    _year = newValue;
+                                  });
+                                },
+                                validator: (value) {
+                                  if (value == null) {
+                                    return 'Please select';
+                                  }
+                                  return null;
+                                },
+                              ),
+                            ),
+                            SizedBox(width: 16),
+                            Expanded(
+                              child: _buildDropdownField(
+                                label: 'Semester',
+                                icon: Icons.access_time_outlined,
+                                value: _semester,
+                                items: _semesterOptions,
+                                onChanged: (String? newValue) {
+                                  setState(() {
+                                    _semester = newValue;
+                                  });
+                                },
+                                validator: (value) {
+                                  if (value == null) {
+                                    return 'Please select';
+                                  }
+                                  return null;
+                                },
+                              ),
+                            ),
+                          ],
+                        ),
+                        SizedBox(height: 40),
+                        SizedBox(
+                          width: double.infinity,
+                          height: 55,
+                          child: ElevatedButton(
+                            onPressed: _updateProfile,
+                            style: ElevatedButton.styleFrom(
+                              backgroundColor: primaryColor,
+                              foregroundColor: Colors.white,
+                              elevation: 1,
+                              shape: RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(8),
+                              ),
+                            ),
+                            child: Text(
+                              'SAVE CHANGES',
+                              style: TextStyle(
+                                fontFamily: 'Poppins',
+                                fontSize: 16,
+                                fontWeight: FontWeight.bold,
+                                letterSpacing: 1,
+                              ),
+                            ),
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                ),
+              ],
+            ),
+          ),
+        ),
+      ),
+    );
+  }
+
+  Widget _buildInputField({
+    required String label,
+    required IconData icon,
+    String? Function(String?)? validator,
+    required TextEditingController controller,
+  }) {
+    return TextFormField(
+      controller: controller,
+      decoration: InputDecoration(
+        labelText: label,
+        prefixIcon: Icon(icon, color: Colors.grey[400], size: 22),
+        contentPadding: EdgeInsets.symmetric(vertical: 16, horizontal: 16),
+        border: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(8),
+          borderSide: BorderSide(color: Colors.grey[400]!, width: 1),
+        ),
+        enabledBorder: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(8),
+          borderSide: BorderSide(color: Colors.grey[400]!, width: 1),
+        ),
+        focusedBorder: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(8),
+          borderSide: BorderSide(color: primaryColor, width: 1.5),
+        ),
+        errorBorder: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(8),
+          borderSide: BorderSide(color: Colors.red.shade400, width: 1),
+        ),
+        filled: true,
+        fillColor: Colors.white,
+        labelStyle: TextStyle(
+          fontFamily: 'Poppins',
+          color: Colors.grey[600],
+        ),
+      ),
+      style: TextStyle(
+        fontFamily: 'Poppins',
+        fontSize: 16,
+        color: Colors.grey[600],
+      ),
+      validator: validator,
+    );
+  }
+
+  Widget _buildTextAreaField({
+    required String label,
+    required IconData icon,
+    required int maxLines,
+    required TextEditingController controller,
+    String? hintText,
+  }) {
+    return TextFormField(
+      controller: controller,
+      maxLines: maxLines,
+      decoration: InputDecoration(
+        labelText: label,
+        hintText: hintText,
+        prefixIcon: Padding(
+          padding: const EdgeInsets.only(bottom: 0, top: 16, left: 12, right: 0),
+          child: Icon(icon, color: Colors.grey[400], size: 22),
+        ),
+        alignLabelWithHint: true,
+        contentPadding: EdgeInsets.symmetric(vertical: 16, horizontal: 16),
+        border: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(8),
+          borderSide: BorderSide(color: Colors.grey[400]!, width: 1),
+        ),
+        enabledBorder: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(8),
+          borderSide: BorderSide(color: Colors.grey[400]!, width: 1),
+        ),
+        focusedBorder: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(8),
+          borderSide: BorderSide(color: primaryColor, width: 1.5),
+        ),
+        filled: true,
+        fillColor: Colors.white,
+        labelStyle: TextStyle(
+          fontFamily: 'Poppins',
+          color: Colors.grey[600],
+        ),
+        hintStyle: TextStyle(
+          fontFamily: 'Poppins',
+          color: Colors.grey[400],
+        ),
+      ),
+      style: TextStyle(
+        fontFamily: 'Poppins',
+        fontSize: 16,
+        color: Colors.grey[600],
+      ),
+    );
+  }
+
+  Widget _buildDropdownField({
+    required String label,
+    required IconData icon,
+    required String? value,
+    required List<String> items,
+    required Function(String?) onChanged,
+    required String? Function(String?)? validator,
+  }) {
+    return DropdownButtonFormField<String>(
+      decoration: InputDecoration(
+        labelText: label,
+        prefixIcon: Icon(icon, color: Colors.grey[400], size: 22),
+        contentPadding: EdgeInsets.symmetric(vertical: 16, horizontal: 16),
+        border: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(8),
+          borderSide: BorderSide(color: Colors.grey[400]!, width: 1),
+        ),
+        enabledBorder: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(8),
+          borderSide: BorderSide(color: Colors.grey[400]!, width: 1),
+        ),
+        focusedBorder: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(8),
+          borderSide: BorderSide(color: primaryColor, width: 1.5),
+        ),
+        errorBorder: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(8),
+          borderSide: BorderSide(color: Colors.red.shade400, width: 1),
+        ),
+        filled: true,
+        fillColor: Colors.white,
+        labelStyle: TextStyle(
+          fontFamily: 'Poppins',
+          color: Colors.grey[600],
+        ),
+      ),
+      style: TextStyle(
+        fontFamily: 'Poppins',
+        fontSize: 16,
+        color: Colors.grey[600],
+      ),
+      value: value,
+      items: items.map((String item) {
+        return DropdownMenuItem<String>(
+          value: item,
+          child: Text(
+              item,
+              style: TextStyle(
+                fontFamily: 'Poppins',
+                color: Colors.grey[600],
+              )
+          ),
+        );
+      }).toList(),
+      onChanged: onChanged,
+      validator: validator,
+    );
+  }
+}

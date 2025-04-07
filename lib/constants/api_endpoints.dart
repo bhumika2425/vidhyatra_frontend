@@ -12,7 +12,7 @@ class ApiEndPoints{
 
   static const postBlogs= "${baseUrl}/api/blog/post"; 
 
-  static const fetchProfileData ="${baseUrl}/api/profile/";
+
   //feedback
   static const createFeedback = "${baseUrl}/api/feedback/create";
   //password
@@ -34,6 +34,7 @@ class ApiEndPoints{
   static const studentProfileUpdate = "${baseUrl}/api/profile/update";
 
   static const fetchAllUsers = "${baseUrl}/api/auth/users";
+  static const fetchProfileData ="${baseUrl}/api/profile/";
 
 //friend request
   static const sendFriendRequest = "${baseUrl}/api/friendRequest/friend-requests";
