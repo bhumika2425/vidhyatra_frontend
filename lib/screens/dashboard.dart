@@ -5,6 +5,8 @@ import 'package:google_fonts/google_fonts.dart';
 import 'package:intl/intl.dart';
 import 'package:percent_indicator/circular_percent_indicator.dart';
 import 'package:timeago/timeago.dart' as timeago;
+import 'package:vidhyatra_flutter/screens/LibraryScreen.dart';
+import 'package:vidhyatra_flutter/screens/TeacherListScreen.dart';
 import 'package:vidhyatra_flutter/screens/profile_creation.dart';
 
 import '../controllers/LoginController.dart';
@@ -12,6 +14,7 @@ import '../controllers/ProfileController.dart';
 import '../controllers/blogController.dart';
 import '../controllers/deadline_controller.dart';
 import '../models/blogModel.dart';
+import 'NotesScreen.dart';
 
 class Dashboard extends StatefulWidget {
   const Dashboard({super.key});
@@ -212,11 +215,29 @@ class _DashboardState extends State<Dashboard>
               indicatorColor: Colors.white,
               labelColor: Colors.white,
               unselectedLabelColor: Colors.white70,
-              tabs: const [
-                Tab(text: 'Home'),
-                Tab(text: 'Social'),
-              ],
+        tabs:[
+          Tab(
+            child: Text(
+              'Home',
+              style: GoogleFonts.poppins(
+                fontSize: 14,
+                // fontWeight: FontWeight.bold,
+
+              ),
             ),
+          ),
+          Tab(
+            child: Text(
+              'Social',
+              style: TextStyle(
+                fontSize: 14,
+                fontFamily: 'Poppins',
+              ),
+            ),
+          ),
+        ],
+
+      ),
     );
   }
 
@@ -254,10 +275,9 @@ class _DashboardState extends State<Dashboard>
             ),
           ),
           _buildDrawerItem(Icons.dashboard, 'Dashboard'),
-          _buildDrawerItem(Icons.book_online, 'Assignments'),
+          _buildDrawerItem(Icons.book_online, 'Appointment'),
           _buildDrawerItem(Icons.library_books, 'Library'),
           _buildDrawerItem(Icons.note_alt, 'Notes'),
-          _buildDrawerItem(Icons.article, 'Study Materials'),
           _buildDrawerItem(Icons.help, 'Help & Support'),
           _buildDrawerItem(Icons.settings, 'Settings'),
           _buildDrawerItem(Icons.logout, 'Logout', color: Colors.red),
@@ -431,28 +451,40 @@ class _DashboardState extends State<Dashboard>
                 style: GoogleFonts.poppins(fontSize: 14)),
           ],
         ),
-      ),
-    );
+      ),    );
   }
 
   Widget _buildQuickAccessGrid() {
     final List<Map<String, dynamic>> quickAccessItems = [
-      {'title': 'Timetable', 'icon': Icons.schedule, 'route': '/classSchedule'},
       {
-        'title': 'Assignments',
-        'icon': Icons.assignment,
-        'route': '/assignments'
+        'title': 'Timetable',
+        'icon': Icons.schedule,
+        'screen': () => NotesScreen(), // Placeholder screen
       },
-      {'title': 'Library', 'icon': Icons.local_library, 'route': '/library'},
-      {'title': 'Notes', 'icon': Icons.note_alt, 'route': '/notes'},
+      {
+        'title': 'Appointment',
+        'icon': Icons.assignment,
+        'screen': () => TeacherListScreen(), // Placeholder screen
+      },
+      {
+        'title': 'Library',
+        'icon': Icons.local_library,
+        'screen': () => LibraryScreen(), // Placeholder screen
+      },
+      {
+        'title': 'Notes',
+        'icon': Icons.note_alt,
+        'screen': () => NotesScreen(), // From notes.dart
+      },
     ];
 
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Text("Quick Access",
-            style:
-                GoogleFonts.poppins(fontSize: 18, fontWeight: FontWeight.bold)),
+        Text(
+          "Quick Access",
+          style: GoogleFonts.poppins(fontSize: 18, fontWeight: FontWeight.bold),
+        ),
         const SizedBox(height: 10),
         GridView.builder(
           shrinkWrap: true,
@@ -467,7 +499,9 @@ class _DashboardState extends State<Dashboard>
           itemBuilder: (context, index) {
             final item = quickAccessItems[index];
             return InkWell(
-              onTap: () => Get.toNamed(item['route']),
+              onTap: () {
+                Get.to(item['screen']()); // Navigate to the respective screen
+              },
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
@@ -477,13 +511,14 @@ class _DashboardState extends State<Dashboard>
                       color: Color(0xFF186CAC).withOpacity(0.1),
                       shape: BoxShape.circle,
                     ),
-                    child:
-                        Icon(item['icon'], color: Color(0xFF186CAC), size: 24),
+                    child: Icon(item['icon'], color: Color(0xFF186CAC), size: 24),
                   ),
                   const SizedBox(height: 5),
-                  Text(item['title'],
-                      style: GoogleFonts.poppins(fontSize: 12),
-                      textAlign: TextAlign.center),
+                  Text(
+                    item['title'],
+                    style: GoogleFonts.poppins(fontSize: 12),
+                    textAlign: TextAlign.center,
+                  ),
                 ],
               ),
             );

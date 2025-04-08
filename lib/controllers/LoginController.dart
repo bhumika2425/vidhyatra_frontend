@@ -1,6 +1,7 @@
 import 'dart:convert';
 
 import 'package:get/get.dart';
+import 'package:vidhyatra_flutter/screens/tryView.dart';
 
 import '../constants/api_endpoints.dart';
 import '../models/user.dart';
@@ -75,7 +76,7 @@ class LoginController extends GetxController {
             Get.toNamed('/admin-dashboard');
           } else if (userRole.toLowerCase() == 'teacher') {
             print("🔹 Navigating to /teacher-dashboard");
-            Get.toNamed('/teacher-dashboard');
+            Get.to(DashboardView());
           } else if (userRole.toLowerCase() == 'student') {
             print("🔹 Navigating to /student-dashboard");
             Get.toNamed('/student-dashboard');

@@ -5,7 +5,7 @@ import 'dart:convert';
 import 'package:provider/provider.dart';
 import '../constants/api_endpoints.dart';
 import '../models/FriendRequestModel.dart';
-import '../providers/user_provider.dart';
+// import '../providers/user_provider.dart';
 import 'LoginController.dart';
 
 class FriendsController extends GetxController {
