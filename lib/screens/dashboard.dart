@@ -9,11 +9,14 @@ import 'package:vidhyatra_flutter/screens/LibraryScreen.dart';
 import 'package:vidhyatra_flutter/screens/TeacherListScreen.dart';
 import 'package:vidhyatra_flutter/screens/profile_creation.dart';
 
+import '../controllers/EventController.dart';
 import '../controllers/LoginController.dart';
 import '../controllers/ProfileController.dart';
 import '../controllers/blogController.dart';
 import '../controllers/deadline_controller.dart';
+import '../models/EventsModel.dart';
 import '../models/blogModel.dart';
+import 'EventDetailsPage.dart';
 import 'NotesScreen.dart';
 
 class Dashboard extends StatefulWidget {
@@ -44,20 +47,20 @@ class _DashboardState extends State<Dashboard>
 
 
 
-  final List<Map<String, dynamic>> announcements = [
-    {
-      'title': 'Spring Fest 2025',
-      'details': 'Registration now open! Deadline: April 15, 2025',
-      'icon': Icons.celebration,
-      'time': DateTime.now().subtract(Duration(hours: 5))
-    },
-    {
-      'title': 'Campus Placement Drive',
-      'details': 'Microsoft recruiting on April 20. Register by April 10',
-      'icon': Icons.work,
-      'time': DateTime.now().subtract(Duration(hours: 12))
-    },
-  ];
+  // final List<Map<String, dynamic>> announcements = [
+  //   {
+  //     'title': 'Spring Fest 2025',
+  //     'details': 'Registration now open! Deadline: April 15, 2025',
+  //     'icon': Icons.celebration,
+  //     'time': DateTime.now().subtract(Duration(hours: 5))
+  //   },
+  //   {
+  //     'title': 'Campus Placement Drive',
+  //     'details': 'Microsoft recruiting on April 20. Register by April 10',
+  //     'icon': Icons.work,
+  //     'time': DateTime.now().subtract(Duration(hours: 12))
+  //   },
+  // ];
 
   final List<Map<String, dynamic>> todayClasses = [
     {
@@ -111,13 +114,16 @@ class _DashboardState extends State<Dashboard>
     await _initializeDashboard();
   }
 
+  final EventController eventController = Get.put(EventController());
+
+
   @override
   Widget build(BuildContext context) {
     final DateTime now = DateTime.now();
     final String today = DateFormat('EEEE, MMMM d').format(now);
 
     return Scaffold(
-      backgroundColor: Colors.grey[100],
+      backgroundColor: Colors.grey[200],
       appBar: _buildAppBar(),
       drawer: _buildDrawer(context),
       body: _isLoading
@@ -153,90 +159,95 @@ class _DashboardState extends State<Dashboard>
       elevation: 0,
       leading: _isSearching
           ? IconButton(
-              icon: const Icon(Icons.arrow_back, color: Colors.black),
-              onPressed: () => setState(() {
-                _isSearching = false;
-                _searchController.clear();
-              }),
-            )
+        icon: const Icon(Icons.arrow_back, color: Colors.black),
+        onPressed: () => setState(() {
+          _isSearching = false;
+          _searchController.clear();
+        }),
+      )
           : Builder(
-              builder: (context) => IconButton(
-                icon: const Icon(Icons.menu, color: Colors.white),
-                onPressed: () => Scaffold.of(context).openDrawer(),
-              ),
-            ),
+        builder: (context) => IconButton(
+          icon: const Icon(Icons.menu, color: Colors.white),
+          onPressed: () => Scaffold.of(context).openDrawer(),
+        ),
+      ),
       title: _isSearching
           ? TextField(
-              controller: _searchController,
-              decoration: const InputDecoration(
-                  hintText: 'Search...', border: InputBorder.none),
-              autofocus: true,
-              onChanged: (value) {},
-            )
-          : Text("Vidhyatra",
-              style: GoogleFonts.poppins(
-                  color: Colors.white,
-                  fontSize: 22,
-                  fontWeight: FontWeight.bold)),
+        controller: _searchController,
+        decoration: const InputDecoration(
+            hintText: 'Search...', border: InputBorder.none),
+        autofocus: true,
+        onChanged: (value) {},
+      )
+          : Text(
+        "Vidhyatra",
+        style: GoogleFonts.poppins(
+          color: Colors.white,
+          fontSize: 20,
+          fontWeight: FontWeight.bold,
+        ),
+      ),
       actions: _isSearching
           ? []
           : [
-              IconButton(
-                icon: const Icon(Icons.search, color: Colors.white),
-                onPressed: () => setState(() => _isSearching = true),
+        IconButton(
+          icon: const Icon(Icons.search, color: Colors.white),
+          onPressed: () => setState(() => _isSearching = true),
+        ),
+        IconButton(
+          icon: const Badge(
+            label: Text('3'),
+            child: Icon(Icons.notifications, color: Colors.white),
+          ),
+          onPressed: () => Get.toNamed('/notifications'),
+        ),
+        GestureDetector(
+          onTap: () => _checkAndNavigateToProfile(context),
+          child: Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 16),
+            child: CircleAvatar(
+              backgroundImage:
+              profileController.profile.value?.profileImageUrl != null
+                  ? NetworkImage(
+                  profileController.profile.value!.profileImageUrl!)
+                  : const AssetImage('assets/default_profile.png')
+              as ImageProvider,
+              radius: 18,
+            ),
+          ),
+        ),
+      ],
+      bottom: _isSearching
+          ? null
+          : PreferredSize(
+        preferredSize: const Size.fromHeight(48.0), // Default TabBar height
+        child: Container(
+          color: Colors.grey[200], // TabBar background color
+          child: TabBar(
+            controller: _tabController,
+            indicatorColor: Colors.deepOrange,
+            labelColor: Colors.deepOrange,
+            unselectedLabelColor: Colors.black,
+            tabs: [
+              Tab(
+                child: Text(
+                  'Home',
+                  style: GoogleFonts.poppins(
+                    fontSize: 14,
+                  ),
+                ),
               ),
-              IconButton(
-                icon: const Badge(
-                    label: Text('3'),
-                    child: Icon(Icons.notifications, color: Colors.white)),
-                onPressed: () => Get.toNamed('/notifications'),
-              ),
-              GestureDetector(
-                onTap: () => _checkAndNavigateToProfile(context),
-                child: Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 16),
-                  child: CircleAvatar(
-                    backgroundImage: profileController
-                                .profile.value?.profileImageUrl !=
-                            null
-                        ? NetworkImage(
-                            profileController.profile.value!.profileImageUrl!)
-                        : const AssetImage('assets/default_profile.png')
-                            as ImageProvider,
-                    radius: 18,
+              Tab(
+                child: Text(
+                  'Social',
+                  style: GoogleFonts.poppins(
+                    fontSize: 14,
                   ),
                 ),
               ),
             ],
-      bottom: _isSearching
-          ? null
-          : TabBar(
-              controller: _tabController,
-              indicatorColor: Colors.white,
-              labelColor: Colors.white,
-              unselectedLabelColor: Colors.white70,
-        tabs:[
-          Tab(
-            child: Text(
-              'Home',
-              style: GoogleFonts.poppins(
-                fontSize: 14,
-                // fontWeight: FontWeight.bold,
-
-              ),
-            ),
           ),
-          Tab(
-            child: Text(
-              'Social',
-              style: TextStyle(
-                fontSize: 14,
-                fontFamily: 'Poppins',
-              ),
-            ),
-          ),
-        ],
-
+        ),
       ),
     );
   }
@@ -316,6 +327,219 @@ class _DashboardState extends State<Dashboard>
       ),
     );
   }
+
+  Widget _buildLatestAnnouncements() {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Row(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          children: [
+            Text(
+              "Announcements",
+              style: GoogleFonts.poppins(
+                fontSize: 18,
+                fontWeight: FontWeight.bold,
+                color: Colors.black87, // Optional: Consistent dark color
+              ),
+            ),
+            TextButton(
+              onPressed: () => Get.toNamed('/calender'),
+              child: Text(
+                "View All",
+                style: GoogleFonts.poppins(
+                  fontSize: 14, // Optional: Explicit size for consistency
+                  color: const Color(0xFF186CAC),
+                ),
+              ),
+            ),
+          ],
+        ),
+        Obx(() {
+          if (eventController.isLoading.value) {
+            return const Center(
+              child: CircularProgressIndicator(),
+            ); // Center the loading spinner
+          } else if (eventController.errorMessage.value.isNotEmpty) {
+            return Text(
+              eventController.errorMessage.value,
+              style: GoogleFonts.poppins(
+                fontSize: 14,
+                color: Colors.deepOrange,
+              ),
+            );
+          } else {
+            List<Event> upcomingEvents = eventController.events.where((event) {
+              DateTime eventDate = DateTime.parse(event.eventDate);
+              return eventDate.isAfter(DateTime.now());
+            }).toList();
+
+            if (upcomingEvents.isEmpty) {
+              return Text(
+                'No upcoming events.',
+                style: GoogleFonts.poppins(
+                  fontSize: 14,
+                  color: Colors.deepOrange, // Optional: Default text color
+                ),
+              );
+            } else {
+              int eventCount = upcomingEvents.length > 2 ? 2 : upcomingEvents.length;
+              return ListView.builder(
+                shrinkWrap: true, // Ensures the ListView takes only the space it needs
+                physics: const NeverScrollableScrollPhysics(), // Disable scrolling inside the ListView
+                itemCount: eventCount,
+                itemBuilder: (context, index) {
+                  Event event = upcomingEvents[index];
+                  return Card(
+                    margin: const EdgeInsets.symmetric(vertical: 5, horizontal: 10),
+                    elevation: 2,
+                    child: ListTile(
+                      title: Text(
+                        event.title,
+                        style: GoogleFonts.poppins(
+                          fontSize: 16,
+                          fontWeight: FontWeight.bold,
+                          color: Colors.deepOrange, // Event name in deep orange
+                        ),
+                      ),
+                      subtitle: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text(
+                            event.description,
+                            style: GoogleFonts.poppins(
+                              fontSize: 13,
+                              // No color specified, defaults to black/grey from theme
+                            ),
+                          ),
+                          Text(
+                            'Date: ${event.eventDate}',
+                            style: GoogleFonts.poppins(
+                              fontSize: 12,
+                              color: const Color(0xFF186CAC), // Event date in theme color
+                            ),
+                          ),
+                        ],
+                      ),
+                      trailing: const Icon(Icons.arrow_forward),
+                      onTap: () {
+                        // Uncommented as per your code; assumes EventDetailsPage exists
+                        Get.to(EventDetailsPage(event: event));
+                      },
+                    ),
+                  );
+                },
+              );
+            }
+          }
+        }),
+      ],
+    );
+  }
+
+  // Widget _buildLatestAnnouncements() {
+  //   return Column(
+  //     crossAxisAlignment: CrossAxisAlignment.start,
+  //     children: [
+  //       Row(
+  //         mainAxisAlignment: MainAxisAlignment.spaceBetween,
+  //         children: [
+  //           Text("Announcements",
+  //               style: GoogleFonts.poppins(
+  //                   fontSize: 18, fontWeight: FontWeight.bold)),
+  //           TextButton(
+  //             onPressed: () => Get.toNamed('/announcements'),
+  //             child: Text("View All",
+  //                 style: GoogleFonts.poppins(color: const Color(0xFF186CAC))),
+  //           ),
+  //         ],
+  //       ),
+  //       Obx(() {
+  //         // Check if events are still loading
+  //         if (eventController.isLoading.value) {
+  //           return CircularProgressIndicator(); // Show a loading spinner while fetching data
+  //         } else if (eventController.errorMessage.value.isNotEmpty) {
+  //           return Text(
+  //             eventController.errorMessage.value,
+  //             style: TextStyle(color: Colors.deepOrange),
+  //           ); // Show error message if something goes wrong
+  //         } else {
+  //           // Filter events to show only upcoming events (events after today's date)
+  //           List<Event> upcomingEvents = eventController.events.where((event) {
+  //             DateTime eventDate = DateTime.parse(event.eventDate); // Assuming eventDate is in string format
+  //             return eventDate.isAfter(DateTime.now()); // Check if the event is after today's date
+  //           }).toList();
+  //
+  //           if (upcomingEvents.isEmpty) {
+  //             return Text('No upcoming events.');
+  //           } else {
+  //             return Expanded(
+  //               child: ListView.builder(
+  //                 shrinkWrap: true,
+  //                 itemCount: upcomingEvents.length,
+  //                 itemBuilder: (context, index) {
+  //                   Event event = upcomingEvents[index];
+  //                   return Card( // Use a card for better UI presentation
+  //                     margin: EdgeInsets.symmetric(vertical: 5, horizontal: 10),
+  //                     elevation: 2,
+  //                     child: ListTile(
+  //                       title: Text(
+  //                         event.title,
+  //                         style: TextStyle(fontWeight: FontWeight.bold),
+  //                       ),
+  //                       subtitle: Column(
+  //                         crossAxisAlignment: CrossAxisAlignment.start,
+  //                         children: [
+  //                           Text(event.description),
+  //                           Text('Date: ${event.eventDate}'), // Time is optional, hence nullable
+  //                         ],
+  //                       ),
+  //                       trailing: Icon(Icons.arrow_forward),
+  //                       onTap: () {
+  //                         // Get.to(EventDetailsPage(event: event,));
+  //                       },
+  //                     ),
+  //                   );
+  //                 },
+  //               ),
+  //             );
+  //           }
+  //         }
+  //       }),
+  //       // ListView.builder(
+  //       //   shrinkWrap: true,
+  //       //   physics: const NeverScrollableScrollPhysics(),
+  //       //   itemCount: announcements.length,
+  //       //   itemBuilder: (context, index) {
+  //       //     final announcement = announcements[index];
+  //       //     return Card(
+  //       //       margin: const EdgeInsets.only(bottom: 8),
+  //       //       child: ListTile(
+  //       //         leading: CircleAvatar(
+  //       //           backgroundColor: Color(0xFF186CAC),
+  //       //           child:
+  //       //           Icon(announcement['icon'], color: Colors.white, size: 20),
+  //       //         ),
+  //       //         title: Text(announcement['title'],
+  //       //             style: GoogleFonts.poppins(fontWeight: FontWeight.bold)),
+  //       //         subtitle: Column(
+  //       //           crossAxisAlignment: CrossAxisAlignment.start,
+  //       //           children: [
+  //       //             Text(announcement['details'],
+  //       //                 style: GoogleFonts.poppins(color: Colors.grey)),
+  //       //             Text(timeago.format(announcement['time']),
+  //       //                 style: GoogleFonts.poppins(
+  //       //                     fontSize: 12, color: Colors.grey)),
+  //       //           ],
+  //       //         ),
+  //       //         isThreeLine: true,
+  //       //       ),
+  //       //     );
+  //       //   },
+  //       // ),
+  //     ],
+  //   );
+  // }
 
   Widget _buildUpcomingDeadlines() {
     return Obx(() => Column(
@@ -431,7 +655,7 @@ class _DashboardState extends State<Dashboard>
             ? 'Good Afternoon'
             : 'Good Evening';
     return Card(
-      elevation: 2,
+      elevation: 3,
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(15)),
       child: Padding(
         padding: const EdgeInsets.all(16),
@@ -442,7 +666,7 @@ class _DashboardState extends State<Dashboard>
                 style: GoogleFonts.poppins(fontSize: 16, color: Colors.grey)),
             Text(profileController.profile.value?.fullname ?? 'Student',
                 style: GoogleFonts.poppins(
-                    fontSize: 24, fontWeight: FontWeight.bold)),
+                    fontSize: 23, fontWeight: FontWeight.bold)),
             const SizedBox(height: 6),
             Text(today,
                 style: GoogleFonts.poppins(fontSize: 14, color: Colors.grey)),
@@ -483,7 +707,11 @@ class _DashboardState extends State<Dashboard>
       children: [
         Text(
           "Quick Access",
-          style: GoogleFonts.poppins(fontSize: 18, fontWeight: FontWeight.bold),
+          style: GoogleFonts.poppins(
+            fontSize: 18,
+            fontWeight: FontWeight.bold,
+            color: Colors.black87,
+          ),
         ),
         const SizedBox(height: 10),
         GridView.builder(
@@ -508,15 +736,23 @@ class _DashboardState extends State<Dashboard>
                   Container(
                     padding: const EdgeInsets.all(10),
                     decoration: BoxDecoration(
-                      color: Color(0xFF186CAC).withOpacity(0.1),
+                      color: const Color(0xFF186CAC).withOpacity(0.1),
                       shape: BoxShape.circle,
                     ),
-                    child: Icon(item['icon'], color: Color(0xFF186CAC), size: 24),
+                    child: Icon(
+                      item['icon'],
+                      color: const Color(0xFF186CAC),
+                      size: 24,
+                    ),
                   ),
                   const SizedBox(height: 5),
                   Text(
-                    item['title'],
-                    style: GoogleFonts.poppins(fontSize: 12),
+                    item['title'], // Displays "Timetable", "Appointment", etc.
+                    style: GoogleFonts.poppins(
+                      fontSize: 12,
+                      fontWeight: FontWeight.w500,
+                      color: Colors.black87,
+                    ),
                     textAlign: TextAlign.center,
                   ),
                 ],
@@ -686,57 +922,7 @@ class _DashboardState extends State<Dashboard>
     );
   }
 
-  Widget _buildLatestAnnouncements() {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        Row(
-          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-          children: [
-            Text("Announcements",
-                style: GoogleFonts.poppins(
-                    fontSize: 18, fontWeight: FontWeight.bold)),
-            TextButton(
-              onPressed: () => Get.toNamed('/announcements'),
-              child: Text("View All",
-                  style: GoogleFonts.poppins(color: const Color(0xFF186CAC))),
-            ),
-          ],
-        ),
-        ListView.builder(
-          shrinkWrap: true,
-          physics: const NeverScrollableScrollPhysics(),
-          itemCount: announcements.length,
-          itemBuilder: (context, index) {
-            final announcement = announcements[index];
-            return Card(
-              margin: const EdgeInsets.only(bottom: 8),
-              child: ListTile(
-                leading: CircleAvatar(
-                  backgroundColor: Color(0xFF186CAC),
-                  child:
-                      Icon(announcement['icon'], color: Colors.white, size: 20),
-                ),
-                title: Text(announcement['title'],
-                    style: GoogleFonts.poppins(fontWeight: FontWeight.bold)),
-                subtitle: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text(announcement['details'],
-                        style: GoogleFonts.poppins(color: Colors.grey)),
-                    Text(timeago.format(announcement['time']),
-                        style: GoogleFonts.poppins(
-                            fontSize: 12, color: Colors.grey)),
-                  ],
-                ),
-                isThreeLine: true,
-              ),
-            );
-          },
-        ),
-      ],
-    );
-  }
+
 
   Widget _buildSocialTab() {
     return Obx(() {

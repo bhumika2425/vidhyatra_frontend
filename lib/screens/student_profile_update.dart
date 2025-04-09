@@ -2,6 +2,7 @@ import 'dart:convert';
 import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:google_fonts/google_fonts.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:http/http.dart' as http;
 import 'package:vidhyatra_flutter/constants/api_endpoints.dart';
@@ -38,11 +39,25 @@ class _StudentProfileUpdatePageState extends State<StudentProfileUpdatePage> {
   // Dropdown options
   final List<String> _yearOptions = ['1st Year', '2nd Year', '3rd Year'];
   final List<String> _semesterOptions = ['Semester 1', 'Semester 2'];
+  final List<String> _departmentOptions = [
+    'Computer Science',
+    'Electrical Engineering',
+    'Mechanical Engineering',
+    'Civil Engineering',
+    'Chemical Engineering',
+    'Business Administration',
+    'Economics',
+    'Physics',
+    'Mathematics',
+    'Biology',
+    'Chemistry',
+    'Other'
+  ];
 
-  // Color theme
+  // Color theme - Using a more subtle color palette
   final Color primaryColor = Color(0xFF186CAC);
-  final Color secondaryColor = Color(0xFF186CAC).withOpacity(0.1);
-  final Color lightBlue = Color(0xFFE6F2FF);
+  final Color secondaryColor = Colors.deepOrange;
+  final Color backgroundColor = Colors.grey[100]!;
   final Color textColor = Color(0xFF333333);
 
   @override
@@ -84,6 +99,7 @@ class _StudentProfileUpdatePageState extends State<StudentProfileUpdatePage> {
           _dateOfBirthController.text = data['date_of_birth'] ?? '';
           _locationController.text = data['location'] ?? '';
           _departmentController.text = data['department'] ?? '';
+          _department = data['department'];
           _year = data['year'];
           _semester = data['semester'];
           _bioController.text = data['bio'] ?? '';
@@ -144,6 +160,11 @@ class _StudentProfileUpdatePageState extends State<StudentProfileUpdatePage> {
               onPrimary: Colors.white,
               onSurface: textColor,
             ),
+            textButtonTheme: TextButtonThemeData(
+              style: TextButton.styleFrom(
+                foregroundColor: primaryColor,
+              ),
+            ),
           ),
           child: child!,
         );
@@ -172,7 +193,7 @@ class _StudentProfileUpdatePageState extends State<StudentProfileUpdatePage> {
         ..fields['full_name'] = _fullnameController.text
         ..fields['date_of_birth'] = _dateOfBirthController.text
         ..fields['location'] = _locationController.text
-        ..fields['department'] = _departmentController.text
+        ..fields['department'] = _department ?? ''
         ..fields['year'] = _year ?? ''
         ..fields['semester'] = _semester ?? ''
         ..fields['bio'] = _bioController.text
@@ -198,8 +219,11 @@ class _StudentProfileUpdatePageState extends State<StudentProfileUpdatePage> {
           ScaffoldMessenger.of(context).showSnackBar(
             SnackBar(
               content: Text('Profile updated successfully'),
-              backgroundColor: primaryColor,
+              backgroundColor: secondaryColor,
               behavior: SnackBarBehavior.floating,
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(10),
+              ),
             ),
           );
           Navigator.pop(context, true); // Return true to indicate successful update
@@ -213,6 +237,9 @@ class _StudentProfileUpdatePageState extends State<StudentProfileUpdatePage> {
               content: Text(errorMessage),
               backgroundColor: Colors.red,
               behavior: SnackBarBehavior.floating,
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(10),
+              ),
             ),
           );
         }
@@ -226,6 +253,9 @@ class _StudentProfileUpdatePageState extends State<StudentProfileUpdatePage> {
             content: Text('Error updating profile. Please try again.'),
             backgroundColor: Colors.red,
             behavior: SnackBarBehavior.floating,
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(10),
+            ),
           ),
         );
       }
@@ -235,310 +265,241 @@ class _StudentProfileUpdatePageState extends State<StudentProfileUpdatePage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Colors.grey[200],
+      backgroundColor: backgroundColor,
       appBar: AppBar(
         elevation: 0,
         backgroundColor: primaryColor,
         title: Text(
           'Update Profile',
-          style: TextStyle(
-            fontFamily: 'Poppins',
+          style: GoogleFonts.poppins(
             color: Colors.white,
-            fontWeight: FontWeight.w500,
+            fontWeight: FontWeight.w600,
+            fontSize: 18,
           ),
         ),
         centerTitle: true,
+        leading: IconButton(
+          icon: Icon(Icons.arrow_back_ios, color: Colors.white),
+          onPressed: () => Navigator.pop(context),
+        ),
       ),
       body: _isLoading
           ? Center(
         child: CircularProgressIndicator(
           color: primaryColor,
+          strokeWidth: 3,
         ),
       )
           : SafeArea(
-        child: Container(
-          color: Colors.grey[200],
-          child: SingleChildScrollView(
+        child: SingleChildScrollView(
+          physics: BouncingScrollPhysics(),
+          child: Padding(
+            padding: const EdgeInsets.all(16.0),
             child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                // Header section with profile image
-                Container(
-                  width: double.infinity,
-                  padding: EdgeInsets.only(bottom: 30),
-                  color: Colors.white,
+                // Profile picture section - Simplified and elegant
+                Center(
                   child: Column(
                     children: [
-                      // Small colored top accent
-                      Container(
-                        width: double.infinity,
-                        color: Colors.grey[200],
-                        padding: EdgeInsets.symmetric(vertical: 15),
-                        child: Column(
+                      GestureDetector(
+                        onTap: _pickImage,
+                        child: Stack(
                           children: [
-                            Text(
-                              'Edit Your Profile',
-                              style: TextStyle(
-                                fontFamily: 'Poppins',
-                                color: Colors.black,
-                                fontSize: 16,
-                              ),
+                            // Profile image
+                            CircleAvatar(
+                              radius: 60,
+                              backgroundColor: Colors.white,
+                              backgroundImage: _isImageChanged && _profileImage != null
+                                  ? FileImage(File(_profileImage!.path))
+                                  : _existingProfileImageUrl != null && _existingProfileImageUrl!.isNotEmpty
+                                  ? NetworkImage(_existingProfileImageUrl!) as ImageProvider
+                                  : null,
+                              child: (_profileImage == null && (_existingProfileImageUrl == null || _existingProfileImageUrl!.isEmpty))
+                                  ? Icon(
+                                Icons.person,
+                                size: 50,
+                                color: primaryColor.withOpacity(0.5),
+                              )
+                                  : null,
                             ),
-                            SizedBox(height: 5),
-                            Text(
-                              'Update your information',
-                              style: TextStyle(
-                                fontFamily: 'Poppins',
-                                color: Colors.black.withOpacity(0.9),
-                                fontSize: 14,
+                            // Camera icon overlay
+                            Positioned(
+                              bottom: 0,
+                              right: 0,
+                              child: Container(
+                                decoration: BoxDecoration(
+                                  color: secondaryColor,
+                                  shape: BoxShape.circle,
+                                ),
+                                padding: EdgeInsets.all(8),
+                                child: Icon(
+                                  Icons.camera_alt,
+                                  color: Colors.white,
+                                  size: 18,
+                                ),
                               ),
                             ),
                           ],
                         ),
                       ),
-                      SizedBox(height: 30),
-                      // Profile image picker
-                      Stack(
-                        alignment: Alignment.center,
-                        children: [
-                          Container(
-                            decoration: BoxDecoration(
-                              color: Colors.grey[200],
-                              shape: BoxShape.circle,
-                              boxShadow: [
-                                BoxShadow(
-                                  color: Colors.black.withOpacity(0.2),
-                                  blurRadius: 10,
-                                  spreadRadius: 2,
-                                ),
-                              ],
-                            ),
-                            child: CircleAvatar(
-                              radius: 65,
-                              backgroundColor: Colors.white,
-                              child: CircleAvatar(
-                                radius: 60,
-                                backgroundColor: Colors.grey[200],
-                                backgroundImage: _isImageChanged && _profileImage != null
-                                    ? FileImage(File(_profileImage!.path))
-                                    : _existingProfileImageUrl != null && _existingProfileImageUrl!.isNotEmpty
-                                    ? NetworkImage(_existingProfileImageUrl!) as ImageProvider
-                                    : null,
-                                child: (_profileImage == null && (_existingProfileImageUrl == null || _existingProfileImageUrl!.isEmpty))
-                                    ? Icon(
-                                  Icons.person,
-                                  size: 60,
-                                  color: primaryColor.withOpacity(0.7),
-                                )
-                                    : null,
-                              ),
-                            ),
-                          ),
-                          Positioned(
-                            bottom: 0,
-                            right: 0,
-                            child: GestureDetector(
-                              onTap: _pickImage,
-                              child: Container(
-                                padding: EdgeInsets.all(8),
-                                decoration: BoxDecoration(
-                                  color: Colors.white,
-                                  shape: BoxShape.circle,
-                                  border: Border.all(
-                                    color: Colors.grey[400]!,
-                                    width: 1,
-                                  ),
-                                  boxShadow: [
-                                    BoxShadow(
-                                      color: Colors.black.withOpacity(0.1),
-                                      blurRadius: 5,
-                                      spreadRadius: 1,
-                                    ),
-                                  ],
-                                ),
-                                child: Icon(
-                                  Icons.camera_alt,
-                                  color: Colors.grey[400],
-                                  size: 22,
-                                ),
-                              ),
-                            ),
-                          ),
-                        ],
+                      SizedBox(height: 12),
+                      Text(
+                        "Tap to change profile picture",
+                        style: GoogleFonts.poppins(
+                          fontSize: 13,
+                          color: Colors.grey[600],
+                          fontStyle: FontStyle.italic,
+                        ),
                       ),
                     ],
                   ),
                 ),
+                SizedBox(height: 30),
 
-                // Form section
-                Container(
-                  color: Colors.grey[200],
-                  margin: EdgeInsets.only(top: 10),
-                  padding: const EdgeInsets.fromLTRB(20, 25, 20, 30),
-                  child: Form(
-                    key: _formKey,
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Text(
-                          'Personal Information',
-                          style: TextStyle(
-                            fontFamily: 'Poppins',
-                            fontSize: 18,
-                            fontWeight: FontWeight.bold,
-                            color: textColor,
-                          ),
-                        ),
-                        SizedBox(height: 20),
-                        _buildInputField(
-                          label: 'Nickname',
-                          icon: Icons.person_outline,
-                          controller: _fullnameController,
-                          validator: (value) {
-                            if (value == null || value.isEmpty) {
-                              return 'Please enter your nickname';
-                            }
-                            return null;
-                          },
-                        ),
-                        SizedBox(height: 16),
-                        GestureDetector(
-                          onTap: () => _selectDate(context),
-                          child: AbsorbPointer(
-                            child: _buildInputField(
-                              label: 'Date of Birth',
-                              icon: Icons.calendar_today_outlined,
-                              controller: _dateOfBirthController,
-                              validator: (value) {
-                                if (value == null || value.isEmpty) {
-                                  return 'Please select your date of birth';
-                                }
-                                return null;
-                              },
-                            ),
-                          ),
-                        ),
-                        SizedBox(height: 16),
-                        _buildInputField(
-                          label: 'Location',
-                          icon: Icons.location_on_outlined,
-                          controller: _locationController,
-                          validator: (value) {
-                            if (value == null || value.isEmpty) {
-                              return 'Please enter your location';
-                            }
-                            return null;
-                          },
-                        ),
-                        SizedBox(height: 16),
-                        _buildTextAreaField(
-                          label: 'Bio',
-                          icon: Icons.description_outlined,
-                          maxLines: 3,
-                          controller: _bioController,
-                          hintText: 'Tell us a bit about yourself...',
-                        ),
-                        SizedBox(height: 16),
-                        _buildTextAreaField(
-                          label: 'Interests',
-                          icon: Icons.interests_outlined,
-                          maxLines: 2,
-                          controller: _interestController,
-                          hintText: 'Reading, Sports, Music, etc.',
-                        ),
+                Form(
+                  key: _formKey,
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      // Personal Information Section
+                      _buildSectionHeader('Personal Information', Icons.person_outline),
+                      SizedBox(height: 16),
 
-                        SizedBox(height: 30),
-                        Text(
-                          'Academic Information',
-                          style: TextStyle(
-                            fontFamily: 'Poppins',
-                            fontSize: 18,
-                            fontWeight: FontWeight.bold,
-                            color: textColor,
+                      _buildTextField(
+                        label: 'Nickname',
+                        hint: 'Enter your preferred name',
+                        icon: Icons.person_outline,
+                        controller: _fullnameController,
+                        validator: (value) => value!.isEmpty ? 'Please enter your nickname' : null,
+                        style: GoogleFonts.poppins(fontSize: 15, color: Colors.black), // Added style
+                      ),
+                      SizedBox(height: 18),
+
+                      GestureDetector(
+                        onTap: () => _selectDate(context),
+                        child: AbsorbPointer(
+                          child: _buildTextField(
+                            label: 'Date of Birth',
+                            hint: 'YYYY-MM-DD',
+                            icon: Icons.calendar_today_outlined,
+                            controller: _dateOfBirthController,
+                            validator: (value) => value!.isEmpty ? 'Please select your date of birth' : null,
+                            suffix: Icon(Icons.arrow_drop_down, color: primaryColor),
+                            style: GoogleFonts.poppins(fontSize: 15, color: Colors.black), // Added style
                           ),
                         ),
-                        SizedBox(height: 20),
-                        _buildInputField(
-                          label: 'Department',
-                          icon: Icons.school_outlined,
-                          controller: _departmentController,
-                          validator: (value) {
-                            if (value == null || value.isEmpty) {
-                              return 'Please enter your department';
-                            }
-                            return null;
-                          },
-                        ),
-                        SizedBox(height: 16),
-                        Row(
-                          children: [
-                            Expanded(
-                              child: _buildDropdownField(
-                                label: 'Year',
-                                icon: Icons.calendar_view_month_outlined,
-                                value: _year,
-                                items: _yearOptions,
-                                onChanged: (String? newValue) {
-                                  setState(() {
-                                    _year = newValue;
-                                  });
-                                },
-                                validator: (value) {
-                                  if (value == null) {
-                                    return 'Please select';
-                                  }
-                                  return null;
-                                },
-                              ),
+                      ),
+                      SizedBox(height: 18),
+
+                      _buildTextField(
+                        label: 'Location',
+                        hint: 'City, Country',
+                        icon: Icons.location_on_outlined,
+                        controller: _locationController,
+                        validator: (value) => value!.isEmpty ? 'Please enter your location' : null,
+                        style: GoogleFonts.poppins(fontSize: 15, color: Colors.black), // Added style
+                      ),
+                      SizedBox(height: 18),
+
+                      _buildTextField(
+                        label: 'Bio',
+                        hint: 'Tell us a bit about yourself...',
+                        icon: Icons.description_outlined,
+                        controller: _bioController,
+                        maxLines: 3,
+                        style: GoogleFonts.poppins(fontSize: 15, color: Colors.black), // Added style
+                      ),
+                      SizedBox(height: 18),
+
+                      _buildTextField(
+                        label: 'Interests',
+                        hint: 'Reading, Sports, Music, etc.',
+                        icon: Icons.interests_outlined,
+                        controller: _interestController,
+                        maxLines: 2,
+                        style: GoogleFonts.poppins(fontSize: 15, color: Colors.black), // Added style
+                      ),
+                      SizedBox(height: 30),
+
+                      // Academic Information Section
+                      _buildSectionHeader('Academic Information', Icons.school_outlined),
+                      SizedBox(height: 16),
+
+                      _buildDropdown(
+                        label: 'Department',
+                        hint: 'Select your department',
+                        icon: Icons.business_outlined,
+                        value: _department,
+                        items: _departmentOptions,
+                        onChanged: (value) => setState(() => _department = value),
+                        validator: (value) => value == null ? 'Please select a department' : null,
+                      ),
+                      SizedBox(height: 18),
+
+                      Row(
+                        children: [
+                          Expanded(
+                            child: _buildDropdown(
+                              label: 'Year',
+                              hint: 'Select year',
+                              icon: Icons.calendar_view_month_outlined,
+                              value: _year,
+                              items: _yearOptions,
+                              onChanged: (value) => setState(() => _year = value),
+                              validator: (value) => value == null ? 'Required' : null,
                             ),
-                            SizedBox(width: 16),
-                            Expanded(
-                              child: _buildDropdownField(
-                                label: 'Semester',
-                                icon: Icons.access_time_outlined,
-                                value: _semester,
-                                items: _semesterOptions,
-                                onChanged: (String? newValue) {
-                                  setState(() {
-                                    _semester = newValue;
-                                  });
-                                },
-                                validator: (value) {
-                                  if (value == null) {
-                                    return 'Please select';
-                                  }
-                                  return null;
-                                },
-                              ),
+                          ),
+                          SizedBox(width: 16),
+                          Expanded(
+                            child: _buildDropdown(
+                              label: 'Semester',
+                              hint: 'Select semester',
+                              icon: Icons.access_time_outlined,
+                              value: _semester,
+                              items: _semesterOptions,
+                              onChanged: (value) => setState(() => _semester = value),
+                              validator: (value) => value == null ? 'Required' : null,
                             ),
-                          ],
-                        ),
-                        SizedBox(height: 40),
-                        SizedBox(
-                          width: double.infinity,
-                          height: 55,
+                          ),
+                        ],
+                      ),
+                      SizedBox(height: 40),
+
+                      // Save button - Compact size, fits content
+                      Center(
+                        child: IntrinsicWidth(
                           child: ElevatedButton(
                             onPressed: _updateProfile,
                             style: ElevatedButton.styleFrom(
-                              backgroundColor: primaryColor,
+                              backgroundColor: secondaryColor,
                               foregroundColor: Colors.white,
-                              elevation: 1,
+                              padding: EdgeInsets.symmetric(horizontal: 24, vertical: 12),
                               shape: RoundedRectangleBorder(
-                                borderRadius: BorderRadius.circular(8),
+                                borderRadius: BorderRadius.circular(30),
                               ),
+                              elevation: 2,
                             ),
-                            child: Text(
-                              'SAVE CHANGES',
-                              style: TextStyle(
-                                fontFamily: 'Poppins',
-                                fontSize: 16,
-                                fontWeight: FontWeight.bold,
-                                letterSpacing: 1,
-                              ),
+                            child: Row(
+                              mainAxisSize: MainAxisSize.min,
+                              children: [
+                                Icon(Icons.save_outlined, size: 18),
+                                SizedBox(width: 8),
+                                Text(
+                                  'Save Changes',
+                                  style: GoogleFonts.poppins(
+                                    fontSize: 14,
+                                    fontWeight: FontWeight.w600,
+                                    letterSpacing: 0.5,
+                                  ),
+                                ),
+                              ],
                             ),
                           ),
                         ),
-                      ],
-                    ),
+                      ),
+                      SizedBox(height: 20),
+                    ],
                   ),
                 ),
               ],
@@ -549,156 +510,175 @@ class _StudentProfileUpdatePageState extends State<StudentProfileUpdatePage> {
     );
   }
 
-  Widget _buildInputField({
+  // Modern section header with gradient underline
+  Widget _buildSectionHeader(String title, IconData icon) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Row(
+          children: [
+            Icon(icon, color: primaryColor, size: 20),
+            SizedBox(width: 8),
+            Text(
+              title,
+              style: GoogleFonts.poppins(
+                fontSize: 17,
+                fontWeight: FontWeight.w600,
+                color: textColor,
+              ),
+            ),
+          ],
+        ),
+        SizedBox(height: 4),
+        Container(
+          height: 2,
+          width: 100,
+          decoration: BoxDecoration(
+            gradient: LinearGradient(
+              colors: [primaryColor, secondaryColor.withOpacity(0.5)],
+              begin: Alignment.centerLeft,
+              end: Alignment.centerRight,
+            ),
+            borderRadius: BorderRadius.circular(2),
+          ),
+        ),
+      ],
+    );
+  }
+
+  // Clean text field with floating label
+  Widget _buildTextField({
     required String label,
+    required String hint,
     required IconData icon,
+    required TextEditingController controller,
     String? Function(String?)? validator,
-    required TextEditingController controller,
+    int maxLines = 1,
+    Widget? suffix,
+    TextStyle? style,
   }) {
-    return TextFormField(
-      controller: controller,
-      decoration: InputDecoration(
-        labelText: label,
-        prefixIcon: Icon(icon, color: Colors.grey[400], size: 22),
-        contentPadding: EdgeInsets.symmetric(vertical: 16, horizontal: 16),
-        border: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(8),
-          borderSide: BorderSide(color: Colors.grey[400]!, width: 1),
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Text(
+          label,
+          style: GoogleFonts.poppins(
+            fontSize: 13,
+            fontWeight: FontWeight.w500,
+            color: Colors.grey[700],
+          ),
         ),
-        enabledBorder: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(8),
-          borderSide: BorderSide(color: Colors.grey[400]!, width: 1),
+        SizedBox(height: 6),
+        TextFormField(
+          controller: controller,
+          maxLines: maxLines,
+          decoration: InputDecoration(
+            hintText: hint,
+            hintStyle: TextStyle(color: Colors.grey[400], fontSize: 14),
+            prefixIcon: Icon(icon, color: Colors.grey[600], size: 20),
+            suffixIcon: suffix,
+            contentPadding: EdgeInsets.symmetric(vertical: 16, horizontal: 12),
+            border: OutlineInputBorder(
+              borderRadius: BorderRadius.circular(10),
+              borderSide: BorderSide(color: Colors.grey[300]!, width: 1),
+            ),
+            enabledBorder: OutlineInputBorder(
+              borderRadius: BorderRadius.circular(10),
+              borderSide: BorderSide(color: Colors.grey[300]!, width: 1),
+            ),
+            focusedBorder: OutlineInputBorder(
+              borderRadius: BorderRadius.circular(10),
+              borderSide: BorderSide(color: primaryColor, width: 1.5),
+            ),
+            errorBorder: OutlineInputBorder(
+              borderRadius: BorderRadius.circular(10),
+              borderSide: BorderSide(color: Colors.red.shade400, width: 1),
+            ),
+            filled: true,
+            fillColor: Colors.grey[50],
+          ),
+          style: GoogleFonts.poppins(
+            fontSize: 14,
+            color: textColor,
+          ),
+          validator: validator,
         ),
-        focusedBorder: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(8),
-          borderSide: BorderSide(color: primaryColor, width: 1.5),
-        ),
-        errorBorder: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(8),
-          borderSide: BorderSide(color: Colors.red.shade400, width: 1),
-        ),
-        filled: true,
-        fillColor: Colors.white,
-        labelStyle: TextStyle(
-          fontFamily: 'Poppins',
-          color: Colors.grey[600],
-        ),
-      ),
-      style: TextStyle(
-        fontFamily: 'Poppins',
-        fontSize: 16,
-        color: Colors.grey[600],
-      ),
-      validator: validator,
+      ],
     );
   }
 
-  Widget _buildTextAreaField({
+  // Sleek dropdown with minimal styling
+  Widget _buildDropdown({
     required String label,
-    required IconData icon,
-    required int maxLines,
-    required TextEditingController controller,
-    String? hintText,
-  }) {
-    return TextFormField(
-      controller: controller,
-      maxLines: maxLines,
-      decoration: InputDecoration(
-        labelText: label,
-        hintText: hintText,
-        prefixIcon: Padding(
-          padding: const EdgeInsets.only(bottom: 0, top: 16, left: 12, right: 0),
-          child: Icon(icon, color: Colors.grey[400], size: 22),
-        ),
-        alignLabelWithHint: true,
-        contentPadding: EdgeInsets.symmetric(vertical: 16, horizontal: 16),
-        border: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(8),
-          borderSide: BorderSide(color: Colors.grey[400]!, width: 1),
-        ),
-        enabledBorder: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(8),
-          borderSide: BorderSide(color: Colors.grey[400]!, width: 1),
-        ),
-        focusedBorder: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(8),
-          borderSide: BorderSide(color: primaryColor, width: 1.5),
-        ),
-        filled: true,
-        fillColor: Colors.white,
-        labelStyle: TextStyle(
-          fontFamily: 'Poppins',
-          color: Colors.grey[600],
-        ),
-        hintStyle: TextStyle(
-          fontFamily: 'Poppins',
-          color: Colors.grey[400],
-        ),
-      ),
-      style: TextStyle(
-        fontFamily: 'Poppins',
-        fontSize: 16,
-        color: Colors.grey[600],
-      ),
-    );
-  }
-
-  Widget _buildDropdownField({
-    required String label,
+    required String hint,
     required IconData icon,
     required String? value,
     required List<String> items,
     required Function(String?) onChanged,
     required String? Function(String?)? validator,
   }) {
-    return DropdownButtonFormField<String>(
-      decoration: InputDecoration(
-        labelText: label,
-        prefixIcon: Icon(icon, color: Colors.grey[400], size: 22),
-        contentPadding: EdgeInsets.symmetric(vertical: 16, horizontal: 16),
-        border: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(8),
-          borderSide: BorderSide(color: Colors.grey[400]!, width: 1),
-        ),
-        enabledBorder: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(8),
-          borderSide: BorderSide(color: Colors.grey[400]!, width: 1),
-        ),
-        focusedBorder: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(8),
-          borderSide: BorderSide(color: primaryColor, width: 1.5),
-        ),
-        errorBorder: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(8),
-          borderSide: BorderSide(color: Colors.red.shade400, width: 1),
-        ),
-        filled: true,
-        fillColor: Colors.white,
-        labelStyle: TextStyle(
-          fontFamily: 'Poppins',
-          color: Colors.grey[600],
-        ),
-      ),
-      style: TextStyle(
-        fontFamily: 'Poppins',
-        fontSize: 16,
-        color: Colors.grey[600],
-      ),
-      value: value,
-      items: items.map((String item) {
-        return DropdownMenuItem<String>(
-          value: item,
-          child: Text(
-              item,
-              style: TextStyle(
-                fontFamily: 'Poppins',
-                color: Colors.grey[600],
-              )
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Text(
+          label,
+          style: GoogleFonts.poppins(
+            fontSize: 13,
+            fontWeight: FontWeight.w500,
+            color: Colors.grey[700],
           ),
-        );
-      }).toList(),
-      onChanged: onChanged,
-      validator: validator,
+        ),
+        SizedBox(height: 6),
+        DropdownButtonFormField<String>(
+          decoration: InputDecoration(
+            hintText: hint,
+            hintStyle: TextStyle(color: Colors.grey[400], fontSize: 14),
+            prefixIcon: Icon(icon, color: Colors.grey[600], size: 20),
+            contentPadding: EdgeInsets.symmetric(vertical: 16, horizontal: 12),
+            border: OutlineInputBorder(
+              borderRadius: BorderRadius.circular(10),
+              borderSide: BorderSide(color: Colors.grey[300]!, width: 1),
+            ),
+            enabledBorder: OutlineInputBorder(
+              borderRadius: BorderRadius.circular(10),
+              borderSide: BorderSide(color: Colors.grey[300]!, width: 1),
+            ),
+            focusedBorder: OutlineInputBorder(
+              borderRadius: BorderRadius.circular(10),
+              borderSide: BorderSide(color: primaryColor, width: 1.5),
+            ),
+            errorBorder: OutlineInputBorder(
+              borderRadius: BorderRadius.circular(10),
+              borderSide: BorderSide(color: Colors.red.shade400, width: 1),
+            ),
+            filled: true,
+            fillColor: Colors.grey[50],
+          ),
+          style: GoogleFonts.poppins(
+            fontSize: 14,
+            color: textColor,
+          ),
+          value: value,
+          isExpanded: true,
+          icon: Icon(Icons.keyboard_arrow_down, color: Colors.grey[600], size: 20),
+          dropdownColor: Colors.white,
+          elevation: 2,
+          items: items.map((String item) {
+            return DropdownMenuItem<String>(
+              value: item,
+              child: Text(
+                item,
+                style: GoogleFonts.poppins(
+                  color: textColor,
+                  fontSize: 14,
+                ),
+              ),
+            );
+          }).toList(),
+          onChanged: onChanged,
+          validator: validator,
+        ),
+      ],
     );
   }
 }

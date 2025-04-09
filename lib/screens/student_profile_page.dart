@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:intl/intl.dart';
+import 'package:google_fonts/google_fonts.dart';
 import 'package:vidhyatra_flutter/screens/student_profile_update.dart';
 import '../controllers/LoginController.dart';
 import '../controllers/ProfileController.dart';
@@ -13,35 +14,34 @@ class StudentProfilePage extends StatelessWidget {
     final token = Get.find<LoginController>().token.value;
     profileController.fetchProfileData(token);
     final screenHeight = MediaQuery.of(context).size.height;
-    final imageHeight = screenHeight * 0.35;
+    final imageHeight = screenHeight * 0.3; // Slightly reduced for better balance
 
     return Scaffold(
-      backgroundColor: Colors.grey[100],
+      backgroundColor: Colors.grey[200], // Updated background color
       appBar: AppBar(
         title: Text(
           'Student Profile',
-          style: TextStyle(
+          style: GoogleFonts.poppins(
             fontWeight: FontWeight.bold,
-            fontSize: 22,
-            color: Colors.black87,
+            fontSize: 19,
+            color: Colors.white,
           ),
         ),
-        backgroundColor: Colors.white,
-        elevation: 2,
+        backgroundColor: const Color(0xFF186CAC), // Match dashboard's AppBar color
+        elevation: 0,
         actions: [
           IconButton(
-            icon: Icon(Icons.edit, color: Colors.blueAccent),
+            icon: const Icon(Icons.edit, color: Colors.white),
             onPressed: () {
               Get.to(() => StudentProfileUpdatePage());
             },
           ),
-
         ],
       ),
       body: Obx(() {
         if (profileController.isLoading.value) {
-          return Center(
-            child: CircularProgressIndicator(color: Colors.blueAccent),
+          return const Center(
+            child: CircularProgressIndicator(color: Color(0xFF186CAC)),
           );
         }
         if (profileController.profile.value != null) {
@@ -50,68 +50,57 @@ class StudentProfilePage extends StatelessWidget {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                // Profile Header
-                Container(
-                  height: imageHeight,
-                  width: double.infinity,
-                  decoration: BoxDecoration(
-                    image: DecorationImage(
-                      image: profile.profileImageUrl != null
-                          ? NetworkImage(profile.profileImageUrl!)
-                          : AssetImage('assets/default_profile.png')
-                      as ImageProvider,
-                      fit: BoxFit.cover,
-                    ),
-                    boxShadow: [
-                      BoxShadow(
-                        color: Colors.black26,
-                        blurRadius: 10,
-                        offset: Offset(0, 2),
-                      ),
-                    ],
-                  ),
-                  child: Container(
-                    decoration: BoxDecoration(
-                      gradient: LinearGradient(
-                        colors: [
-                          Colors.black.withOpacity(0.7),
-                          Colors.transparent,
-                        ],
-                        begin: Alignment.bottomCenter,
-                        end: Alignment.topCenter,
+                // Profile Header - MODIFIED to remove gradient
+                Stack(
+                  children: [
+                    Container(
+                      height: imageHeight,
+                      width: double.infinity,
+                      decoration: BoxDecoration(
+                        image: DecorationImage(
+                          image: profile.profileImageUrl != null
+                              ? NetworkImage(profile.profileImageUrl!)
+                              : const AssetImage('assets/default_profile.png')
+                          as ImageProvider,
+                          fit: BoxFit.cover,
+                        ),
                       ),
                     ),
-                    child: Padding(
-                      padding: EdgeInsets.all(20),
-                      child: Column(
-                        mainAxisAlignment: MainAxisAlignment.end,
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Text(
-                            profile.fullname ?? 'John Doe',
-                            style: TextStyle(
-                              fontSize: 32,
-                              fontWeight: FontWeight.bold,
-                              color: Colors.white,
+                    Container(
+                      height: imageHeight,
+                      // Removed the gradient here
+                      child: Padding(
+                        padding: const EdgeInsets.all(20),
+                        child: Column(
+                          mainAxisAlignment: MainAxisAlignment.end,
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Text(
+                              profile.fullname ?? 'John Doe',
+                              style: GoogleFonts.poppins(
+                                fontSize: 28,
+                                fontWeight: FontWeight.bold,
+                                color: Color(0xFF186CAC),
+                              ),
                             ),
-                          ),
-                          SizedBox(height: 5),
-                          Text(
-                            profile.department ?? 'Computer Science',
-                            style: TextStyle(
-                              fontSize: 18,
-                              color: Colors.white70,
+                            const SizedBox(height: 5),
+                            Text(
+                              profile.department ?? 'Computer Science',
+                              style: GoogleFonts.poppins(
+                                fontSize: 16,
+                                color: Colors.deepOrange,
+                              ),
                             ),
-                          ),
-                        ],
+                          ],
+                        ),
                       ),
                     ),
-                  ),
+                  ],
                 ),
 
                 // Profile Content
                 Padding(
-                  padding: EdgeInsets.all(20),
+                  padding: const EdgeInsets.all(20),
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
@@ -119,11 +108,14 @@ class StudentProfilePage extends StatelessWidget {
                       _buildSectionTitle('Bio'),
                       _buildInfoCard([
                         Text(
-                          profile.bio ?? 'No bio available', // Display bio if available or fallback to 'No bio available'
-                          style: TextStyle(fontSize: 16, color: Colors.grey[800]),
+                          profile.bio ?? 'Describe Yourself',
+                          style: GoogleFonts.poppins(
+                            fontSize: 15,
+                            color: Colors.grey[800],
+                          ),
                         ),
                       ]),
-                      SizedBox(height: 20),
+                      const SizedBox(height: 20),
 
                       // Personal Details Section
                       _buildSectionTitle('Personal Details'),
@@ -141,8 +133,7 @@ class StudentProfilePage extends StatelessWidget {
                                     : '1998-05-15',
                               ),
                             ),
-                            SizedBox(width: 16),
-                            // Add some spacing between the two items
+                            const SizedBox(width: 16),
                             Expanded(
                               child: _buildInfoRow(
                                 FontAwesomeIcons.mapMarkerAlt,
@@ -152,6 +143,7 @@ class StudentProfilePage extends StatelessWidget {
                             ),
                           ],
                         ),
+                        const SizedBox(height: 10),
                         Row(
                           mainAxisAlignment: MainAxisAlignment.spaceBetween,
                           children: [
@@ -162,8 +154,7 @@ class StudentProfilePage extends StatelessWidget {
                                 profile.year ?? '3rd Year',
                               ),
                             ),
-                            SizedBox(width: 16),
-                            // Add some spacing between the two items
+                            const SizedBox(width: 16),
                             Expanded(
                               child: _buildInfoRow(
                                 FontAwesomeIcons.book,
@@ -175,19 +166,25 @@ class StudentProfilePage extends StatelessWidget {
                         ),
                       ]),
 
-                      SizedBox(height: 20),
+                      const SizedBox(height: 20),
 
-                      // Interests Section
+                      // Interests Section - MODIFIED to remove chips
                       _buildSectionTitle('Interests'),
                       _buildInfoCard([
-                        Wrap(
-                          spacing: 10,
-                          children: profile.interest != null
-                              ? profile.interest!
-                              .split(',')
-                              .map((interest) => _buildInterestChip(interest)) // Create a chip for each interest
-                              .toList()
-                              : [Text('No interests listed')], // Fallback message if no interests
+                        profile.interest != null
+                            ? Text(
+                          profile.interest!,
+                          style: GoogleFonts.poppins(
+                            fontSize: 16,
+                            color: Colors.grey[800],
+                          ),
+                        )
+                            : Text(
+                          'Let others know you',
+                          style: GoogleFonts.poppins(
+                            fontSize: 16,
+                            color: Colors.grey[600],
+                          ),
                         ),
                       ]),
                     ],
@@ -200,7 +197,10 @@ class StudentProfilePage extends StatelessWidget {
           return Center(
             child: Text(
               'Profile not found',
-              style: TextStyle(fontSize: 18, color: Colors.grey),
+              style: GoogleFonts.poppins(
+                fontSize: 18,
+                color: Colors.grey[600],
+              ),
             ),
           );
         }
@@ -210,13 +210,13 @@ class StudentProfilePage extends StatelessWidget {
 
   Widget _buildSectionTitle(String title) {
     return Padding(
-      padding: EdgeInsets.only(bottom: 10),
+      padding: const EdgeInsets.only(bottom: 10),
       child: Text(
         title,
-        style: TextStyle(
-          fontSize: 22,
+        style: GoogleFonts.poppins(
+          fontSize: 20,
           fontWeight: FontWeight.bold,
-          color: Colors.blueAccent,
+          color: Colors.black, // Use primary blue for section titles
         ),
       ),
     );
@@ -225,15 +225,15 @@ class StudentProfilePage extends StatelessWidget {
   Widget _buildInfoCard(List<Widget> children) {
     return Container(
       width: double.infinity,
-      padding: EdgeInsets.all(15),
+      padding: const EdgeInsets.all(15),
       decoration: BoxDecoration(
         color: Colors.white,
         borderRadius: BorderRadius.circular(12),
         boxShadow: [
           BoxShadow(
-            color: Colors.black12,
+            color: Colors.black.withOpacity(0.05),
             blurRadius: 8,
-            offset: Offset(0, 2),
+            offset: const Offset(0, 2),
           ),
         ],
       ),
@@ -246,25 +246,29 @@ class StudentProfilePage extends StatelessWidget {
 
   Widget _buildInfoRow(IconData icon, String label, String value) {
     return Padding(
-      padding: EdgeInsets.symmetric(vertical: 8),
+      padding: const EdgeInsets.symmetric(vertical: 8),
       child: Row(
         children: [
-          FaIcon(icon, size: 20, color: Colors.blueAccent),
-          SizedBox(width: 15),
+          FaIcon(
+            icon,
+            size: 20,
+            color: const Color(0xFF186CAC), // Use primary blue for icons
+          ),
+          const SizedBox(width: 15),
           Expanded(
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text(
                   label,
-                  style: TextStyle(
+                  style: GoogleFonts.poppins(
                     fontSize: 14,
                     color: Colors.grey[600],
                   ),
                 ),
                 Text(
                   value,
-                  style: TextStyle(
+                  style: GoogleFonts.poppins(
                     fontSize: 16,
                     color: Colors.black87,
                     fontWeight: FontWeight.w500,
@@ -278,14 +282,5 @@ class StudentProfilePage extends StatelessWidget {
     );
   }
 
-  Widget _buildInterestChip(String interest) {
-    return Chip(
-      label: Text(
-        interest,
-        style: TextStyle(color: Colors.white),
-      ),
-      backgroundColor: Colors.blueAccent,
-      padding: EdgeInsets.symmetric(horizontal: 8),
-    );
-  }
+// Removed the _buildInterestChip method as it's no longer needed
 }
