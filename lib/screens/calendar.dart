@@ -63,56 +63,51 @@ class _CalendarState extends State<Calendar> {
     return Scaffold(
       backgroundColor: Colors.grey[200],
       appBar: AppBar(
-        backgroundColor: _isSelected[0] ? Color(0xFF186CAC) : Colors.deepOrange,
+        backgroundColor: const Color(0xFF186CAC), // Always Color(0xFF186CAC)
         elevation: 0,
         title: Text(
           _isSelected[0] ? 'Academic Calendar' : 'Event Calendar',
           style: GoogleFonts.poppins(
             fontWeight: FontWeight.w600,
             color: Colors.white,
+            fontSize: 19,
           ),
         ),
         actions: [
-          Container(
-            margin: EdgeInsets.only(right: 16),
-            decoration: BoxDecoration(
-              color: Colors.white.withOpacity(0.2),
-              borderRadius: BorderRadius.circular(12),
+          ToggleButtons(
+            isSelected: _isSelected,
+            onPressed: (int index) {
+              setState(() {
+                for (int i = 0; i < _isSelected.length; i++) {
+                  _isSelected[i] = i == index;
+                }
+              });
+            },
+            borderRadius: BorderRadius.circular(12),
+            selectedColor: Colors.white,
+            fillColor: _isSelected[1] ? Colors.deepOrange : Colors.deepOrange, // Deep orange when Event is selected
+            color: Colors.white,
+            constraints: const BoxConstraints(
+              minHeight: 30.0,
+              minWidth: 50.0,
             ),
-            child: ToggleButtons(
-              isSelected: _isSelected,
-              onPressed: (int index) {
-                setState(() {
-                  for (int i = 0; i < _isSelected.length; i++) {
-                    _isSelected[i] = i == index;
-                  }
-                });
-              },
-              borderRadius: BorderRadius.circular(12),
-              selectedColor: Colors.white,
-              fillColor: _isSelected[1] ? Colors.deepOrange : Color(0xFF186CAC),
-              color: Colors.white,
-              constraints: const BoxConstraints(
-                minHeight: 40.0,
-                minWidth: 56.0,
+            children: const [
+              Padding(
+                padding: EdgeInsets.symmetric(horizontal: 8.0),
+                child: Icon(Icons.school),
               ),
-              children: [
-                Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 8.0),
-                  child: Icon(Icons.school),
-                ),
-                Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 8.0),
-                  child: Icon(Icons.event),
-                ),
-              ],
-              splashColor: Colors.grey.withOpacity(0.2),
-              highlightColor: Colors.transparent,
-              renderBorder: true,
-              borderWidth: 1.0,
-              borderColor: Colors.white.withOpacity(0.3),
-            ),
+              Padding(
+                padding: EdgeInsets.symmetric(horizontal: 8.0),
+                child: Icon(Icons.event),
+              ),
+            ],
+            splashColor: Colors.grey.withOpacity(0.2),
+            highlightColor: Colors.transparent,
+            renderBorder: true,
+            borderWidth: 1.0,
+            borderColor: Colors.white.withOpacity(0.3),
           ),
+          const SizedBox(width: 10),
         ],
       ),
       body: Container(
@@ -121,8 +116,8 @@ class _CalendarState extends State<Calendar> {
           children: [
             // Year Selection Card
             Container(
-              margin: EdgeInsets.only(bottom: 16),
-              padding: EdgeInsets.symmetric(vertical: 12, horizontal: 20),
+              margin: const EdgeInsets.only(bottom: 16),
+              padding: const EdgeInsets.symmetric(vertical: 0, horizontal: 20),
               decoration: BoxDecoration(
                 color: Colors.white,
                 borderRadius: BorderRadius.circular(15),
@@ -130,7 +125,7 @@ class _CalendarState extends State<Calendar> {
                   BoxShadow(
                     color: Colors.black.withOpacity(0.05),
                     blurRadius: 10,
-                    offset: Offset(0, 4),
+                    offset: const Offset(0, 4),
                   ),
                 ],
               ),
@@ -146,12 +141,16 @@ class _CalendarState extends State<Calendar> {
                     ),
                   ),
                   Container(
-                    padding: EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+                    padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
                     decoration: BoxDecoration(
-                      color: _isSelected[0] ? Color(0xFF186CAC).withOpacity(0.1) : Colors.deepOrange.withOpacity(0.1),
+                      color: _isSelected[0]
+                          ? const Color(0xFF186CAC).withOpacity(0.1)
+                          : Colors.deepOrange.withOpacity(0.1),
                       borderRadius: BorderRadius.circular(10),
                       border: Border.all(
-                        color: _isSelected[0] ? Color(0xFF186CAC).withOpacity(0.3) : Colors.deepOrange.withOpacity(0.3),
+                        color: _isSelected[0]
+                            ? const Color(0xFF186CAC).withOpacity(0.3)
+                            : Colors.deepOrange.withOpacity(0.3),
                         width: 1,
                       ),
                     ),
@@ -160,13 +159,15 @@ class _CalendarState extends State<Calendar> {
                         value: _selectedYear,
                         icon: Icon(
                           Icons.keyboard_arrow_down,
-                          color: _isSelected[0] ? Color(0xFF186CAC) : Colors.deepOrange,
+                          color: _isSelected[0] ? const Color(0xFF186CAC) : Colors.deepOrange,
                         ),
                         onChanged: (int? newValue) {
                           setState(() {
                             _selectedYear = newValue!;
-                            _focusedAcademicDay = DateTime(_selectedYear, _focusedAcademicDay.month, _focusedAcademicDay.day);
-                            _focusedEventDay = DateTime(_selectedYear, _focusedEventDay.month, _focusedEventDay.day);
+                            _focusedAcademicDay = DateTime(
+                                _selectedYear, _focusedAcademicDay.month, _focusedAcademicDay.day);
+                            _focusedEventDay = DateTime(
+                                _selectedYear, _focusedEventDay.month, _focusedEventDay.day);
                           });
                         },
                         items: _years.map<DropdownMenuItem<int>>((int year) {
@@ -437,7 +438,7 @@ class _CalendarState extends State<Calendar> {
               style: GoogleFonts.poppins(
                 fontWeight: FontWeight.w700,
                 fontSize: 19,
-                color: Colors.deepOrange,
+                color: Color(0xFF186CAC),
               ),
             ),
           ),

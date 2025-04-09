@@ -479,58 +479,58 @@ class AppointmentsView extends GetView<AppointmentsController> {
       body: Obx(() => controller.appointments.isEmpty
           ? Center(child: Text('No appointments yet'))
           : ListView.builder(
-              itemCount: controller.appointments.length,
-              itemBuilder: (context, index) {
-                final appointment = controller.appointments[index];
-                return Card(
-                  margin: EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-                  child: ListTile(
-                    title: Text(appointment.title),
-                    subtitle: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Text(DateFormat('MMM dd, yyyy')
-                            .format(appointment.date)),
-                        Text(
-                            '${appointment.startTime} - ${appointment.endTime}'),
-                        Text('Location: ${appointment.location}'),
-                        // Continuing from appointments_view.dart ListTile subtitle
-                        Text('Status: ${appointment.status.capitalizeFirst}'),
-                      ],
+        itemCount: controller.appointments.length,
+        itemBuilder: (context, index) {
+          final appointment = controller.appointments[index];
+          return Card(
+            margin: EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+            child: ListTile(
+              title: Text(appointment.title),
+              subtitle: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(DateFormat('MMM dd, yyyy')
+                      .format(appointment.date)),
+                  Text(
+                      '${appointment.startTime} - ${appointment.endTime}'),
+                  Text('Location: ${appointment.location}'),
+                  // Continuing from appointments_view.dart ListTile subtitle
+                  Text('Status: ${appointment.status.capitalizeFirst}'),
+                ],
+              ),
+              trailing: Row(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  Container(
+                    padding:
+                    EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                    decoration: BoxDecoration(
+                      color: appointment.status == 'booked'
+                          ? Colors.green[100]
+                          : Colors.blue[100],
+                      borderRadius: BorderRadius.circular(12),
                     ),
-                    trailing: Row(
-                      mainAxisSize: MainAxisSize.min,
-                      children: [
-                        Container(
-                          padding:
-                              EdgeInsets.symmetric(horizontal: 8, vertical: 4),
-                          decoration: BoxDecoration(
-                            color: appointment.status == 'booked'
-                                ? Colors.green[100]
-                                : Colors.blue[100],
-                            borderRadius: BorderRadius.circular(12),
-                          ),
-                          child: Text(
-                            appointment.status.capitalizeFirst!,
-                            style: TextStyle(
-                              color: appointment.status == 'booked'
-                                  ? Colors.green[800]
-                                  : Colors.blue[800],
-                              fontWeight: FontWeight.bold,
-                            ),
-                          ),
-                        ),
-                        IconButton(
-                          icon: Icon(Icons.delete, color: Colors.red),
-                          onPressed: () =>
-                              controller.deleteAppointment(appointment.id),
-                        ),
-                      ],
+                    child: Text(
+                      appointment.status.capitalizeFirst!,
+                      style: TextStyle(
+                        color: appointment.status == 'booked'
+                            ? Colors.green[800]
+                            : Colors.blue[800],
+                        fontWeight: FontWeight.bold,
+                      ),
                     ),
                   ),
-                );
-              },
-            )),
+                  IconButton(
+                    icon: Icon(Icons.delete, color: Colors.red),
+                    onPressed: () =>
+                        controller.deleteAppointment(appointment.id),
+                  ),
+                ],
+              ),
+            ),
+          );
+        },
+      )),
       floatingActionButton: FloatingActionButton(
         onPressed: () => _showCreateAppointmentDialog(context),
         child: Icon(Icons.add),
@@ -1025,5 +1025,3 @@ class DeadlinesView extends GetView<DeadlinesController> {
     );
   }
 }
-
-
