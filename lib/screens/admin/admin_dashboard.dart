@@ -12,7 +12,7 @@ class AdminDashboard extends StatefulWidget {
 
 class _AdminDashboardState extends State<AdminDashboard> {
   final AdminDashboardController controller =
-      Get.put(AdminDashboardController());
+  Get.put(AdminDashboardController());
   int selectedIndex = 0;
 
   void _onNavItemSelected(int index) {

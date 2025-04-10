@@ -18,7 +18,6 @@ class Event {
   });
 
   // Convert JSON to Event object
-  // Convert JSON to Event object
   factory Event.fromJson(Map<String, dynamic> json) {
     return Event(
       title: json['title'] ?? 'No Title',  // Default value for title if null

@@ -49,8 +49,8 @@ class AdminNavBar extends StatelessWidget {
                   height: 60,
                   width: 60,
                   decoration: BoxDecoration(
-                    color: Colors.grey,
-                    borderRadius: BorderRadius.circular(50)
+                      color: Colors.grey,
+                      borderRadius: BorderRadius.circular(50)
                   ),
                 ),
                 SizedBox(width: 15),
@@ -92,7 +92,7 @@ class AdminNavBar extends StatelessWidget {
         Get.to(() => ManageEvent()); // Navigate to Event Management page
         break;
       case 2:
-        // Get.to(() => FeedbackPage()); // Navigate to Feedback page
+      // Get.to(() => FeedbackPage()); // Navigate to Feedback page
         break;
       case 3:
         Get.to(() => ProfessorsPage()); // Navigate to Professors page
@@ -100,14 +100,14 @@ class AdminNavBar extends StatelessWidget {
       case 4:
         Get.to(() => AdminStudentsPage()); // Navigate to Students page
         break;
-      // case 5:
-      //   Get.to(() => FeesPage()); // Navigate to Fees page
-      //   break;
+    // case 5:
+    //   Get.to(() => FeesPage()); // Navigate to Fees page
+    //   break;
       case 6:
-      Get.to(() => ManageRoutine()); // Navigate to Manage routine page
+        Get.to(() => ManageRoutine()); // Navigate to Manage routine page
         break;
       default:
-        // Get.to(() => DashboardPage()); // Default fallback to Dashboard
+      // Get.to(() => DashboardPage()); // Default fallback to Dashboard
     }
   }
 }

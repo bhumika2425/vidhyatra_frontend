@@ -23,7 +23,7 @@ class _ManageEventState extends State<ManageEvent> {
   final TextEditingController _startTimeController = TextEditingController();
 
   final EventPostingController eventController =
-      Get.find<EventPostingController>();
+  Get.find<EventPostingController>();
 
   void _onNavItemSelected(int index) {
     setState(() {
@@ -75,6 +75,30 @@ class _ManageEventState extends State<ManageEvent> {
     }
   }
 
+  // Function to open date picker and set the date in the controller
+  Future<void> _selectDate() async {
+    DateTime selectedDate = DateTime.now();
+    final DateTime? picked = await showDatePicker(
+      context: context,
+      initialDate: selectedDate,
+      firstDate: DateTime(2000),
+      lastDate: DateTime(2101),
+      builder: (context, child) {
+        return Theme(
+          data: ThemeData.light().copyWith(
+            primaryColor: Color(0xFF042F6B),
+            colorScheme: ColorScheme.light(primary: Color(0xFF042F6B)),
+            buttonTheme: ButtonThemeData(textTheme: ButtonTextTheme.primary),
+          ),
+          child: child!,
+        );
+      },
+    );
+    if (picked != null) {
+      _dateController.text = DateFormat('yyyy-MM-dd').format(picked);
+    }
+  }
+
   void _submitForm() {
     if (_formKey.currentState!.validate()) {
       // Prepare event data and create an Event instance
@@ -92,6 +116,13 @@ class _ManageEventState extends State<ManageEvent> {
 
       // Call the postEvent method from EventController
       eventController.postEvent(newEvent);
+
+      // Clear form fields after submission
+      _nameController.clear();
+      _descriptionController.clear();
+      _locationController.clear();
+      _dateController.clear();
+      _startTimeController.clear();
     }
   }
 
@@ -107,76 +138,79 @@ class _ManageEventState extends State<ManageEvent> {
           AdminNavBar(onTap: _onNavItemSelected),
           Expanded(
             child: Container(
-              color: Color(0xFFE9EDF2), // Background color for the body
+              color: Colors.grey[200], // Grey 200 background color
               padding: const EdgeInsets.all(20.0),
               child: Row(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   // Form Section (now 30% of the screen width)
                   Container(
-                    width: MediaQuery.of(context).size.width *
-                        0.3, // 30% of screen width
-                    padding: EdgeInsets.all(16.0),
+                    width: MediaQuery.of(context).size.width * 0.3,
+                    padding: EdgeInsets.all(20.0),
+                    decoration: BoxDecoration(
+                      color: Colors.white,
+                      borderRadius: BorderRadius.circular(15),
+                      boxShadow: [
+                        BoxShadow(
+                          color: Colors.black12,
+                          blurRadius: 10,
+                          offset: Offset(0, 5),
+                        ),
+                      ],
+                    ),
                     child: Form(
                       key: _formKey,
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
-                          Text("Manage Events",
-                              style: TextStyle(
-                                  fontWeight: FontWeight.bold, fontSize: 24)),
-                          SizedBox(height: 10),
-                          _buildTextField("Name", _nameController),
-                          _buildDescriptionTextField(
-                              "Description", _descriptionController),
-                          _buildTextField("Location", _locationController),
-                          _buildTextField("Date", _dateController),
-                          Padding(
-                            padding: const EdgeInsets.symmetric(vertical: 8.0),
-                            child: TextFormField(
-                              controller: _startTimeController,
-                              readOnly: true,
-                              // Makes the text field read-only
-                              decoration: InputDecoration(
-                                labelText: "Start Time",
-                                filled: true,
-                                fillColor: Colors.white,
-                                border: OutlineInputBorder(),
-                                suffixIcon: Icon(Icons.access_time),
+                          Row(
+                            children: [
+                              Icon(Icons.event, color: Color(0xFF042F6B), size: 28),
+                              SizedBox(width: 10),
+                              Text(
+                                "Manage Events",
+                                style: TextStyle(
+                                  fontWeight: FontWeight.bold,
+                                  fontSize: 24,
+                                  color: Color(0xFF042F6B),
+                                ),
                               ),
-                              validator: (value) {
-                                if (value == null || value.isEmpty) {
-                                  return "Please select a start time";
-                                }
-                                return null;
-                              },
-                              onTap:
-                                  _selectStartTime, // Open time picker when tapped
-                            ),
+                            ],
                           ),
-                          SizedBox(height: 10),
+                          Divider(height: 30, thickness: 1),
+                          _buildTextField("Event Name", _nameController, Icons.title),
+                          _buildDescriptionTextField("Description", _descriptionController),
+                          _buildTextField("Location", _locationController, Icons.location_on),
+                          _buildDateField("Date", _dateController),
+                          _buildTimeField("Start Time", _startTimeController),
+                          SizedBox(height: 20),
                           Center(
                             child: SizedBox(
-                              width: 200,
+                              width: double.infinity,
                               child: ElevatedButton(
                                 onPressed: _submitForm,
                                 style: ElevatedButton.styleFrom(
                                   backgroundColor: Color(0xFF042F6B),
-                                  // Set the background color
-                                  padding: EdgeInsets.symmetric(
-                                      horizontal: 20, vertical: 20),
-                                  // Set padding
+                                  padding: EdgeInsets.symmetric(vertical: 18),
                                   shape: RoundedRectangleBorder(
-                                      borderRadius: BorderRadius.circular(
-                                          10)), // Rounded corners
-                                ),
-                                child: Text(
-                                  "Add New Event", // Button text
-                                  style: TextStyle(
-                                    fontSize: 16,
-                                    fontWeight: FontWeight.bold,
-                                    color: Colors.white, // White text color
+                                    borderRadius: BorderRadius.circular(10),
                                   ),
+                                  elevation: 5,
+                                ),
+                                child: Row(
+                                  mainAxisAlignment: MainAxisAlignment.center,
+                                  children: [
+                                    Icon(Icons.add_circle, color: Colors.white),
+                                    SizedBox(width: 10),
+                                    Text(
+                                      "Add New Event",
+                                      style: TextStyle(
+                                        fontSize: 16,
+                                        fontWeight: FontWeight.bold,
+                                        color: Colors.white,
+                                      ),
+                                    ),
+                                  ],
                                 ),
                               ),
                             ),
@@ -186,114 +220,290 @@ class _ManageEventState extends State<ManageEvent> {
                     ),
                   ),
                   SizedBox(width: 20),
-                  // Existing Content (empty now)
+                  // Events List Section
                   Expanded(
-                    child: Obx(() {
-                      // Checking if the events are still loading
-                      if (eventController.isLoading.value) {
-                        return Center(
-                            child:
-                                CircularProgressIndicator()); // Show loading spinner
-                      } else if (eventController.errorMessage.isNotEmpty) {
-                        return Center(
-                            child: Text(
-                                'Error: ${eventController.errorMessage}')); // Show error message
-                      } else if (eventController.events.isEmpty) {
-                        return Center(
-                            child: Text(
-                                'No events available')); // Show no events message
-                      } else {
-                        // Display events in a ListView
-                        return Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            Padding(
-                              padding:
-                                  const EdgeInsets.symmetric(vertical: 16.0),
-                              child: Text(
-                                "Events", // Title at the top
-                                style: TextStyle(
-                                    fontSize: 24, fontWeight: FontWeight.bold),
-                              ),
+                    child: Container(
+                      decoration: BoxDecoration(
+                        color: Colors.white,
+                        borderRadius: BorderRadius.circular(15),
+                        boxShadow: [
+                          BoxShadow(
+                            color: Colors.black12,
+                            blurRadius: 10,
+                            offset: Offset(0, 5),
+                          ),
+                        ],
+                      ),
+                      padding: EdgeInsets.all(20),
+                      child: Obx(() {
+                        // Checking if the events are still loading
+                        if (eventController.isLoading.value) {
+                          return Center(
+                            child: CircularProgressIndicator(
+                              color: Color(0xFF042F6B),
                             ),
-                            Expanded(
-                              child: ListView.builder(
-                                itemCount: eventController.events.length,
-                                itemBuilder: (context, index) {
-                                  var event = eventController.events[index];
-                                  return Card(
-                                    color: Colors.white,
-                                    // Set the card color to white
-                                    margin: EdgeInsets.symmetric(vertical: 8.0),
-                                    child: Row(
-                                      children: [
-                                        Padding(
-                                          padding: const EdgeInsets.all(18.0),
-                                          child: Container(
-                                            // width: 50,
-                                            decoration: BoxDecoration(
-                                              color: Color(0xFF053985),
-                                              borderRadius: BorderRadius.circular(50),
-                                            ),
-                                            child: Padding(
-                                              padding: const EdgeInsets.symmetric(horizontal: 18.0, vertical: 13),
-                                              child: Text("${index + 1}", style: TextStyle(color: Colors.white),),
-                                            ),
-                                          ),
+                          );
+                        } else if (eventController.errorMessage.isNotEmpty) {
+                          return Center(
+                            child: Column(
+                              mainAxisAlignment: MainAxisAlignment.center,
+                              children: [
+                                Icon(Icons.error_outline, color: Colors.red, size: 48),
+                                SizedBox(height: 16),
+                                Text(
+                                  'Error: ${eventController.errorMessage}',
+                                  style: TextStyle(
+                                    color: Colors.red,
+                                    fontSize: 16,
+                                  ),
+                                ),
+                              ],
+                            ),
+                          );
+                        } else if (eventController.events.isEmpty) {
+                          return Center(
+                            child: Column(
+                              mainAxisAlignment: MainAxisAlignment.center,
+                              children: [
+                                Icon(
+                                  Icons.event_busy,
+                                  size: 64,
+                                  color: Colors.grey,
+                                ),
+                                SizedBox(height: 16),
+                                Text(
+                                  'No events available',
+                                  style: TextStyle(
+                                    fontSize: 18,
+                                    color: Colors.grey[700],
+                                  ),
+                                ),
+                                SizedBox(height: 8),
+                                Text(
+                                  'Add a new event to get started',
+                                  style: TextStyle(
+                                    fontSize: 14,
+                                    color: Colors.grey[600],
+                                  ),
+                                ),
+                              ],
+                            ),
+                          );
+                        } else {
+                          // Display events in a ListView
+                          return Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Row(
+                                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                children: [
+                                  Row(
+                                    children: [
+                                      Icon(Icons.list_alt, color: Color(0xFF042F6B), size: 28),
+                                      SizedBox(width: 10),
+                                      Text(
+                                        "Event List",
+                                        style: TextStyle(
+                                          fontSize: 24,
+                                          fontWeight: FontWeight.bold,
+                                          color: Color(0xFF042F6B),
                                         ),
-                                        Expanded(
-                                          child: ListTile(
-                                            title: Text("${event.title}"),
-                                            // Display event number and title
-                                            subtitle: Column(
-                                              crossAxisAlignment:
-                                                  CrossAxisAlignment.start,
-                                              children: [
-                                                Text(
-                                                    "Description: ${event.description}"),
-                                                Text("Venue: ${event.venue}"),
-                                                Text(
-                                                    "Date: ${event.eventDate}"),
-                                                Text(
-                                                    "Start Time: ${event.eventStartTime}"),
-                                              ],
-                                            ),
-                                            trailing: Row(
-                                              mainAxisSize: MainAxisSize.min,
-                                              children: [
-                                                // Edit button
-                                                IconButton(
-                                                  icon: Icon(Icons.edit,
-                                                      color: Colors.blue),
-                                                  onPressed: () {
-                                                    // Trigger edit action
-                                                    // _editEvent(event);
-                                                  },
-                                                ),
-                                                // Delete button
-                                                IconButton(
-                                                  icon: Icon(Icons.delete,
-                                                      color: Colors.red),
-                                                  onPressed: () {
-                                                    // Trigger delete action
-                                                    // _deleteEvent(event);
-                                                  },
-                                                ),
-                                              ],
-                                            ),
-                                          ),
-                                        ),
-                                      ],
+                                      ),
+                                    ],
+                                  ),
+                                  Text(
+                                    "${eventController.events.length} Event${eventController.events.length > 1 ? 's' : ''}",
+                                    style: TextStyle(
+                                      color: Colors.grey[600],
+                                      fontWeight: FontWeight.w500,
                                     ),
-                                  );
-                                },
+                                  ),
+                                ],
                               ),
-                            ),
-                          ],
-                        );
-                      }
-                    }),
-                  )
+                              Divider(height: 30, thickness: 1),
+                              Expanded(
+                                child: ListView.builder(
+                                  itemCount: eventController.events.length,
+                                  itemBuilder: (context, index) {
+                                    var event = eventController.events[index];
+                                    return Card(
+                                      elevation: 3,
+                                      margin: EdgeInsets.only(bottom: 16),
+                                      shape: RoundedRectangleBorder(
+                                        borderRadius: BorderRadius.circular(12),
+                                      ),
+                                      child: IntrinsicHeight(
+                                        child: Container(
+                                          decoration: BoxDecoration(
+                                            borderRadius: BorderRadius.circular(12),
+                                            border: Border.all(
+                                              color: Colors.grey.shade200,
+                                              width: 1,
+                                            ),
+                                          ),
+                                          child: Row(
+                                            crossAxisAlignment: CrossAxisAlignment.stretch,
+                                            children: [
+                                              Container(
+                                                padding: EdgeInsets.all(16),
+                                                decoration: BoxDecoration(
+                                                  color: Color(0xFF042F6B),
+                                                  borderRadius: BorderRadius.only(
+                                                    topLeft: Radius.circular(12),
+                                                    bottomLeft: Radius.circular(12),
+                                                  ),
+                                                ),
+                                                child: Column(
+                                                  mainAxisAlignment: MainAxisAlignment.center,
+                                                  children: [
+                                                    Text(
+                                                      "${index + 1}",
+                                                      style: TextStyle(
+                                                        color: Colors.white,
+                                                        fontSize: 22,
+                                                        fontWeight: FontWeight.bold,
+                                                      ),
+                                                    ),
+                                                    Icon(
+                                                      Icons.event,
+                                                      color: Colors.white,
+                                                      size: 22,
+                                                    ),
+                                                  ],
+                                                ),
+                                              ),
+                                              Expanded(
+                                                child: Padding(
+                                                  padding: const EdgeInsets.symmetric(
+                                                    horizontal: 10,
+                                                    vertical: 8,
+                                                  ),
+                                                  child: Column(
+                                                    crossAxisAlignment: CrossAxisAlignment.start,
+                                                    children: [
+                                                      Text(
+                                                        "${event.title}",
+                                                        style: TextStyle(
+                                                          fontWeight: FontWeight.bold,
+                                                          fontSize: 13,
+                                                          color: Color(0xFF042F6B),
+                                                        ),
+                                                      ),
+                                                      SizedBox(height: 8),
+                                                      Row(
+                                                        children: [
+                                                          Icon(Icons.description, size: 14, color: Colors.grey[600]),
+                                                          SizedBox(width: 4),
+                                                          Expanded(
+                                                            child: Text(
+                                                              "${event.description}",
+                                                              style: TextStyle(
+                                                                color: Colors.grey[700],
+                                                                fontSize: 14,
+                                                              ),
+                                                              maxLines: 2,
+                                                              overflow: TextOverflow.ellipsis,
+                                                            ),
+                                                          ),
+                                                        ],
+                                                      ),
+                                                      SizedBox(height: 4),
+                                                      Row(
+                                                        children: [
+                                                          Icon(Icons.location_on, size: 14, color: Colors.grey[600]),
+                                                          SizedBox(width: 4),
+                                                          Text(
+                                                            "${event.venue}",
+                                                            style: TextStyle(
+                                                              color: Colors.grey[700],
+                                                              fontSize: 14,
+                                                            ),
+                                                          ),
+                                                        ],
+                                                      ),
+                                                      SizedBox(height: 4),
+                                                      Row(
+                                                        children: [
+                                                          Expanded(
+                                                            child: Row(
+                                                              children: [
+                                                                Icon(Icons.calendar_today, size: 14, color: Colors.grey[600]),
+                                                                SizedBox(width: 4),
+                                                                Text(
+                                                                  "${event.eventDate}",
+                                                                  style: TextStyle(
+                                                                    color: Colors.grey[700],
+                                                                    fontSize: 14,
+                                                                  ),
+                                                                ),
+                                                              ],
+                                                            ),
+                                                          ),
+                                                          SizedBox(width: 16),
+                                                          Expanded(
+                                                            child: Row(
+                                                              children: [
+                                                                Icon(Icons.access_time, size: 14, color: Colors.grey[600]),
+                                                                SizedBox(width: 4),
+                                                                Text(
+                                                                  "${event.eventStartTime}",
+                                                                  style: TextStyle(
+                                                                    color: Colors.grey[700],
+                                                                    fontSize: 14,
+                                                                  ),
+                                                                ),
+                                                              ],
+                                                            ),
+                                                          ),
+                                                        ],
+                                                      ),
+                                                    ],
+                                                  ),
+                                                ),
+                                              ),
+                                              Container(
+                                                padding: EdgeInsets.symmetric(horizontal: 8),
+                                                child: Row(
+                                                  children: [
+                                                    IconButton(
+                                                      icon: Icon(
+                                                        Icons.edit,
+                                                        color: Colors.blue,
+                                                      ),
+                                                      onPressed: () {
+                                                        // Trigger edit action
+                                                        // _editEvent(event);
+                                                      },
+                                                      tooltip: "Edit Event",
+                                                    ),
+                                                    IconButton(
+                                                      icon: Icon(
+                                                        Icons.delete,
+                                                        color: Colors.red,
+                                                      ),
+                                                      onPressed: () {
+                                                        // Trigger delete action
+                                                        // _deleteEvent(event);
+                                                      },
+                                                      tooltip: "Delete Event",
+                                                    ),
+                                                  ],
+                                                ),
+                                              ),
+                                            ],
+                                          ),
+                                        ),
+                                      ),
+                                    );
+                                  },
+                                ),
+                              ),
+                            ],
+                          );
+                        }
+                      }),
+                    ),
+                  ),
                 ],
               ),
             ),
@@ -303,16 +513,28 @@ class _ManageEventState extends State<ManageEvent> {
     );
   }
 
-  Widget _buildTextField(String label, TextEditingController controller) {
+  Widget _buildTextField(String label, TextEditingController controller, IconData icon) {
     return Padding(
       padding: const EdgeInsets.symmetric(vertical: 8.0),
       child: TextFormField(
         controller: controller,
         decoration: InputDecoration(
           labelText: label,
-          filled: true, // Enable background fill
-          fillColor: Colors.white, // Set the background color to white
-          border: OutlineInputBorder(),
+          prefixIcon: Icon(icon, color: Color(0xFF042F6B)),
+          filled: true,
+          fillColor: Colors.grey[50],
+          border: OutlineInputBorder(
+            borderRadius: BorderRadius.circular(10),
+            borderSide: BorderSide(color: Colors.grey[300]!),
+          ),
+          enabledBorder: OutlineInputBorder(
+            borderRadius: BorderRadius.circular(10),
+            borderSide: BorderSide(color: Colors.grey[300]!),
+          ),
+          focusedBorder: OutlineInputBorder(
+            borderRadius: BorderRadius.circular(10),
+            borderSide: BorderSide(color: Color(0xFF042F6B), width: 2),
+          ),
         ),
         validator: (value) {
           if (value == null || value.isEmpty) {
@@ -324,8 +546,7 @@ class _ManageEventState extends State<ManageEvent> {
     );
   }
 
-  Widget _buildDescriptionTextField(
-      String label, TextEditingController controller) {
+  Widget _buildDescriptionTextField(String label, TextEditingController controller) {
     return Padding(
       padding: const EdgeInsets.symmetric(vertical: 8.0),
       child: TextFormField(
@@ -333,13 +554,98 @@ class _ManageEventState extends State<ManageEvent> {
         maxLines: 3,
         decoration: InputDecoration(
           labelText: label,
-          filled: true, // Enable background fill
-          fillColor: Colors.white, // Set the background color to white
-          border: OutlineInputBorder(),
+          prefixIcon: Padding(
+            padding: const EdgeInsets.only(bottom: 64),
+            child: Icon(Icons.description, color: Color(0xFF042F6B)),
+          ),
+          filled: true,
+          fillColor: Colors.grey[50],
+          border: OutlineInputBorder(
+            borderRadius: BorderRadius.circular(10),
+            borderSide: BorderSide(color: Colors.grey[300]!),
+          ),
+          enabledBorder: OutlineInputBorder(
+            borderRadius: BorderRadius.circular(10),
+            borderSide: BorderSide(color: Colors.grey[300]!),
+          ),
+          focusedBorder: OutlineInputBorder(
+            borderRadius: BorderRadius.circular(10),
+            borderSide: BorderSide(color: Color(0xFF042F6B), width: 2),
+          ),
         ),
         validator: (value) {
           if (value == null || value.isEmpty) {
             return "Please enter $label";
+          }
+          return null;
+        },
+      ),
+    );
+  }
+
+  Widget _buildDateField(String label, TextEditingController controller) {
+    return Padding(
+      padding: const EdgeInsets.symmetric(vertical: 8.0),
+      child: TextFormField(
+        controller: controller,
+        readOnly: true,
+        decoration: InputDecoration(
+          labelText: label,
+          prefixIcon: Icon(Icons.calendar_today, color: Color(0xFF042F6B)),
+          filled: true,
+          fillColor: Colors.grey[50],
+          border: OutlineInputBorder(
+            borderRadius: BorderRadius.circular(10),
+            borderSide: BorderSide(color: Colors.grey[300]!),
+          ),
+          enabledBorder: OutlineInputBorder(
+            borderRadius: BorderRadius.circular(10),
+            borderSide: BorderSide(color: Colors.grey[300]!),
+          ),
+          focusedBorder: OutlineInputBorder(
+            borderRadius: BorderRadius.circular(10),
+            borderSide: BorderSide(color: Color(0xFF042F6B), width: 2),
+          ),
+        ),
+        onTap: _selectDate,
+        validator: (value) {
+          if (value == null || value.isEmpty) {
+            return "Please select a date";
+          }
+          return null;
+        },
+      ),
+    );
+  }
+
+  Widget _buildTimeField(String label, TextEditingController controller) {
+    return Padding(
+      padding: const EdgeInsets.symmetric(vertical: 8.0),
+      child: TextFormField(
+        controller: controller,
+        readOnly: true,
+        decoration: InputDecoration(
+          labelText: label,
+          prefixIcon: Icon(Icons.access_time, color: Color(0xFF042F6B)),
+          filled: true,
+          fillColor: Colors.grey[50],
+          border: OutlineInputBorder(
+            borderRadius: BorderRadius.circular(10),
+            borderSide: BorderSide(color: Colors.grey[300]!),
+          ),
+          enabledBorder: OutlineInputBorder(
+            borderRadius: BorderRadius.circular(10),
+            borderSide: BorderSide(color: Colors.grey[300]!),
+          ),
+          focusedBorder: OutlineInputBorder(
+            borderRadius: BorderRadius.circular(10),
+            borderSide: BorderSide(color: Color(0xFF042F6B), width: 2),
+          ),
+        ),
+        onTap: _selectStartTime,
+        validator: (value) {
+          if (value == null || value.isEmpty) {
+            return "Please select a time";
           }
           return null;
         },

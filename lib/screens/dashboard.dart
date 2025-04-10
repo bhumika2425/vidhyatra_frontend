@@ -5,6 +5,7 @@ import 'package:google_fonts/google_fonts.dart';
 import 'package:intl/intl.dart';
 import 'package:percent_indicator/circular_percent_indicator.dart';
 import 'package:timeago/timeago.dart' as timeago;
+import 'package:vidhyatra_flutter/screens/FeesScreen.dart';
 import 'package:vidhyatra_flutter/screens/LibraryScreen.dart';
 import 'package:vidhyatra_flutter/screens/TeacherListScreen.dart';
 import 'package:vidhyatra_flutter/screens/profile_creation.dart';
@@ -147,9 +148,11 @@ class _DashboardState extends State<Dashboard>
       floatingActionButton: FloatingActionButton(
         onPressed: () => Get.toNamed('/new-post'),
         backgroundColor: Color(0xFF186CAC),
-        child: Icon(Icons.add, color: Colors.white),
+        child: Icon(Icons.edit, color: Colors.white),
+        elevation: 4,
       ),
       floatingActionButtonLocation: FloatingActionButtonLocation.endFloat,
+
     );
   }
 
@@ -691,9 +694,9 @@ class _DashboardState extends State<Dashboard>
         'screen': () => TeacherListScreen(), // Placeholder screen
       },
       {
-        'title': 'Library',
-        'icon': Icons.local_library,
-        'screen': () => LibraryScreen(), // Placeholder screen
+        'title': 'Fees',
+        'icon': Icons.money,
+        'screen': () => FeesScreen(), // Placeholder screen
       },
       {
         'title': 'Notes',
@@ -808,11 +811,7 @@ class _DashboardState extends State<Dashboard>
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
       child: Container(
         decoration: BoxDecoration(
-          gradient: LinearGradient(
-            begin: Alignment.topLeft,
-            end: Alignment.bottomRight,
-            colors: [Color(0xFF186CAC), Color(0xFF186CAC)],
-          ),
+          color: Color(0x33186CAC), // Light transparent blue
           borderRadius: BorderRadius.circular(12),
         ),
         child: Padding(
@@ -822,26 +821,25 @@ class _DashboardState extends State<Dashboard>
             children: [
               Row(
                 children: [
-                  Icon(CupertinoIcons.time, size: 15, color: Colors.white),
+                  Icon(CupertinoIcons.time, size: 15, color: Colors.black87),
                   SizedBox(width: 5),
-                  Text(time, style: GoogleFonts.poppins(color: Colors.white)),
+                  Text(time, style: GoogleFonts.poppins(color: Colors.black87)),
                   SizedBox(width: 15),
-                  Icon(Icons.room_outlined, size: 15, color: Colors.white),
+                  Icon(Icons.room_outlined, size: 15, color: Colors.black87),
                   SizedBox(width: 5),
-                  Text(location,
-                      style: GoogleFonts.poppins(color: Colors.white)),
+                  Text(location, style: GoogleFonts.poppins(color: Colors.black87)),
                 ],
               ),
               SizedBox(height: 5),
               Text(course,
-                  style:
-                      GoogleFonts.poppins(fontSize: 16, color: Colors.white)),
+                  style: GoogleFonts.poppins(fontSize: 16, color: Colors.black)),
               SizedBox(height: 5),
               Text(status, style: GoogleFonts.poppins(color: statusColor)),
             ],
           ),
         ),
       ),
+
     );
   }
 
@@ -1225,10 +1223,10 @@ class _DashboardState extends State<Dashboard>
             icon: Icon(Icons.home),
             label: 'Home',
           ),
-          BottomNavigationBarItem(
-            icon: Icon(Icons.monetization_on_outlined),
-            label: 'Fees',
-          ),
+          // BottomNavigationBarItem(
+          //   icon: Icon(Icons.local_library),
+          //   label: 'Library',
+          // ),
           BottomNavigationBarItem(
             icon: Icon(Icons.calendar_today),
             label: 'Calendar',
@@ -1249,15 +1247,12 @@ class _DashboardState extends State<Dashboard>
               // Already on home
               break;
             case 1:
-              Get.toNamed('/feesScreen');
-              break;
-            case 2:
               Get.toNamed('/calendar');
               break;
-            case 3:
+            case 2:
               Get.toNamed('/messages');
               break;
-            case 4:
+            case 3:
               _checkAndNavigateToProfile(context);
               break;
           }

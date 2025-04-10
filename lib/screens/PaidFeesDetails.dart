@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:google_fonts/google_fonts.dart';
 import 'package:vidhyatra_flutter/controllers/LoginController.dart';
 import 'package:vidhyatra_flutter/controllers/PaymentController.dart';
 import '../models/user.dart';
@@ -30,7 +31,7 @@ class PaidFeesDetails extends StatelessWidget {
           "Missing payment data",
           backgroundColor: Colors.red.withOpacity(0.1),
           colorText: Colors.red,
-          snackPosition: SnackPosition.BOTTOM,
+          snackPosition: SnackPosition.TOP,
         );
         return;
       }
@@ -39,11 +40,17 @@ class PaidFeesDetails extends StatelessWidget {
     }
 
     return Scaffold(
-      backgroundColor: Colors.grey[400],
+      backgroundColor: Colors.grey[200],
       appBar: AppBar(
-        title: const Text('Fee Details'),
+        title: Text(
+          'Fee Details',
+          style: GoogleFonts.poppins(
+              fontWeight: FontWeight.w600,
+              color: Colors.white
+          ),
+        ),
         elevation: 0,
-        backgroundColor: Theme.of(context).primaryColor,
+        backgroundColor: Color(0xFF186CAC),
         foregroundColor: Colors.white,
         centerTitle: true,
       ),
@@ -57,79 +64,88 @@ class PaidFeesDetails extends StatelessWidget {
         return SingleChildScrollView(
           child: Column(
             children: [
-              // Header
+              // User info header
               Container(
                 width: double.infinity,
+                padding: const EdgeInsets.symmetric(vertical: 16, horizontal: 20),
                 decoration: BoxDecoration(
-                  color: Color(0xFF3D7FA4),
-                  borderRadius: const BorderRadius.only(
-                    bottomLeft: Radius.circular(30),
-                    bottomRight: Radius.circular(30),
-                  ),
-                  boxShadow: [
-                    BoxShadow(
-                      color: Colors.grey.withOpacity(0.3),
-                      spreadRadius: 1,
-                      blurRadius: 5,
-                      offset: const Offset(0, 3),
-                    ),
-                  ],
+                  color: Colors.grey[200], // Changed from blue to grey[200]
                 ),
-                padding: const EdgeInsets.fromLTRB(20, 5, 20, 15),
-                child: Row(
+                child: Column(
                   children: [
-                    const CircleAvatar(
-                      radius: 25,
-                      backgroundColor: Colors.white,
-                      child: Icon(Icons.person, size: 25, color: Colors.blueGrey),
-                    ),
-                    const SizedBox(width: 15),
-                    Expanded(
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Text(
-                            currentUser.email,
-                            style: const TextStyle(
-                              color: Colors.white,
-                              fontSize: 16,
-                              fontWeight: FontWeight.bold,
-                            ),
-                            overflow: TextOverflow.ellipsis,
+                    // User profile section and information in same line
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        Container(
+                          padding: const EdgeInsets.all(12),
+                          decoration: BoxDecoration(
+                            color: Colors.white,
+                            borderRadius: BorderRadius.circular(50),
+                            boxShadow: [
+                              BoxShadow(
+                                color: Colors.black.withOpacity(0.1),
+                                blurRadius: 8,
+                                offset: const Offset(0, 4),
+                              ),
+                            ],
                           ),
-                          Text(
-                            'ID: ${currentUser.collegeId}',
-                            style: TextStyle(
-                              color: Colors.white.withOpacity(0.9),
-                              fontSize: 14,
-                            ),
+                          child: Icon(
+                            Icons.person_rounded,
+                            size: 30,
+                            color: Color(0xFF186CAC),
                           ),
-                        ],
-                      ),
+                        ),
+                        const SizedBox(width: 16), // Space between icon and text
+                        Expanded(
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Text(
+                                currentUser.email,
+                                style: GoogleFonts.poppins(
+                                  color: Colors.black87,
+                                  fontSize: 16,
+                                  fontWeight: FontWeight.w600,
+                                ),
+                                overflow: TextOverflow.ellipsis,
+                              ),
+                              Text(
+                                'ID: ${currentUser.collegeId}',
+                                style: GoogleFonts.poppins(
+                                  color: Colors.black54,
+                                  fontSize: 14,
+                                  fontWeight: FontWeight.w500,
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
+                      ],
                     ),
                   ],
                 ),
               ),
 
-              // Body
+              // Main content
               Padding(
-                padding: const EdgeInsets.all(20.0),
+                padding: const EdgeInsets.only(left: 20.0, right: 20.0, bottom: 20.0),
                 child: Card(
-                  elevation: 4,
+                  elevation: 2,
                   shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(15),
+                    borderRadius: BorderRadius.circular(12),
                   ),
                   child: Padding(
                     padding: const EdgeInsets.all(20.0),
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        const Text(
+                        Text(
                           "Fee Payment Details",
-                          style: TextStyle(
+                          style: GoogleFonts.poppins(
                             fontSize: 20,
                             fontWeight: FontWeight.bold,
-                            color: Colors.blueGrey,
+                            color: Color(0xFF186CAC),
                           ),
                         ),
                         const Divider(height: 30),
@@ -137,13 +153,19 @@ class PaidFeesDetails extends StatelessWidget {
                         _buildSectionTitle("Academic Details"),
                         const SizedBox(height: 15),
 
-                        const Text("Select Year", style: TextStyle(fontSize: 16)),
+                        Text(
+                          "Select Year",
+                          style: GoogleFonts.poppins(fontSize: 15),
+                        ),
                         const SizedBox(height: 8),
                         _buildDropdown(year, ['First', 'Second', 'Third']),
 
                         const SizedBox(height: 20),
 
-                        const Text("Select Semester", style: TextStyle(fontSize: 16)),
+                        Text(
+                          "Select Semester",
+                          style: GoogleFonts.poppins(fontSize: 15),
+                        ),
                         const SizedBox(height: 8),
                         _buildDropdown(semester, ['First', 'Second']),
 
@@ -155,37 +177,64 @@ class PaidFeesDetails extends StatelessWidget {
                         Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
-                            const Text('Choose payment type', style: TextStyle(fontSize: 16)),
+                            Text(
+                              'Choose payment type',
+                              style: GoogleFonts.poppins(fontSize: 15),
+                            ),
                             const SizedBox(height: 10),
-                            Obx(() => Row(
-                              children: [
-                                Radio<String>(
-                                  value: 'esewa',
-                                  groupValue: paymentType.value,
-                                  onChanged: (String? value) {
-                                    if (value != null) paymentType.value = value;
-                                  },
-                                  activeColor: Colors.green,
-                                ),
-                                Image.asset(
-                                  'assets/img_1.png',
-                                  height: 30,
-                                  width: 30,
-                                ),
-                                const SizedBox(width: 10),
-                                const Text('eSewa'),
-                              ],
+                            Obx(() => Container(
+                              decoration: BoxDecoration(
+                                borderRadius: BorderRadius.circular(8),
+                                border: Border.all(color: Colors.grey.shade300),
+                              ),
+                              padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+                              child: Row(
+                                children: [
+                                  Radio<String>(
+                                    value: 'esewa',
+                                    groupValue: paymentType.value,
+                                    onChanged: (String? value) {
+                                      if (value != null) paymentType.value = value;
+                                    },
+                                    activeColor: Colors.deepOrange,
+                                  ),
+                                  Image.asset(
+                                    'assets/img_1.png',
+                                    height: 30,
+                                    width: 30,
+                                  ),
+                                  const SizedBox(width: 10),
+                                  Text(
+                                    'eSewa',
+                                    style: GoogleFonts.poppins(),
+                                  ),
+                                ],
+                              ),
                             )),
                           ],
                         ),
 
                         const SizedBox(height: 30),
                         _buildSectionTitle("Payment Summary"),
-                        const SizedBox(height: 10),
+                        const SizedBox(height: 15),
 
-                        _buildInfoRow("Amount", "NPR ${paidFeesData['totalPrice'] ?? 0.00}"),
-                        _buildInfoRow("Transaction ID", paidFeesData['paidFeesId'] ?? 'N/A'),
-                        _buildInfoRow("Date", paidFeesData['paidDate'] ?? 'N/A'),
+                        Container(
+                          padding: const EdgeInsets.all(16),
+                          decoration: BoxDecoration(
+                            color: Colors.grey.shade100,
+                            borderRadius: BorderRadius.circular(10),
+                            border: Border.all(color: Colors.grey.shade300),
+                          ),
+                          child: Column(
+                            children: [
+                              _buildInfoRow("Amount", "NPR ${paidFeesData['totalPrice'] ?? 0.00}"),
+                              const SizedBox(height: 10),
+                              _buildInfoRow("Transaction ID", paidFeesData['paidFeesId'] ?? 'N/A'),
+                              const SizedBox(height: 10),
+                              _buildInfoRow("Date", paidFeesData['paidDate'] ?? 'N/A'),
+                            ],
+                          ),
+                        ),
 
                         const SizedBox(height: 30),
 
@@ -195,17 +244,15 @@ class PaidFeesDetails extends StatelessWidget {
                             height: 50,
                             decoration: BoxDecoration(
                               borderRadius: BorderRadius.circular(10),
-                              gradient: LinearGradient(
-                                colors: [Colors.green, Colors.green.shade700],
-                              ),
+                              color: Colors.deepOrange,
                             ),
                             child: TextButton(
                               onPressed: handlePayment,
                               child: Text(
                                 'Pay with ${paymentType.value.capitalizeFirst}',
-                                style: const TextStyle(
+                                style: GoogleFonts.poppins(
                                   color: Colors.white,
-                                  fontWeight: FontWeight.bold,
+                                  fontWeight: FontWeight.w600,
                                   fontSize: 16,
                                 ),
                               ),
@@ -227,10 +274,10 @@ class PaidFeesDetails extends StatelessWidget {
   Widget _buildSectionTitle(String title) {
     return Text(
       title,
-      style: const TextStyle(
+      style: GoogleFonts.poppins(
         fontSize: 16,
         fontWeight: FontWeight.w600,
-        color: Colors.blueGrey,
+        color: Color(0xFF186CAC),
       ),
     );
   }
@@ -246,14 +293,17 @@ class PaidFeesDetails extends StatelessWidget {
         child: DropdownButton<String>(
           value: selectedValue.value,
           isExpanded: true,
-          icon: const Icon(Icons.arrow_drop_down),
+          icon: const Icon(Icons.arrow_drop_down, color: Color(0xFF186CAC)),
           onChanged: (String? newValue) {
             if (newValue != null) selectedValue.value = newValue;
           },
           items: items.map<DropdownMenuItem<String>>((String value) {
             return DropdownMenuItem<String>(
               value: value,
-              child: Text(value),
+              child: Text(
+                value,
+                style: GoogleFonts.poppins(),
+              ),
             );
           }).toList(),
         ),
@@ -262,22 +312,28 @@ class PaidFeesDetails extends StatelessWidget {
   }
 
   Widget _buildInfoRow(String label, String value) {
-    return Padding(
-      padding: const EdgeInsets.symmetric(vertical: 4),
-      child: Row(
-        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-        children: [
-          Text(label, style: TextStyle(color: Colors.grey[600])),
-          Expanded(
-            child: Text(
-              value,
-              textAlign: TextAlign.right,
-              style: const TextStyle(fontWeight: FontWeight.w500),
-              overflow: TextOverflow.ellipsis,
-            ),
+    return Row(
+      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+      children: [
+        Text(
+          label,
+          style: GoogleFonts.poppins(
+            color: Colors.grey[600],
+            fontWeight: FontWeight.w500,
           ),
-        ],
-      ),
+        ),
+        Expanded(
+          child: Text(
+            value,
+            textAlign: TextAlign.right,
+            style: GoogleFonts.poppins(
+              fontWeight: FontWeight.w600,
+              color: Colors.black87,
+            ),
+            overflow: TextOverflow.ellipsis,
+          ),
+        ),
+      ],
     );
   }
 }

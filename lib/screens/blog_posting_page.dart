@@ -43,7 +43,7 @@ class _BlogPostingPageState extends State<BlogPostPage> {
           style: GoogleFonts.poppins(
             color: Colors.black,
             // fontWeight: FontWeight.bold,
-            fontSize: 23, // Set font size to 24
+            fontSize: 19,
           ),
         ),
         leading: IconButton(

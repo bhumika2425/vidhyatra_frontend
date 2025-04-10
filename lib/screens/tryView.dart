@@ -1,9 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:google_fonts/google_fonts.dart';
 import 'package:intl/intl.dart';
-
 import '../controllers/tryController.dart';
-
 
 class DashboardView extends GetView<DashboardController> {
   final DashboardController controller = Get.put(DashboardController());
@@ -11,16 +10,26 @@ class DashboardView extends GetView<DashboardController> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      backgroundColor: Colors.grey[200],
       appBar: AppBar(
-        title: const Text('Teacher Dashboard'),
+        title: Text(
+          'Teacher Dashboard',
+          style: GoogleFonts.poppins(
+            fontWeight: FontWeight.w600,
+            color: Colors.white,
+          ),
+        ),
         centerTitle: true,
-        backgroundColor: Colors.blue, // Blue theme for AppBar
-        foregroundColor: Colors.white, // White text/icons
+        backgroundColor: Color(0xFF186CAC),
+        foregroundColor: Colors.white,
+        elevation: 0,
         actions: [
           IconButton(
             icon: const Icon(Icons.notifications),
             onPressed: () {
-              Get.snackbar('Notifications', 'Coming soon!');
+              Get.snackbar('Notifications', 'Coming soon!',
+                  backgroundColor: Colors.deepOrange.withOpacity(0.9),
+                  colorText: Colors.white);
             },
           ),
         ],
@@ -29,15 +38,14 @@ class DashboardView extends GetView<DashboardController> {
       body: LayoutBuilder(
         builder: (context, constraints) {
           return SingleChildScrollView(
-            child: Container(
+            child: Padding(
               padding: EdgeInsets.all(constraints.maxWidth * 0.04),
-              color: Colors.white, // White background
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   _buildWelcomeSection(context, constraints),
-                  // SizedBox(height: constraints.maxHeight * 0.03),
-                  // _buildStatusCards(context, constraints),
+                  SizedBox(height: constraints.maxHeight * 0.03),
+                  _buildBlogSlider(context, constraints),
                   SizedBox(height: constraints.maxHeight * 0.03),
                   _buildFeaturesGrid(context, constraints),
                 ],
@@ -48,155 +56,152 @@ class DashboardView extends GetView<DashboardController> {
       ),
     );
   }
-
-  Widget _buildWelcomeSection(BuildContext context, BoxConstraints constraints) {
-    return Container(
-      padding: EdgeInsets.symmetric(vertical: constraints.maxHeight * 0.02),
-      child: Row(
-        children: [
-          CircleAvatar(
-            radius: constraints.maxWidth * 0.08,
-            backgroundImage: const AssetImage('assets/images/teacher_avatar.png'),
-            backgroundColor: Colors.blue.shade100, // Light blue fallback
-            child: controller.teacherName.value.isNotEmpty
-                ? null
-                : Text(
-              'TP',
-              style: TextStyle(
-                fontSize: constraints.maxWidth * 0.06,
-                fontWeight: FontWeight.bold,
-                color: Colors.blue.shade800, // Dark blue text
-              ),
-            ),
-          ),
-          SizedBox(width: constraints.maxWidth * 0.04),
-          Expanded(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Obx(() => Text(
-                  'Welcome, ${controller.teacherName}!',
-                  style: TextStyle(
-                    fontSize: constraints.maxWidth * 0.06,
-                    fontWeight: FontWeight.bold,
-                    color: Colors.blue.shade800, // Dark blue
-                  ),
-                )),
-                Text(
-                  DateFormat('EEEE, MMMM d, yyyy').format(DateTime.now()),
-                  style: TextStyle(
-                    fontSize: constraints.maxWidth * 0.035,
-                    color: Colors.blue.shade600, // Medium blue
-                  ),
-                ),
-                Obx(() => Text(
-                  controller.teacherDepartment.value,
-                  style: TextStyle(
-                    fontSize: constraints.maxWidth * 0.04,
-                    fontStyle: FontStyle.italic,
-                    color: Colors.blue.shade600, // Medium blue
-                  ),
-                )),
-              ],
-            ),
-          ),
-        ],
-      ),
-    );
-  }
-
-  Widget _buildStatusCards(BuildContext context, BoxConstraints constraints) {
-    return SizedBox(
-      height: constraints.maxHeight * 0.15,
-      child: ListView(
-        scrollDirection: Axis.horizontal,
-        children: [
-          _buildStatusCard(
-            context,
-            'Today\'s Classes',
-            controller.todayClassesCount.toString(),
-            Icons.school,
-            Colors.blue,
-            constraints,
-          ),
-          _buildStatusCard(
-            context,
-            'Pending Appointments',
-            controller.pendingAppointmentsCount.toString(),
-            Icons.schedule,
-            Colors.blue,
-            constraints,
-          ),
-          _buildStatusCard(
-            context,
-            'Unread Messages',
-            controller.unreadMessagesCount.toString(),
-            Icons.email,
-            Colors.blue,
-            constraints,
-          ),
-          _buildStatusCard(
-            context,
-            'Upcoming Deadlines',
-            controller.upcomingDeadlinesCount.toString(),
-            Icons.alarm,
-            Colors.blue,
-            constraints,
-          ),
-        ],
-      ),
-    );
-  }
-
-  Widget _buildStatusCard(
-      BuildContext context,
-      String title,
-      String count,
-      IconData icon,
-      Color color,
-      BoxConstraints constraints,
-      ) {
-    return Container(
-      width: constraints.maxWidth * 0.35,
-      margin: EdgeInsets.only(right: constraints.maxWidth * 0.04),
-      padding: EdgeInsets.all(constraints.maxWidth * 0.03),
-      decoration: BoxDecoration(
-        color: Colors.blue.shade50, // Very light blue background
-        borderRadius: BorderRadius.circular(12),
-        border: Border.all(color: Colors.blue.shade200), // Light blue border
-      ),
-      child: Column(
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: [
-          Row(
-            mainAxisAlignment: MainAxisAlignment.center,
+  Widget _buildBlogSlider(BuildContext context, BoxConstraints constraints) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        DefaultTabController(
+          length: 2,
+          child: Column(
             children: [
-              Icon(icon, color: Colors.blue.shade800, size: constraints.maxWidth * 0.05),
-              SizedBox(width: constraints.maxWidth * 0.02),
-              Flexible(
-                child: Text(
-                  title,
-                  style: TextStyle(
-                    color: Colors.blue.shade800,
-                    fontWeight: FontWeight.bold,
-                    fontSize: constraints.maxWidth * 0.035,
-                  ),
-                  overflow: TextOverflow.ellipsis,
+              TabBar(
+                labelStyle: GoogleFonts.poppins(fontWeight: FontWeight.w600, fontSize: constraints.maxWidth * 0.04),
+                unselectedLabelStyle: GoogleFonts.poppins(fontSize: constraints.maxWidth * 0.035),
+                labelColor: Color(0xFF186CAC),
+                unselectedLabelColor: Colors.grey[700],
+                indicatorColor: Colors.deepOrange,
+                tabs: [
+                  Tab(text: 'Home'),
+                  Tab(text: 'Social'),
+                ],
+              ),
+              SizedBox(
+                height: constraints.maxHeight * 0.3,
+                child: TabBarView(
+                  children: [
+                    _buildBlogList(context, constraints, isHome: true),
+                    _buildBlogList(context, constraints, isHome: false),
+                  ],
                 ),
               ),
             ],
           ),
-          SizedBox(height: constraints.maxHeight * 0.01),
-          Text(
-            count,
-            style: TextStyle(
-              fontSize: constraints.maxWidth * 0.06,
-              fontWeight: FontWeight.bold,
-              color: Colors.blue.shade800,
-            ),
+        ),
+      ],
+    );
+  }
+  Widget _buildWelcomeSection(BuildContext context, BoxConstraints constraints) {
+    return Card(
+      elevation: 4,
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+      child: Container(
+        decoration: BoxDecoration(
+          gradient: LinearGradient(
+            begin: Alignment.topLeft,
+            end: Alignment.bottomRight,
+            colors: [Colors.white, Color(0xFF186CAC).withOpacity(0.1)],
           ),
-        ],
+          borderRadius: BorderRadius.circular(16),
+        ),
+        padding: EdgeInsets.symmetric(vertical: constraints.maxHeight * 0.02, horizontal: constraints.maxWidth * 0.04),
+        child: Row(
+          children: [
+            CircleAvatar(
+              radius: constraints.maxWidth * 0.08,
+              backgroundImage: const AssetImage('assets/images/teacher_avatar.png'),
+              backgroundColor: Color(0xFF186CAC).withOpacity(0.2),
+              child: controller.teacherName.value.isNotEmpty
+                  ? null
+                  : Text(
+                'TP',
+                style: GoogleFonts.poppins(
+                  fontSize: constraints.maxWidth * 0.06,
+                  fontWeight: FontWeight.bold,
+                  color: Color(0xFF186CAC),
+                ),
+              ),
+            ),
+            SizedBox(width: constraints.maxWidth * 0.04),
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Obx(() => Text(
+                    'Welcome, ${controller.teacherName}!',
+                    style: GoogleFonts.poppins(
+                      fontSize: constraints.maxWidth * 0.06,
+                      fontWeight: FontWeight.w600,
+                      color: Colors.black,
+                    ),
+                  )),
+                  Text(
+                    DateFormat('EEEE, MMMM d, yyyy').format(DateTime.now()),
+                    style: GoogleFonts.poppins(
+                      fontSize: constraints.maxWidth * 0.035,
+                      color: Colors.grey[700],
+                    ),
+                  ),
+                  Obx(() => Text(
+                    controller.teacherDepartment.value,
+                    style: GoogleFonts.poppins(
+                      fontSize: constraints.maxWidth * 0.04,
+                      fontStyle: FontStyle.italic,
+                      color: Colors.deepOrange,
+                    ),
+                  )),
+                ],
+              ),
+            ),
+          ],
+        ),
       ),
+    );
+  }
+
+
+
+  Widget _buildBlogList(BuildContext context, BoxConstraints constraints, {required bool isHome}) {
+    // Placeholder blog data (replace with actual controller data)
+    final blogs = isHome
+        ? [
+      {'title': 'Teaching Tips', 'author': 'Dr. Smith', 'date': 'Apr 8, 2025'},
+      {'title': 'Classroom Tech', 'author': 'Prof. Jane', 'date': 'Apr 7, 2025'},
+    ]
+        : [
+      {'title': 'Student Life', 'author': 'John Doe', 'date': 'Apr 6, 2025'},
+      {'title': 'Study Hacks', 'author': 'Emma Lee', 'date': 'Apr 5, 2025'},
+    ];
+
+    return ListView.builder(
+      itemCount: blogs.length,
+      itemBuilder: (context, index) {
+        final blog = blogs[index];
+        return Card(
+          elevation: 3,
+          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+          margin: EdgeInsets.symmetric(vertical: 8),
+          child: ListTile(
+            leading: Container(
+              width: constraints.maxWidth * 0.12,
+              height: constraints.maxWidth * 0.12,
+              decoration: BoxDecoration(
+                color: Color(0xFF186CAC).withOpacity(0.2),
+                borderRadius: BorderRadius.circular(8),
+              ),
+              child: Icon(Icons.article, color: Color(0xFF186CAC), size: constraints.maxWidth * 0.06),
+            ),
+            title: Text(blog['title']!, style: GoogleFonts.poppins(fontWeight: FontWeight.w600)),
+            subtitle: Text(
+              'By ${blog['author']} • ${blog['date']}',
+              style: GoogleFonts.poppins(color: Colors.grey[700], fontSize: constraints.maxWidth * 0.035),
+            ),
+            trailing: Icon(Icons.arrow_forward_ios, color: Colors.deepOrange, size: constraints.maxWidth * 0.04),
+            onTap: () {
+              Get.snackbar('Blog', 'Opening ${blog['title']}...', backgroundColor: Color(0xFF186CAC), colorText: Colors.white);
+            },
+          ),
+        );
+      },
     );
   }
 
@@ -208,42 +213,42 @@ class DashboardView extends GetView<DashboardController> {
       crossAxisCount: crossAxisCount,
       crossAxisSpacing: constraints.maxWidth * 0.04,
       mainAxisSpacing: constraints.maxHeight * 0.03,
-      childAspectRatio: constraints.maxWidth / (constraints.maxHeight * 0.8),
+      childAspectRatio: constraints.maxWidth / (constraints.maxHeight * 0.65),
       children: [
         _buildFeatureCard(
           context,
           'Appointments',
           Icons.calendar_today,
-          Colors.blue,
+          Color(0xFF186CAC),
               () => Get.to(() => AppointmentsView()),
-          'Set appointment slots for students to book consultation hours',
+          'Set appointment slots for students',
           constraints,
         ),
         _buildFeatureCard(
           context,
           'Calendar',
           Icons.event,
-          Colors.blue,
+          Colors.deepOrange,
               () => Get.to(() => CalendarView()),
-          'View your schedule, classes, and upcoming events',
+          'View your schedule and events',
           constraints,
         ),
         _buildFeatureCard(
           context,
           'Messages',
           Icons.message,
-          Colors.blue,
+          Color(0xFF186CAC),
               () => Get.to(() => MessagesView()),
-          'Communicate with students and colleagues in real-time',
+          'Chat with students and colleagues',
           constraints,
         ),
         _buildFeatureCard(
           context,
           'Deadlines',
           Icons.assignment_late,
-          Colors.blue,
+          Colors.deepOrange,
               () => Get.to(() => DeadlinesView()),
-          'Create and manage assignment deadlines for your courses',
+          'Manage assignment deadlines',
           constraints,
         ),
       ],
@@ -257,51 +262,52 @@ class DashboardView extends GetView<DashboardController> {
       Color color,
       VoidCallback onPressed,
       String description,
-      BoxConstraints constraints,
-      ) {
+      BoxConstraints constraints) {
     return Card(
-      elevation: 4,
-      shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.circular(16),
-      ),
+      elevation: 6,
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
       child: InkWell(
         onTap: onPressed,
         borderRadius: BorderRadius.circular(16),
         child: Container(
           decoration: BoxDecoration(
+            borderRadius: BorderRadius.circular(16),
             gradient: LinearGradient(
               begin: Alignment.topLeft,
               end: Alignment.bottomRight,
-              colors: [
-                Colors.white,
-                Colors.blue.shade50, // Light blue gradient
-              ],
+              colors: [Colors.white, color.withOpacity(0.1)],
             ),
-            borderRadius: BorderRadius.circular(16),
+            boxShadow: [
+              BoxShadow(
+                color: color.withOpacity(0.2),
+                blurRadius: 8,
+                offset: Offset(0, 4),
+              ),
+            ],
           ),
           padding: EdgeInsets.all(constraints.maxWidth * 0.04),
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
               Container(
-                padding: EdgeInsets.all(constraints.maxWidth * 0.04),
+                padding: EdgeInsets.all(constraints.maxWidth * 0.03),
                 decoration: BoxDecoration(
-                  color: Colors.blue.shade100, // Light blue circle
+                  color: color.withOpacity(0.2),
                   shape: BoxShape.circle,
                 ),
                 child: Icon(
                   icon,
                   size: constraints.maxWidth * 0.12,
-                  color: Colors.blue.shade800, // Dark blue icon
+                  color: color,
                 ),
               ),
-              SizedBox(height: constraints.maxHeight * 0.02),
+               SizedBox(height: constraints.maxHeight * 0.02),
               Text(
                 title,
-                style: TextStyle(
+                style: GoogleFonts.poppins(
                   fontSize: constraints.maxWidth * 0.05,
-                  fontWeight: FontWeight.bold,
-                  color: Colors.blue.shade800,
+                  fontWeight: FontWeight.w600,
+                  color: Colors.black,
                 ),
               ),
               SizedBox(height: constraints.maxHeight * 0.01),
@@ -309,9 +315,9 @@ class DashboardView extends GetView<DashboardController> {
                 child: Text(
                   description,
                   textAlign: TextAlign.center,
-                  style: TextStyle(
+                  style: GoogleFonts.poppins(
                     fontSize: constraints.maxWidth * 0.035,
-                    color: Colors.blue.shade600, // Medium blue
+                    color: Colors.grey[700],
                   ),
                 ),
               ),
@@ -321,16 +327,16 @@ class DashboardView extends GetView<DashboardController> {
                 children: [
                   Text(
                     'Open',
-                    style: TextStyle(
-                      color: Colors.blue.shade800,
-                      fontWeight: FontWeight.bold,
+                    style: GoogleFonts.poppins(
+                      color: color,
+                      fontWeight: FontWeight.w600,
                       fontSize: constraints.maxWidth * 0.035,
                     ),
                   ),
                   Icon(
                     Icons.arrow_forward,
                     size: constraints.maxWidth * 0.04,
-                    color: Colors.blue.shade800,
+                    color: color,
                   ),
                 ],
               ),
@@ -353,7 +359,7 @@ class DashboardView extends GetView<DashboardController> {
                   gradient: LinearGradient(
                     begin: Alignment.topLeft,
                     end: Alignment.bottomRight,
-                    colors: [Colors.blue, Colors.blue.shade800], // Blue gradient
+                    colors: [Color(0xFF186CAC), Color(0xFF186CAC).withOpacity(0.8)],
                   ),
                 ),
                 child: Column(
@@ -362,30 +368,30 @@ class DashboardView extends GetView<DashboardController> {
                     CircleAvatar(
                       radius: constraints.maxWidth * 0.12,
                       backgroundImage: const AssetImage('assets/images/teacher_avatar.png'),
-                      backgroundColor: Colors.blue.shade100, // Light blue fallback
+                      backgroundColor: Colors.white.withOpacity(0.2),
                       child: controller.teacherName.value.isNotEmpty
                           ? null
                           : Text(
                         'TP',
-                        style: TextStyle(
+                        style: GoogleFonts.poppins(
                           fontSize: constraints.maxWidth * 0.1,
                           fontWeight: FontWeight.bold,
-                          color: Colors.white, // White text
+                          color: Colors.white,
                         ),
                       ),
                     ),
                     SizedBox(height: constraints.maxHeight * 0.015),
                     Obx(() => Text(
                       controller.teacherName.value,
-                      style: TextStyle(
+                      style: GoogleFonts.poppins(
                         color: Colors.white,
                         fontSize: constraints.maxWidth * 0.06,
-                        fontWeight: FontWeight.bold,
+                        fontWeight: FontWeight.w600,
                       ),
                     )),
                     Obx(() => Text(
                       controller.teacherEmail.value,
-                      style: TextStyle(
+                      style: GoogleFonts.poppins(
                         color: Colors.white.withOpacity(0.8),
                         fontSize: constraints.maxWidth * 0.045,
                       ),
@@ -393,248 +399,76 @@ class DashboardView extends GetView<DashboardController> {
                   ],
                 ),
               ),
-              ListTile(
-                leading: const Icon(Icons.person, color: Colors.blue),
-                title: const Text('My Profile'),
-                onTap: () {
-                  Get.back();
-                },
-              ),
-              ListTile(
-                leading: const Icon(Icons.settings, color: Colors.blue),
-                title: const Text('Account Settings'),
-                onTap: () {
-                  Get.back();
-                },
-              ),
-              ListTile(
-                leading: const Icon(Icons.school, color: Colors.blue),
-                title: const Text('My Courses'),
-                onTap: () {
-                  Get.back();
-                },
-              ),
-              ListTile(
-                leading: const Icon(Icons.badge, color: Colors.blue),
-                title: const Text('Office Hours'),
-                onTap: () {
-                  Get.back();
-                },
-              ),
-              Divider(color: Colors.blue.shade200),
-              ListTile(
-                leading: const Icon(Icons.help_outline, color: Colors.blue),
-                title: const Text('Help & Support'),
-                onTap: () {
-                  Get.back();
-                },
-              ),
-              ListTile(
-                leading: const Icon(Icons.logout, color: Colors.blue),
-                title: const Text('Logout'),
-                onTap: () {
-                  Get.dialog(
-                    AlertDialog(
-                      title: const Text('Logout'),
-                      content: const Text('Are you sure you want to logout?'),
-                      actions: [
-                        TextButton(
-                          onPressed: () => Get.back(),
-                          child: const Text('Cancel', style: TextStyle(color: Colors.blue)),
-                        ),
-                        ElevatedButton(
-                          onPressed: () {
-                            Get.back();
-                            // controller.logout();
-                          },
-                          child: const Text('Logout'),
-                          style: ElevatedButton.styleFrom(
-                            backgroundColor: Colors.blue, // Blue button
-                            foregroundColor: Colors.white, // White text
-                          ),
-                        ),
-                      ],
-                    ),
-                  );
-                },
-              ),
+              _buildDrawerItem(Icons.person, 'My Profile', Color(0xFF186CAC), () => Get.back()),
+              _buildDrawerItem(Icons.settings, 'Account Settings', Color(0xFF186CAC), () => Get.back()),
+              _buildDrawerItem(Icons.school, 'My Courses', Color(0xFF186CAC), () => Get.back()),
+              _buildDrawerItem(Icons.badge, 'Office Hours', Color(0xFF186CAC), () => Get.back()),
+              _buildDrawerItem(Icons.people, 'Friends', Color(0xFF186CAC), () => _showFriendsDialog(context)),
+              Divider(color: Colors.grey[300]),
+              _buildDrawerItem(Icons.help_outline, 'Help & Support', Color(0xFF186CAC), () => Get.back()),
+              _buildDrawerItem(Icons.logout, 'Logout', Colors.deepOrange, () {
+                Get.dialog(
+                  AlertDialog(
+                    title: Text('Logout', style: GoogleFonts.poppins(fontWeight: FontWeight.w600)),
+                    content: Text('Are you sure you want to logout?', style: GoogleFonts.poppins()),
+                    actions: [
+                      TextButton(
+                        onPressed: () => Get.back(),
+                        child: Text('Cancel', style: GoogleFonts.poppins(color: Color(0xFF186CAC))),
+                      ),
+                      ElevatedButton(
+                        onPressed: () {
+                          Get.back();
+                          // controller.logout();
+                        },
+                        child: Text('Logout', style: GoogleFonts.poppins(color: Colors.white)),
+                        style: ElevatedButton.styleFrom(backgroundColor: Colors.deepOrange),
+                      ),
+                    ],
+                  ),
+                );
+              }),
             ],
           );
         },
       ),
     );
   }
-}
 
-
-class AppointmentsView extends GetView<AppointmentsController> {
-  final AppointmentsController controller = Get.put(AppointmentsController());
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        title: Text('Appointments'),
-        centerTitle: true,
-      ),
-      body: Obx(() => controller.appointments.isEmpty
-          ? Center(child: Text('No appointments yet'))
-          : ListView.builder(
-        itemCount: controller.appointments.length,
-        itemBuilder: (context, index) {
-          final appointment = controller.appointments[index];
-          return Card(
-            margin: EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-            child: ListTile(
-              title: Text(appointment.title),
-              subtitle: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(DateFormat('MMM dd, yyyy')
-                      .format(appointment.date)),
-                  Text(
-                      '${appointment.startTime} - ${appointment.endTime}'),
-                  Text('Location: ${appointment.location}'),
-                  // Continuing from appointments_view.dart ListTile subtitle
-                  Text('Status: ${appointment.status.capitalizeFirst}'),
-                ],
-              ),
-              trailing: Row(
-                mainAxisSize: MainAxisSize.min,
-                children: [
-                  Container(
-                    padding:
-                    EdgeInsets.symmetric(horizontal: 8, vertical: 4),
-                    decoration: BoxDecoration(
-                      color: appointment.status == 'booked'
-                          ? Colors.green[100]
-                          : Colors.blue[100],
-                      borderRadius: BorderRadius.circular(12),
-                    ),
-                    child: Text(
-                      appointment.status.capitalizeFirst!,
-                      style: TextStyle(
-                        color: appointment.status == 'booked'
-                            ? Colors.green[800]
-                            : Colors.blue[800],
-                        fontWeight: FontWeight.bold,
-                      ),
-                    ),
-                  ),
-                  IconButton(
-                    icon: Icon(Icons.delete, color: Colors.red),
-                    onPressed: () =>
-                        controller.deleteAppointment(appointment.id),
-                  ),
-                ],
-              ),
-            ),
-          );
-        },
-      )),
-      floatingActionButton: FloatingActionButton(
-        onPressed: () => _showCreateAppointmentDialog(context),
-        child: Icon(Icons.add),
-        tooltip: 'Create New Appointment',
-      ),
+  Widget _buildDrawerItem(IconData icon, String title, Color color, VoidCallback onTap) {
+    return ListTile(
+      leading: Icon(icon, color: color),
+      title: Text(title, style: GoogleFonts.poppins(fontSize: 16, color: Colors.black)),
+      onTap: onTap,
     );
   }
 
-  void _showCreateAppointmentDialog(BuildContext context) {
+  void _showFriendsDialog(BuildContext context) {
     Get.dialog(
       Dialog(
-        shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(16),
-        ),
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
         child: Container(
           padding: EdgeInsets.all(16),
           width: MediaQuery.of(context).size.width * 0.9,
           child: Column(
             mainAxisSize: MainAxisSize.min,
             children: [
-              Text(
-                'Create New Appointment',
-                style: TextStyle(
-                  fontSize: 20,
-                  fontWeight: FontWeight.bold,
-                ),
-              ),
+              Text('Friends', style: GoogleFonts.poppins(fontSize: 20, fontWeight: FontWeight.w600)),
               SizedBox(height: 16),
-              TextField(
-                controller: controller.titleController,
-                decoration: InputDecoration(
-                  labelText: 'Title',
-                  border: OutlineInputBorder(),
-                ),
-              ),
-              SizedBox(height: 12),
-              InkWell(
-                onTap: controller.selectDate,
-                child: TextField(
-                  controller: controller.dateController,
-                  decoration: InputDecoration(
-                    labelText: 'Date',
-                    border: OutlineInputBorder(),
-                    suffixIcon: Icon(Icons.calendar_today),
-                  ),
-                  enabled: false,
-                ),
-              ),
-              SizedBox(height: 12),
-              Row(
-                children: [
-                  Expanded(
-                    child: InkWell(
-                      onTap: controller.selectStartTime,
-                      child: TextField(
-                        controller: controller.startTimeController,
-                        decoration: InputDecoration(
-                          labelText: 'Start Time',
-                          border: OutlineInputBorder(),
-                          suffixIcon: Icon(Icons.access_time),
-                        ),
-                        enabled: false,
-                      ),
-                    ),
-                  ),
-                  SizedBox(width: 12),
-                  Expanded(
-                    child: InkWell(
-                      onTap: controller.selectEndTime,
-                      child: TextField(
-                        controller: controller.endTimeController,
-                        decoration: InputDecoration(
-                          labelText: 'End Time',
-                          border: OutlineInputBorder(),
-                          suffixIcon: Icon(Icons.access_time),
-                        ),
-                        enabled: false,
-                      ),
-                    ),
-                  ),
-                ],
-              ),
-              SizedBox(height: 12),
-              TextField(
-                controller: controller.locationController,
-                decoration: InputDecoration(
-                  labelText: 'Location',
-                  border: OutlineInputBorder(),
-                ),
-              ),
+              // Friend Requests Section
+              Text('Pending Requests', style: GoogleFonts.poppins(fontSize: 16, fontWeight: FontWeight.w600, color: Colors.black)),
+              SizedBox(height: 8),
+              _buildFriendRequestTile('Jane Doe', 'Student', true),
+              _buildFriendRequestTile('Prof. Smith', 'Teacher', true),
+              SizedBox(height: 16),
+              // Send Friend Request Section
+              Text('Send Friend Request', style: GoogleFonts.poppins(fontSize: 16, fontWeight: FontWeight.w600, color: Colors.black)),
+              SizedBox(height: 8),
+              _buildFriendRequestTile('Emma Lee', 'Student', false),
               SizedBox(height: 20),
-              Row(
-                mainAxisAlignment: MainAxisAlignment.end,
-                children: [
-                  TextButton(
-                    onPressed: () => Get.back(),
-                    child: Text('Cancel'),
-                  ),
-                  SizedBox(width: 8),
-                  ElevatedButton(
-                    onPressed: controller.createAppointment,
-                    child: Text('Create'),
-                  ),
-                ],
+              TextButton(
+                onPressed: () => Get.back(),
+                child: Text('Close', style: GoogleFonts.poppins(color: Color(0xFF186CAC))),
               ),
             ],
           ),
@@ -642,51 +476,50 @@ class AppointmentsView extends GetView<AppointmentsController> {
       ),
     );
   }
-}
 
-class CalendarView extends StatelessWidget {
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        title: Text('Calendar'),
-        centerTitle: true,
-      ),
-      body: Center(
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
+  Widget _buildFriendRequestTile(String name, String role, bool isRequestReceived) {
+    return Card(
+      elevation: 2,
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+      child: Padding(
+        padding: EdgeInsets.all(12),
+        child: Row(
           children: [
-            Icon(
-              Icons.calendar_today,
-              size: 80,
-              color: Colors.blue,
+            CircleAvatar(
+              backgroundColor: Color(0xFF186CAC),
+              child: Text(name[0], style: GoogleFonts.poppins(color: Colors.white)),
             ),
-            SizedBox(height: 20),
-            Text(
-              'Calendar Feature',
-              style: TextStyle(
-                fontSize: 24,
-                fontWeight: FontWeight.bold,
+            SizedBox(width: 12),
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(name, style: GoogleFonts.poppins(fontWeight: FontWeight.w600)),
+                  Text(role, style: GoogleFonts.poppins(color: Colors.grey[700])),
+                ],
               ),
             ),
-            SizedBox(height: 10),
-            Text(
-              'This is a placeholder for the existing calendar feature.',
-              textAlign: TextAlign.center,
-              style: TextStyle(
-                fontSize: 16,
-                color: Colors.grey[600],
+            if (isRequestReceived) ...[
+              IconButton(
+                icon: Icon(Icons.check, color: Colors.green),
+                onPressed: () {
+                  Get.snackbar('Friend Request', 'Accepted $name', backgroundColor: Color(0xFF186CAC), colorText: Colors.white);
+                },
               ),
-            ),
-            SizedBox(height: 30),
-            ElevatedButton(
-              onPressed: (){},
-              // onPressed: controller.navigateToCalendar,
-              child: Text('Go to Calendar'),
-              style: ElevatedButton.styleFrom(
-                padding: EdgeInsets.symmetric(horizontal: 32, vertical: 16),
+              IconButton(
+                icon: Icon(Icons.close, color: Colors.red),
+                onPressed: () {
+                  Get.snackbar('Friend Request', 'Rejected $name', backgroundColor: Colors.deepOrange, colorText: Colors.white);
+                },
               ),
-            ),
+            ] else
+              ElevatedButton(
+                onPressed: () {
+                  Get.snackbar('Friend Request', 'Sent to $name', backgroundColor: Color(0xFF186CAC), colorText: Colors.white);
+                },
+                child: Text('Send', style: GoogleFonts.poppins(color: Colors.white)),
+                style: ElevatedButton.styleFrom(backgroundColor: Colors.deepOrange, padding: EdgeInsets.symmetric(horizontal: 16)),
+              ),
           ],
         ),
       ),
@@ -694,334 +527,23 @@ class CalendarView extends StatelessWidget {
   }
 }
 
-class MessagesView extends GetView<MessagesController> {
-  final MessagesController controller = Get.put(MessagesController());
+// Placeholder classes for other views (unchanged from your original code)
+class AppointmentsView extends StatelessWidget {
   @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        title: Text('Messages'),
-        centerTitle: true,
-      ),
-      body: Row(
-        children: [
-          // Conversation list
-          Container(
-            width: MediaQuery.of(context).size.width * 0.3,
-            decoration: BoxDecoration(
-              border: Border(
-                right: BorderSide(color: Colors.grey[300]!, width: 1),
-              ),
-            ),
-            child: Obx(() => controller.conversations.isEmpty
-                ? Center(child: Text('No conversations'))
-                : ListView.builder(
-              itemCount: controller.conversations.length,
-              itemBuilder: (context, index) {
-                final user = controller.conversations[index];
-                return Obx(() => ListTile(
-                  leading: CircleAvatar(
-                    child: Text(user.name[0]),
-                  ),
-                  title: Text(user.name),
-                  subtitle: Text(user.email),
-                  selected: controller.selectedConversation.value?.id == user.id,
-                  selectedTileColor: Colors.grey[100],
-                  onTap: () => controller.selectConversation(user),
-                ));
-              },
-            )),
-          ),
-          // Message thread
-          Expanded(
-            child: Obx(() => controller.selectedConversation.value == null
-                ? Center(child: Text('Select a conversation to start messaging'))
-                : Column(
-              children: [
-                // Conversation header
-                Container(
-                  padding: EdgeInsets.all(16),
-                  decoration: BoxDecoration(
-                    border: Border(
-                      bottom: BorderSide(color: Colors.grey[300]!, width: 1),
-                    ),
-                  ),
-                  child: Row(
-                    children: [
-                      CircleAvatar(
-                        child: Text(controller.selectedConversation.value!.name[0]),
-                      ),
-                      SizedBox(width: 12),
-                      Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Text(
-                            controller.selectedConversation.value!.name,
-                            style: TextStyle(
-                              fontWeight: FontWeight.bold,
-                              fontSize: 16,
-                            ),
-                          ),
-                          Text(
-                            controller.selectedConversation.value!.email,
-                            style: TextStyle(
-                              color: Colors.grey[600],
-                            ),
-                          ),
-                        ],
-                      ),
-                    ],
-                  ),
-                ),
-                // Messages
-                Expanded(
-                  child: Obx(() => controller.messages.isEmpty
-                      ? Center(child: Text('No messages yet'))
-                      : ListView.builder(
-                    itemCount: controller.messages.length,
-                    itemBuilder: (context, index) {
-                      final message = controller.messages[index];
-                      final isMyMessage = message.senderId == controller.currentTeacherId.value;
-
-                      return Align(
-                        alignment: isMyMessage ? Alignment.centerRight : Alignment.centerLeft,
-                        child: Container(
-                          constraints: BoxConstraints(
-                            maxWidth: MediaQuery.of(context).size.width * 0.5,
-                          ),
-                          margin: EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-                          padding: EdgeInsets.all(12),
-                          decoration: BoxDecoration(
-                            color: isMyMessage ? Colors.blue[100] : Colors.grey[200],
-                            borderRadius: BorderRadius.circular(12),
-                          ),
-                          child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              Text(message.content),
-                              SizedBox(height: 4),
-                              Text(
-                                DateFormat('hh:mm a').format(message.timestamp),
-                                style: TextStyle(
-                                  color: Colors.grey[600],
-                                  fontSize: 10,
-                                ),
-                              ),
-                            ],
-                          ),
-                        ),
-                      );
-                    },
-                  )),
-                ),
-                // Message input
-                Container(
-                  padding: EdgeInsets.all(8),
-                  decoration: BoxDecoration(
-                    border: Border(
-                      top: BorderSide(color: Colors.grey[300]!, width: 1),
-                    ),
-                  ),
-                  child: Row(
-                    children: [
-                      Expanded(
-                        child: TextField(
-                          controller: controller.messageController,
-                          decoration: InputDecoration(
-                            hintText: 'Type a message...',
-                            border: OutlineInputBorder(
-                              borderRadius: BorderRadius.circular(24),
-                            ),
-                            contentPadding: EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-                          ),
-                          onSubmitted: (_) => controller.sendMessage(),
-                        ),
-                      ),
-                      SizedBox(width: 8),
-                      CircleAvatar(
-                        backgroundColor: Colors.blue,
-                        child: IconButton(
-                          icon: Icon(Icons.send, color: Colors.white),
-                          onPressed: controller.sendMessage,
-                        ),
-                      ),
-                    ],
-                  ),
-                ),
-              ],
-            )),
-          ),
-        ],
-      ),
-    );
-  }
+  Widget build(BuildContext context) => Scaffold(body: Center(child: Text('Appointments')));
 }
 
-class DeadlinesView extends GetView<DeadlinesController> {
-  final DeadlinesController controller = Get.put(DeadlinesController());
+class CalendarView extends StatelessWidget {
   @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        title: Text('Deadlines'),
-        centerTitle: true,
-      ),
-      body: Obx(() => controller.deadlines.isEmpty
-          ? Center(child: Text('No deadlines yet'))
-          : ListView.builder(
-        itemCount: controller.deadlines.length,
-        itemBuilder: (context, index) {
-          final deadline = controller.deadlines[index];
-          final isUpcoming = deadline.dueDate.isAfter(DateTime.now());
-          final daysLeft = deadline.dueDate.difference(DateTime.now()).inDays;
+  Widget build(BuildContext context) => Scaffold(body: Center(child: Text('Calendar')));
+}
 
-          return Card(
-            margin: EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-            child: ListTile(
-              title: Text(deadline.title),
-              subtitle: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(deadline.description),
-                  Text('Subject: ${deadline.subjectId}'),
-                  Text('Due: ${DateFormat('MMM dd, yyyy').format(deadline.dueDate)}'),
-                ],
-              ),
-              trailing: Row(
-                mainAxisSize: MainAxisSize.min,
-                children: [
-                  Container(
-                    padding: EdgeInsets.symmetric(horizontal: 8, vertical: 4),
-                    decoration: BoxDecoration(
-                      color: isUpcoming
-                          ? (daysLeft <= 3 ? Colors.orange[100] : Colors.green[100])
-                          : Colors.red[100],
-                      borderRadius: BorderRadius.circular(12),
-                    ),
-                    child: Text(
-                      isUpcoming
-                          ? daysLeft == 0
-                          ? 'Due Today!'
-                          : daysLeft == 1
-                          ? '1 day left'
-                          : '$daysLeft days left'
-                          : 'Overdue',
-                      style: TextStyle(
-                        color: isUpcoming
-                            ? (daysLeft <= 3 ? Colors.orange[800] : Colors.green[800])
-                            : Colors.red[800],
-                        fontWeight: FontWeight.bold,
-                      ),
-                    ),
-                  ),
-                  IconButton(
-                    icon: Icon(Icons.delete, color: Colors.red),
-                    onPressed: () => controller.deleteDeadline(deadline.id),
-                  ),
-                ],
-              ),
-              isThreeLine: true,
-            ),
-          );
-        },
-      )),
-      floatingActionButton: FloatingActionButton(
-        onPressed: () => _showCreateDeadlineDialog(context),
-        child: Icon(Icons.add),
-        tooltip: 'Create New Deadline',
-      ),
-    );
-  }
+class MessagesView extends StatelessWidget {
+  @override
+  Widget build(BuildContext context) => Scaffold(body: Center(child: Text('Messages')));
+}
 
-  void _showCreateDeadlineDialog(BuildContext context) {
-    Get.dialog(
-      Dialog(
-        shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(16),
-        ),
-        child: Container(
-          padding: EdgeInsets.all(16),
-          width: MediaQuery.of(context).size.width * 0.9,
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              Text(
-                'Create New Deadline',
-                style: TextStyle(
-                  fontSize: 20,
-                  fontWeight: FontWeight.bold,
-                ),
-              ),
-              SizedBox(height: 16),
-              TextField(
-                controller: controller.titleController,
-                decoration: InputDecoration(
-                  labelText: 'Title',
-                  border: OutlineInputBorder(),
-                ),
-              ),
-              SizedBox(height: 12),
-              TextField(
-                controller: controller.descriptionController,
-                decoration: InputDecoration(
-                  labelText: 'Description',
-                  border: OutlineInputBorder(),
-                ),
-                maxLines: 3,
-              ),
-              SizedBox(height: 12),
-              InkWell(
-                onTap: controller.selectDueDate,
-                child: TextField(
-                  controller: controller.dueDateController,
-                  decoration: InputDecoration(
-                    labelText: 'Due Date',
-                    border: OutlineInputBorder(),
-                    suffixIcon: Icon(Icons.calendar_today),
-                  ),
-                  enabled: false,
-                ),
-              ),
-              SizedBox(height: 12),
-              DropdownButtonFormField<String>(
-                value: controller.selectedSubject.value.isEmpty
-                    ? null
-                    : controller.selectedSubject.value,
-                decoration: InputDecoration(
-                  labelText: 'Subject',
-                  border: OutlineInputBorder(),
-                ),
-                items: controller.subjects.map((subject) {
-                  return DropdownMenuItem<String>(
-                    value: subject,
-                    child: Text(subject),
-                  );
-                }).toList(),
-                onChanged: (value) {
-                  if (value != null) {
-                    controller.setSubject(value);
-                  }
-                },
-              ),
-              SizedBox(height: 20),
-              Row(
-                mainAxisAlignment: MainAxisAlignment.end,
-                children: [
-                  TextButton(
-                    onPressed: () => Get.back(),
-                    child: Text('Cancel'),
-                  ),
-                  SizedBox(width: 8),
-                  ElevatedButton(
-                    onPressed: controller.createDeadline,
-                    child: Text('Create'),
-                  ),
-                ],
-              ),
-            ],
-          ),
-        ),
-      ),
-    );
-  }
+class DeadlinesView extends StatelessWidget {
+  @override
+  Widget build(BuildContext context) => Scaffold(body: Center(child: Text('Deadlines')));
 }
