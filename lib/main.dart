@@ -6,13 +6,10 @@ import 'package:vidhyatra_flutter/screens/ClassRoutine.dart';
 import 'package:vidhyatra_flutter/screens/FeesScreen.dart';
 import 'package:vidhyatra_flutter/screens/FriendsScreen.dart';
 import 'package:vidhyatra_flutter/screens/StudentSetting.dart';
-import 'package:vidhyatra_flutter/screens/admin/admin_dashboard.dart';
-import 'package:vidhyatra_flutter/screens/admin/event_management/controller/event_posting_controller.dart';
-import 'package:vidhyatra_flutter/screens/admin/event_management/view/event_management.dart';
 import 'package:vidhyatra_flutter/screens/blog_posting_page.dart';
 import 'package:vidhyatra_flutter/screens/calendar.dart';
 import 'package:vidhyatra_flutter/screens/chat_page.dart';
-import 'package:vidhyatra_flutter/screens/dashboard.dart';
+import 'package:vidhyatra_flutter/screens/StudentDashboard.dart';
 import 'package:vidhyatra_flutter/screens/feedback_form.dart';
 import 'package:vidhyatra_flutter/screens/forgot_password_page.dart';
 import 'package:vidhyatra_flutter/screens/login.dart';
@@ -25,7 +22,6 @@ import 'controllers/ProfileController.dart';
 void main() {
   Get.put(LoginController());
   Get.put(ProfileController()); // Ensures ProfileController is available globally
-  Get.put(EventPostingController());
 
   runApp(VidhyatraApp());
 }
@@ -66,8 +62,6 @@ class VidhyatraApp extends StatelessWidget {
         GetPage(name: '/studentSetting', page: () => Studentsetting()),
         GetPage(name: '/feesScreen', page: () => FeesScreen()),
         GetPage(name: '/classSchedule', page: () => ClassRoutine()),
-        GetPage(name: '/manageEvents', page: () => ManageEvent()),
-        GetPage(name: '/admin-dashboard', page: () => AdminDashboard()),
         GetPage(name: '/changePassword', page: () => ChangePassword()),
 
       ],

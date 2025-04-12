@@ -47,22 +47,6 @@ class _DashboardState extends State<Dashboard>
   };
 
 
-
-  // final List<Map<String, dynamic>> announcements = [
-  //   {
-  //     'title': 'Spring Fest 2025',
-  //     'details': 'Registration now open! Deadline: April 15, 2025',
-  //     'icon': Icons.celebration,
-  //     'time': DateTime.now().subtract(Duration(hours: 5))
-  //   },
-  //   {
-  //     'title': 'Campus Placement Drive',
-  //     'details': 'Microsoft recruiting on April 20. Register by April 10',
-  //     'icon': Icons.work,
-  //     'time': DateTime.now().subtract(Duration(hours: 12))
-  //   },
-  // ];
-
   final List<Map<String, dynamic>> todayClasses = [
     {
       'name': 'Artificial Intelligence',
@@ -439,110 +423,6 @@ class _DashboardState extends State<Dashboard>
       ],
     );
   }
-
-  // Widget _buildLatestAnnouncements() {
-  //   return Column(
-  //     crossAxisAlignment: CrossAxisAlignment.start,
-  //     children: [
-  //       Row(
-  //         mainAxisAlignment: MainAxisAlignment.spaceBetween,
-  //         children: [
-  //           Text("Announcements",
-  //               style: GoogleFonts.poppins(
-  //                   fontSize: 18, fontWeight: FontWeight.bold)),
-  //           TextButton(
-  //             onPressed: () => Get.toNamed('/announcements'),
-  //             child: Text("View All",
-  //                 style: GoogleFonts.poppins(color: const Color(0xFF186CAC))),
-  //           ),
-  //         ],
-  //       ),
-  //       Obx(() {
-  //         // Check if events are still loading
-  //         if (eventController.isLoading.value) {
-  //           return CircularProgressIndicator(); // Show a loading spinner while fetching data
-  //         } else if (eventController.errorMessage.value.isNotEmpty) {
-  //           return Text(
-  //             eventController.errorMessage.value,
-  //             style: TextStyle(color: Colors.deepOrange),
-  //           ); // Show error message if something goes wrong
-  //         } else {
-  //           // Filter events to show only upcoming events (events after today's date)
-  //           List<Event> upcomingEvents = eventController.events.where((event) {
-  //             DateTime eventDate = DateTime.parse(event.eventDate); // Assuming eventDate is in string format
-  //             return eventDate.isAfter(DateTime.now()); // Check if the event is after today's date
-  //           }).toList();
-  //
-  //           if (upcomingEvents.isEmpty) {
-  //             return Text('No upcoming events.');
-  //           } else {
-  //             return Expanded(
-  //               child: ListView.builder(
-  //                 shrinkWrap: true,
-  //                 itemCount: upcomingEvents.length,
-  //                 itemBuilder: (context, index) {
-  //                   Event event = upcomingEvents[index];
-  //                   return Card( // Use a card for better UI presentation
-  //                     margin: EdgeInsets.symmetric(vertical: 5, horizontal: 10),
-  //                     elevation: 2,
-  //                     child: ListTile(
-  //                       title: Text(
-  //                         event.title,
-  //                         style: TextStyle(fontWeight: FontWeight.bold),
-  //                       ),
-  //                       subtitle: Column(
-  //                         crossAxisAlignment: CrossAxisAlignment.start,
-  //                         children: [
-  //                           Text(event.description),
-  //                           Text('Date: ${event.eventDate}'), // Time is optional, hence nullable
-  //                         ],
-  //                       ),
-  //                       trailing: Icon(Icons.arrow_forward),
-  //                       onTap: () {
-  //                         // Get.to(EventDetailsPage(event: event,));
-  //                       },
-  //                     ),
-  //                   );
-  //                 },
-  //               ),
-  //             );
-  //           }
-  //         }
-  //       }),
-  //       // ListView.builder(
-  //       //   shrinkWrap: true,
-  //       //   physics: const NeverScrollableScrollPhysics(),
-  //       //   itemCount: announcements.length,
-  //       //   itemBuilder: (context, index) {
-  //       //     final announcement = announcements[index];
-  //       //     return Card(
-  //       //       margin: const EdgeInsets.only(bottom: 8),
-  //       //       child: ListTile(
-  //       //         leading: CircleAvatar(
-  //       //           backgroundColor: Color(0xFF186CAC),
-  //       //           child:
-  //       //           Icon(announcement['icon'], color: Colors.white, size: 20),
-  //       //         ),
-  //       //         title: Text(announcement['title'],
-  //       //             style: GoogleFonts.poppins(fontWeight: FontWeight.bold)),
-  //       //         subtitle: Column(
-  //       //           crossAxisAlignment: CrossAxisAlignment.start,
-  //       //           children: [
-  //       //             Text(announcement['details'],
-  //       //                 style: GoogleFonts.poppins(color: Colors.grey)),
-  //       //             Text(timeago.format(announcement['time']),
-  //       //                 style: GoogleFonts.poppins(
-  //       //                     fontSize: 12, color: Colors.grey)),
-  //       //           ],
-  //       //         ),
-  //       //         isThreeLine: true,
-  //       //       ),
-  //       //     );
-  //       //   },
-  //       // ),
-  //     ],
-  //   );
-  // }
 
   Widget _buildUpcomingDeadlines() {
     return Obx(() => Column(

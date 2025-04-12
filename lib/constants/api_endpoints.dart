@@ -1,5 +1,5 @@
 class ApiEndPoints{
-  static const baseUrl = "http://192.168.100.245:3001";
+  static const baseUrl = "http://192.168.1.7:3001";
   // static const baseUrl = "http://10.0.2.2:3001";
 
 
@@ -44,11 +44,7 @@ class ApiEndPoints{
   // fees
 static const getAllFees = "${baseUrl}/api/collegeFees/fees";
 
-// get students
-static const getStudents= "${baseUrl}/api/auth/students";
 
-// get professors
-  static const getProfessors= "${baseUrl}/api/auth/teachers";
 
 // esewa
 static const initializePaymentWithEsewa = "${baseUrl}/api/payFees/initialize-esewa";
@@ -56,8 +52,7 @@ static const initializePaymentWithEsewa = "${baseUrl}/api/payFees/initialize-ese
 //postfees
   static const postFees = "${baseUrl}/api/collegeFees/fees";
 
-//calender
-  static const postEvents = "${baseUrl}/api/eventCalender/postEvents";
+
 
 static const getEvents = "${baseUrl}/api/eventCalender/getEvents";
 

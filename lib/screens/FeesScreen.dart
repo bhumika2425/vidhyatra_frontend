@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:intl/intl.dart';
 import 'package:vidhyatra_flutter/controllers/PaymentController.dart';
 import '../controllers/FeeController.dart';
 import '../models/FeesModel.dart';
@@ -210,7 +211,7 @@ class FeesScreen extends StatelessWidget {
                                               ),
                                               SizedBox(width: 8),
                                               Text(
-                                                "Due: ${fee.dueDate}",
+                                                "Due: ${DateFormat('yyyy-MM-dd').format(DateTime.parse(fee.dueDate))}",
                                                 style: GoogleFonts.poppins(
                                                   fontSize: 14,
                                                   fontWeight: FontWeight.w500,

@@ -1,7 +1,7 @@
 import 'dart:convert';
 
 import 'package:get/get.dart';
-import 'package:vidhyatra_flutter/screens/tryView.dart';
+import 'package:vidhyatra_flutter/screens/TeacherDashboard.dart';
 
 import '../constants/api_endpoints.dart';
 import '../models/user.dart';
