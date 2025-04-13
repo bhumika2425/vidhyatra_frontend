@@ -431,9 +431,12 @@ class _DashboardState extends State<Dashboard>
         Row(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
-            Text("Upcoming Deadlines",
-                style: GoogleFonts.poppins(
-                    fontSize: 18, fontWeight: FontWeight.bold)),
+            Padding(
+              padding: const EdgeInsets.only(bottom: 10),
+              child: Text("Upcoming Deadlines",
+                  style: GoogleFonts.poppins(
+                      fontSize: 18, fontWeight: FontWeight.bold)),
+            ),
             if (deadlineController.deadlines.length > 2)
               Align(
                 alignment: Alignment.centerRight,
@@ -537,9 +540,14 @@ class _DashboardState extends State<Dashboard>
         : hour < 17
             ? 'Good Afternoon'
             : 'Good Evening';
-    return Card(
-      elevation: 3,
-      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(15)),
+    return Container(
+      width: double.infinity,
+      decoration: BoxDecoration(
+        borderRadius: BorderRadius.circular(15),
+        color: Colors.white
+      ),
+      // elevation: 3,
+      // shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(15)),
       child: Padding(
         padding: const EdgeInsets.all(16),
         child: Column(

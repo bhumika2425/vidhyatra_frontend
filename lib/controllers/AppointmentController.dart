@@ -58,18 +58,23 @@ class AppointmentController extends GetxController {
 
         if (slotData.isNotEmpty) {
           print('Found ${slotData.length} time slots in response');
-          dateTimeSlots[formattedDate] = List<TimeSlot>.from(
-            slotData.map((slot) {
-              print('Parsing time slot: $slot');
-              return TimeSlot.fromJson(slot);
-            }),
-          );
-          print('Successfully parsed ${dateTimeSlots[formattedDate]!.length} time slots');
+
+          final slotsForSelectedDate = slotData
+              .map((slot) => TimeSlot.fromJson(slot))
+              .where((slot) =>
+          DateFormat('yyyy-MM-dd').format(slot.startTime) == formattedDate)
+              .toList();
+
+          dateTimeSlots[formattedDate] = slotsForSelectedDate;
+
+          print('Filtered and stored ${slotsForSelectedDate.length} slots for $formattedDate');
         } else {
           print('No time slots found for $formattedDate');
           dateTimeSlots[formattedDate] = [];
           Get.snackbar('Info', 'No time slots found for selected date');
         }
+
+
       } else {
         print('Failed to fetch time slots - Status: ${response.statusCode}');
         Get.snackbar('Error', 'Failed to fetch time slots: ${response.statusCode} - ${response.body}');

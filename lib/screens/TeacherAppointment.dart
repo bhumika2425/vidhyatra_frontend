@@ -270,105 +270,6 @@ import 'package:get/get.dart';
 import 'package:intl/intl.dart';
 import '../controllers/AppointmentController.dart';
 
-// Dialog for adding time slots
-class TimeSlotDialog extends StatelessWidget {
-  TimeSlotDialog({Key? key}) : super(key: key);
-
-  final startTimeController = TextEditingController();
-  final endTimeController = TextEditingController();
-  final controller = Get.find<AppointmentController>();
-
-  @override
-  Widget build(BuildContext context) {
-    return AlertDialog(
-      title: Text('Add Time Slot', style: GoogleFonts.poppins(fontWeight: FontWeight.bold)),
-      content: Column(
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          TextField(
-            controller: startTimeController,
-            decoration: InputDecoration(
-              labelText: 'Start Time (HH:MM)',
-              labelStyle: GoogleFonts.poppins(),
-            ),
-            readOnly: true,
-            onTap: () async {
-              final TimeOfDay? pickedTime = await showTimePicker(
-                context: context,
-                initialTime: TimeOfDay.now(),
-              );
-              if (pickedTime != null) {
-                startTimeController.text = '${pickedTime.hour}:${pickedTime.minute.toString().padLeft(2, '0')}';
-              }
-            },
-          ),
-          const SizedBox(height: 16),
-          TextField(
-            controller: endTimeController,
-            decoration: InputDecoration(
-              labelText: 'End Time (HH:MM)',
-              labelStyle: GoogleFonts.poppins(),
-            ),
-            readOnly: true,
-            onTap: () async {
-              final TimeOfDay? pickedTime = await showTimePicker(
-                context: context,
-                initialTime: TimeOfDay.now(),
-              );
-              if (pickedTime != null) {
-                endTimeController.text = '${pickedTime.hour}:${pickedTime.minute.toString().padLeft(2, '0')}';
-              }
-            },
-          ),
-        ],
-      ),
-      actions: [
-        TextButton(
-          onPressed: () => Get.back(),
-          child: Text('Cancel', style: GoogleFonts.poppins()),
-        ),
-        ElevatedButton(
-          onPressed: () {
-            if (startTimeController.text.isEmpty || endTimeController.text.isEmpty) {
-              Get.snackbar('Error', 'Please select both start and end times');
-              return;
-            }
-
-            final startParts = startTimeController.text.split(':');
-            final endParts = endTimeController.text.split(':');
-
-            final selectedDate = controller.selectedDate.value;
-            final startTime = DateTime(
-              selectedDate.year,
-              selectedDate.month,
-              selectedDate.day,
-              int.parse(startParts[0]),
-              int.parse(startParts[1]),
-            );
-
-            final endTime = DateTime(
-              selectedDate.year,
-              selectedDate.month,
-              selectedDate.day,
-              int.parse(endParts[0]),
-              int.parse(endParts[1]),
-            );
-
-            if (endTime.isBefore(startTime) || endTime.isAtSameMomentAs(startTime)) {
-              Get.snackbar('Error', 'End time must be after start time');
-              return;
-            }
-
-            controller.addTimeSlot(startTime, endTime);
-            Get.back();
-          },
-          child: Text('Save', style: GoogleFonts.poppins()),
-        ),
-      ],
-    );
-  }
-}
-
 // Main widget for TeacherAppointment
 class TeacherAppointment extends StatelessWidget {
   const TeacherAppointment({super.key});
@@ -529,5 +430,105 @@ class TeacherAppointment extends StatelessWidget {
   int _getSlotCount(AppointmentController controller) {
     final formattedDate = DateFormat('yyyy-MM-dd').format(controller.selectedDate.value);
     return controller.dateTimeSlots[formattedDate]?.length ?? 0;
+  }
+}
+
+
+// Dialog for adding time slots
+class TimeSlotDialog extends StatelessWidget {
+  TimeSlotDialog({Key? key}) : super(key: key);
+
+  final startTimeController = TextEditingController();
+  final endTimeController = TextEditingController();
+  final controller = Get.find<AppointmentController>();
+
+  @override
+  Widget build(BuildContext context) {
+    return AlertDialog(
+      title: Text('Add Time Slot', style: GoogleFonts.poppins(fontWeight: FontWeight.bold)),
+      content: Column(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          TextField(
+            controller: startTimeController,
+            decoration: InputDecoration(
+              labelText: 'Start Time (HH:MM)',
+              labelStyle: GoogleFonts.poppins(),
+            ),
+            readOnly: true,
+            onTap: () async {
+              final TimeOfDay? pickedTime = await showTimePicker(
+                context: context,
+                initialTime: TimeOfDay.now(),
+              );
+              if (pickedTime != null) {
+                startTimeController.text = '${pickedTime.hour}:${pickedTime.minute.toString().padLeft(2, '0')}';
+              }
+            },
+          ),
+          const SizedBox(height: 16),
+          TextField(
+            controller: endTimeController,
+            decoration: InputDecoration(
+              labelText: 'End Time (HH:MM)',
+              labelStyle: GoogleFonts.poppins(),
+            ),
+            readOnly: true,
+            onTap: () async {
+              final TimeOfDay? pickedTime = await showTimePicker(
+                context: context,
+                initialTime: TimeOfDay.now(),
+              );
+              if (pickedTime != null) {
+                endTimeController.text = '${pickedTime.hour}:${pickedTime.minute.toString().padLeft(2, '0')}';
+              }
+            },
+          ),
+        ],
+      ),
+      actions: [
+        TextButton(
+          onPressed: () => Get.back(),
+          child: Text('Cancel', style: GoogleFonts.poppins()),
+        ),
+        ElevatedButton(
+          onPressed: () {
+            if (startTimeController.text.isEmpty || endTimeController.text.isEmpty) {
+              Get.snackbar('Error', 'Please select both start and end times');
+              return;
+            }
+
+            final startParts = startTimeController.text.split(':');
+            final endParts = endTimeController.text.split(':');
+
+            final selectedDate = controller.selectedDate.value;
+            final startTime = DateTime(
+              selectedDate.year,
+              selectedDate.month,
+              selectedDate.day,
+              int.parse(startParts[0]),
+              int.parse(startParts[1]),
+            );
+
+            final endTime = DateTime(
+              selectedDate.year,
+              selectedDate.month,
+              selectedDate.day,
+              int.parse(endParts[0]),
+              int.parse(endParts[1]),
+            );
+
+            if (endTime.isBefore(startTime) || endTime.isAtSameMomentAs(startTime)) {
+              Get.snackbar('Error', 'End time must be after start time');
+              return;
+            }
+
+            controller.addTimeSlot(startTime, endTime);
+            Get.back();
+          },
+          child: Text('Save', style: GoogleFonts.poppins()),
+        ),
+      ],
+    );
   }
 }

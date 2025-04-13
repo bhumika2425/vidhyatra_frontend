@@ -445,20 +445,10 @@ class DashboardView extends GetView<DashboardController> {
                       backgroundImage:
                           const AssetImage('assets/images/teacher_avatar.png'),
                       backgroundColor: Colors.white.withOpacity(0.2),
-                      child: controller.teacherName.value.isNotEmpty
-                          ? null
-                          : Text(
-                              'TP',
-                              style: GoogleFonts.poppins(
-                                fontSize: constraints.maxWidth * 0.1,
-                                fontWeight: FontWeight.bold,
-                                color: Colors.white,
-                              ),
-                            ),
                     ),
                     SizedBox(height: constraints.maxHeight * 0.015),
                     Obx(() => Text(
-                          controller.teacherName.value,
+                          loginController.user.value!.name,
                           style: GoogleFonts.poppins(
                             color: Colors.white,
                             fontSize: constraints.maxWidth * 0.06,
@@ -466,7 +456,7 @@ class DashboardView extends GetView<DashboardController> {
                           ),
                         )),
                     Obx(() => Text(
-                          controller.teacherEmail.value,
+                      loginController.user.value!.email,
                           style: GoogleFonts.poppins(
                             color: Colors.white.withOpacity(0.8),
                             fontSize: constraints.maxWidth * 0.045,
@@ -479,10 +469,6 @@ class DashboardView extends GetView<DashboardController> {
                   () => Get.back()),
               _buildDrawerItem(Icons.settings, 'Account Settings',
                   Color(0xFF186CAC), () => Get.back()),
-              _buildDrawerItem(Icons.school, 'My Courses', Color(0xFF186CAC),
-                  () => Get.back()),
-              _buildDrawerItem(Icons.badge, 'Office Hours', Color(0xFF186CAC),
-                  () => Get.back()),
               _buildDrawerItem(Icons.people, 'Friends', Color(0xFF186CAC),
                   () => _showFriendsDialog(context)),
               Divider(color: Colors.grey[300]),

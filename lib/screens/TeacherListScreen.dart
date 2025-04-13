@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:intl/intl.dart';
+import 'package:google_fonts/google_fonts.dart';
 import 'package:vidhyatra_flutter/controllers/AppointmentBookingController.dart';
 import 'package:vidhyatra_flutter/controllers/TeacherListController.dart';
 import 'TeacherAvailableSlotScreen.dart';
@@ -22,26 +23,44 @@ class TeacherListScreen extends StatelessWidget {
     });
 
     return Scaffold(
+      backgroundColor: Colors.grey[200],
       appBar: AppBar(
         elevation: 0,
+        backgroundColor: Color(0xFF186CAC),
         title: Obx(
-              () => controller.isSearchActive.value
+          () => controller.isSearchActive.value
               ? TextField(
-            controller: searchController,
-            autofocus: true,
-            decoration: const InputDecoration(
-              hintText: 'Search by teacher name',
-              border: InputBorder.none,
-            ),
-            onChanged: (value) => controller.updateSearchQuery(value),
-          )
-              : const Text('Book Appointment'),
+                  controller: searchController,
+                  autofocus: true,
+                  style: GoogleFonts.poppins(
+                    color: Colors.white,
+                    fontSize: 16,
+                  ),
+                  decoration: InputDecoration(
+                    hintText: 'Search by teacher name',
+                    hintStyle: GoogleFonts.poppins(
+                      color: Colors.white70,
+                      fontSize: 16,
+                    ),
+                    border: InputBorder.none,
+                  ),
+                  onChanged: (value) => controller.updateSearchQuery(value),
+                )
+              : Text(
+                  'Book Appointment',
+                  style: GoogleFonts.poppins(
+                    color: Colors.white,
+                    fontWeight: FontWeight.w600,
+                    fontSize: 18,
+                  ),
+                ),
         ),
         actions: [
           IconButton(
             icon: Obx(() => Icon(
-              controller.isSearchActive.value ? Icons.close : Icons.search,
-            )),
+                  controller.isSearchActive.value ? Icons.close : Icons.search,
+                  color: Colors.white,
+                )),
             onPressed: () {
               controller.toggleSearch();
               if (!controller.isSearchActive.value) {
@@ -52,134 +71,280 @@ class TeacherListScreen extends StatelessWidget {
         ],
       ),
       body: Obx(
-            () => controller.isLoading.value
-            ? const Center(child: CircularProgressIndicator())
+        () => controller.isLoading.value
+            ? Center(
+                child: CircularProgressIndicator(
+                  color: Color(0xFF186CAC),
+                ),
+              )
             : Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Padding(
-              padding: const EdgeInsets.all(16.0),
-              child: Text(
-                'Select a Teacher',
-                style: Theme.of(context).textTheme.titleLarge,
-              ),
-            ),
-            // Department filter chips
-            SingleChildScrollView(
-              scrollDirection: Axis.horizontal,
-              padding: const EdgeInsets.symmetric(horizontal: 16.0),
-              child: Row(
+                crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  FilterChip(
-                    label: const Text('All Departments'),
-                    selected: controller.selectedDepartment.value == 'All Departments',
-                    onSelected: (bool selected) {
-                      controller.updateDepartment('All Departments');
-                    },
+                  Padding(
+                    padding: const EdgeInsets.all(18.0),
+                    child: Text(
+                      'Select a Teacher',
+                      style: GoogleFonts.poppins(
+                        fontSize: 20,
+                        fontWeight: FontWeight.w600,
+                        color: Colors.black,
+                      ),
+                    ),
                   ),
-                  const SizedBox(width: 8),
-                  FilterChip(
-                    label: const Text('BIT'),
-                    selected: controller.selectedDepartment.value == 'BIT',
-                    onSelected: (bool selected) {
-                      controller.updateDepartment('BIT');
-                    },
+                  // Department filter chips
+                  SingleChildScrollView(
+                    scrollDirection: Axis.horizontal,
+                    padding: const EdgeInsets.symmetric(horizontal: 16.0),
+                    child: Row(
+                      children: [
+                        FilterChip(
+                          label: Text(
+                            'All Departments',
+                            style: GoogleFonts.poppins(
+                              fontSize: 13,
+                              color: Colors.white,
+                            ),
+                          ),
+                          selected: controller.selectedDepartment.value ==
+                              'All Departments',
+                          selectedColor: Colors.deepOrange,
+                          backgroundColor: Color(0xFF186CAC),
+                          checkmarkColor: Colors.white,
+                          onSelected: (bool selected) {
+                            controller.updateDepartment('All Departments');
+                          },
+                        ),
+                        const SizedBox(width: 8),
+                        FilterChip(
+                          label: Text(
+                            'BIT',
+                            style: GoogleFonts.poppins(
+                                fontSize: 13, color: Colors.white),
+                          ),
+                          selected:
+                              controller.selectedDepartment.value == 'BIT',
+                          selectedColor: Colors.deepOrange,
+                          backgroundColor: Color(0xFF186CAC),
+                          checkmarkColor: Colors.white,
+                          onSelected: (bool selected) {
+                            controller.updateDepartment('BIT');
+                          },
+                        ),
+                        const SizedBox(width: 8),
+                        FilterChip(
+                          label: Text(
+                            'BBA',
+                            style: GoogleFonts.poppins(
+                                fontSize: 13, color: Colors.white),
+                          ),
+                          selected:
+                              controller.selectedDepartment.value == 'BBA',
+                          selectedColor: Colors.deepOrange,
+                          backgroundColor: Color(0xFF186CAC),
+                          checkmarkColor: Colors.white,
+                          onSelected: (bool selected) {
+                            controller.updateDepartment('BBA');
+                          },
+                        ),
+                      ],
+                    ),
                   ),
-                  const SizedBox(width: 8),
-                  FilterChip(
-                    label: const Text('BBA'),
-                    selected: controller.selectedDepartment.value == 'BBA',
-                    onSelected: (bool selected) {
-                      controller.updateDepartment('BBA');
-                    },
+                  const SizedBox(height: 8),
+                  // Booked Appointments Section
+                  Container(
+                    margin:
+                        const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+                    decoration: BoxDecoration(
+                      color: Colors.white,
+                      borderRadius: BorderRadius.circular(10),
+                      // boxShadow: [
+                      //   BoxShadow(
+                      //     color: Colors.grey.withOpacity(0.1),
+                      //     spreadRadius: 1,
+                      //     blurRadius: 3,
+                      //     offset: const Offset(0, 1),
+                      //   ),
+                      // ],
+                    ),
+                    child: ExpansionTile(
+                      title: Text(
+                        'My Booked Appointments',
+                        style: GoogleFonts.poppins(
+                          fontSize: 16,
+                          fontWeight: FontWeight.w600,
+                          color: Colors.black,
+                        ),
+                      ),
+                      iconColor: Color(0xFF186CAC),
+                      collapsedIconColor: Colors.deepOrange,
+                      initiallyExpanded: false,
+                      children: [
+                        Obx(
+                          () => appointmentController
+                                  .studentAppointments.isEmpty
+                              ? Padding(
+                                  padding: const EdgeInsets.all(16.0),
+                                  child: Text(
+                                    'No appointments booked.',
+                                    style: GoogleFonts.poppins(
+                                      color: Colors.black54,
+                                    ),
+                                  ),
+                                )
+                              : ListView.builder(
+                                  shrinkWrap: true,
+                                  physics: const NeverScrollableScrollPhysics(),
+                                  itemCount: appointmentController
+                                      .studentAppointments.length,
+                                  itemBuilder: (context, index) {
+                                    final appointment = appointmentController
+                                        .studentAppointments[index];
+                                    return Padding(
+                                      padding: const EdgeInsets.symmetric(
+                                          horizontal: 8, vertical: 4),
+                                      child: Card(
+                                        elevation: 0,
+                                        shape: RoundedRectangleBorder(
+                                          borderRadius:
+                                              BorderRadius.circular(8),
+                                          side: BorderSide(
+                                            color: Colors.grey.shade300,
+                                            width: 1,
+                                          ),
+                                        ),
+                                        child: ListTile(
+                                          leading: Icon(
+                                            appointment.status == 'confirmed'
+                                                ? Icons.check_circle
+                                                : Icons.pending_actions,
+                                            color: appointment.status ==
+                                                    'confirmed'
+                                                ? Colors.green
+                                                : Colors.deepOrange,
+                                            size: 28,
+                                          ),
+                                          title: Text(
+                                            'With ${appointment.timeSlot.teacher.name}',
+                                            style: GoogleFonts.poppins(
+                                              fontWeight: FontWeight.w600,
+                                              fontSize: 14,
+                                            ),
+                                          ),
+                                          subtitle: Column(
+                                            crossAxisAlignment:
+                                                CrossAxisAlignment.start,
+                                            children: [
+                                              const SizedBox(height: 4),
+                                              Text(
+                                                'Date: ${DateFormat('yyyy-MM-dd').format(DateTime.parse(appointment.timeSlot.date))}',
+                                                style: GoogleFonts.poppins(
+                                                    fontSize: 12),
+                                              ),
+                                              Text(
+                                                'Time: ${appointment.timeSlot.startTime.substring(0, 5)} - ${appointment.timeSlot.endTime.substring(0, 5)}',
+                                                style: GoogleFonts.poppins(
+                                                    fontSize: 12),
+                                              ),
+                                              Text(
+                                                'Reason: ${appointment.reason}',
+                                                style: GoogleFonts.poppins(
+                                                    fontSize: 12),
+                                              ),
+                                              Padding(
+                                                padding: const EdgeInsets.only(
+                                                    top: 4, bottom: 4),
+                                                child: Container(
+                                                  padding: const EdgeInsets
+                                                      .symmetric(
+                                                      horizontal: 8,
+                                                      vertical: 2),
+                                                  decoration: BoxDecoration(
+                                                    color: appointment.status ==
+                                                            'confirmed'
+                                                        ? Colors.green
+                                                            .withOpacity(0.1)
+                                                        : Colors.deepOrange
+                                                            .withOpacity(0.1),
+                                                    borderRadius:
+                                                        BorderRadius.circular(
+                                                            12),
+                                                  ),
+                                                  child: Text(
+                                                    'Status: ${appointment.status.capitalize}',
+                                                    style: GoogleFonts.poppins(
+                                                      fontSize: 12,
+                                                      color: appointment
+                                                                  .status ==
+                                                              'confirmed'
+                                                          ? Colors.green
+                                                          : Colors.deepOrange,
+                                                      fontWeight:
+                                                          FontWeight.w500,
+                                                    ),
+                                                  ),
+                                                ),
+                                              ),
+                                            ],
+                                          ),
+                                          contentPadding:
+                                              const EdgeInsets.symmetric(
+                                                  horizontal: 16, vertical: 8),
+                                        ),
+                                      ),
+                                    );
+                                  },
+                                ),
+                        ),
+                      ],
+                    ),
+                  ),
+                  const SizedBox(height: 8),
+                  // Teacher list
+                  Expanded(
+                    child: controller.getFilteredTeachers().isEmpty
+                        ? Center(
+                            child: Text(
+                              'No teachers found',
+                              style: GoogleFonts.poppins(
+                                color: Colors.black54,
+                                fontSize: 16,
+                              ),
+                            ),
+                          )
+                        : ListView.builder(
+                            itemCount: controller.getFilteredTeachers().length,
+                            padding:
+                                const EdgeInsets.symmetric(horizontal: 16.0),
+                            itemBuilder: (context, index) {
+                              final teacher =
+                                  controller.getFilteredTeachers()[index];
+                              return TeacherCard(
+                                name: teacher['name'],
+                                department: teacher['department'],
+                                isAvailable: teacher['available'],
+                                appointmentsBooked:
+                                    teacher['appointmentsBooked'],
+                                totalTimeSlots: teacher['totalTimeSlots'],
+                                onTap: () {
+                                  if (teacher['available'] &&
+                                      teacher['appointmentsBooked'] <
+                                          teacher['totalTimeSlots']) {
+                                    Navigator.push(
+                                      context,
+                                      MaterialPageRoute(
+                                        builder: (context) =>
+                                            TeacherAvailableSlotsScreen(
+                                                teacher: teacher),
+                                      ),
+                                    );
+                                  }
+                                },
+                              );
+                            },
+                          ),
                   ),
                 ],
               ),
-            ),
-            const SizedBox(height: 16),
-            // Booked Appointments Section
-            ExpansionTile(
-              title: Text(
-                'My Booked Appointments',
-                style: Theme.of(context).textTheme.titleMedium,
-              ),
-              initiallyExpanded: false,
-              children: [
-                Obx(
-                      () => appointmentController.studentAppointments.isEmpty
-                      ? const Padding(
-                    padding: EdgeInsets.all(16.0),
-                    child: Text('No appointments booked.'),
-                  )
-                      : ListView.builder(
-                    shrinkWrap: true,
-                    physics: const NeverScrollableScrollPhysics(),
-                    itemCount: appointmentController.studentAppointments.length,
-                    itemBuilder: (context, index) {
-                      final appointment = appointmentController.studentAppointments[index];
-                      return ListTile(
-                        leading: Icon(
-                          appointment.status == 'confirmed'
-                              ? Icons.check_circle
-                              : Icons.pending,
-                          color: appointment.status == 'confirmed'
-                              ? Colors.green
-                              : Colors.orange,
-                        ),
-                        title: Text(
-                          'With ${appointment.timeSlot.teacher.name}',
-                          style: const TextStyle(fontWeight: FontWeight.bold),
-                        ),
-                        subtitle: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            Text('Date: ${DateFormat('yyyy-MM-dd').format(DateTime.parse(appointment.timeSlot.date))}'),
-                            Text(
-                                'Time: ${appointment.timeSlot.startTime.substring(0, 5)} - ${appointment.timeSlot.endTime.substring(0, 5)}'),
-                            Text('Reason: ${appointment.reason}'),
-                            Text('Status: ${appointment.status.capitalize}'),
-                          ],
-                        ),
-                      );
-                    },
-                  ),
-                ),
-              ],
-            ),
-            const SizedBox(height: 16),
-            // Teacher list
-            Expanded(
-              child: controller.getFilteredTeachers().isEmpty
-                  ? const Center(child: Text('No teachers found'))
-                  : ListView.builder(
-                itemCount: controller.getFilteredTeachers().length,
-                padding: const EdgeInsets.symmetric(horizontal: 16.0),
-                itemBuilder: (context, index) {
-                  final teacher = controller.getFilteredTeachers()[index];
-                  return TeacherCard(
-                    name: teacher['name'],
-                    department: teacher['department'],
-                    isAvailable: teacher['available'],
-                    // image: teacher['image'],
-                    appointmentsBooked: teacher['appointmentsBooked'],
-                    totalTimeSlots: teacher['totalTimeSlots'],
-                    onTap: () {
-                      if (teacher['available'] &&
-                          teacher['appointmentsBooked'] < teacher['totalTimeSlots']) {
-                        Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                            builder: (context) => TeacherAvailableSlotsScreen(teacher: teacher),
-                          ),
-                        );
-                      }
-                    },
-                  );
-                },
-              ),
-            ),
-          ],
-        ),
       ),
     );
   }
@@ -189,7 +354,6 @@ class TeacherCard extends StatelessWidget {
   final String name;
   final String department;
   final bool isAvailable;
-  // final String image;
   final int appointmentsBooked;
   final int totalTimeSlots;
   final VoidCallback onTap;
@@ -199,7 +363,6 @@ class TeacherCard extends StatelessWidget {
     required this.name,
     required this.department,
     required this.isAvailable,
-    // required this.image,
     required this.appointmentsBooked,
     required this.totalTimeSlots,
     required this.onTap,
@@ -210,19 +373,40 @@ class TeacherCard extends StatelessWidget {
     final bool canBook = isAvailable && appointmentsBooked < totalTimeSlots;
 
     return Card(
-      margin: const EdgeInsets.only(bottom: 16.0),
-      elevation: 2,
-      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+      margin: const EdgeInsets.only(bottom: 12.0),
+      elevation: 0,
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(10),
+        side: BorderSide(
+          color: Colors.grey.shade300,
+          width: 1,
+        ),
+      ),
+      color: Colors.white,
       child: InkWell(
         onTap: canBook ? onTap : null,
-        borderRadius: BorderRadius.circular(12),
+        borderRadius: BorderRadius.circular(10),
         child: Padding(
           padding: const EdgeInsets.all(16.0),
           child: Row(
             children: [
-              CircleAvatar(
-                radius: 30,
-                // backgroundImage: AssetImage(image),
+              Container(
+                width: 60,
+                height: 60,
+                decoration: BoxDecoration(
+                  color: Color(0xFF186CAC),
+                  shape: BoxShape.circle,
+                ),
+                child: Center(
+                  child: Text(
+                    name.substring(0, 1).toUpperCase(),
+                    style: GoogleFonts.poppins(
+                      color: Colors.white,
+                      fontSize: 24,
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
+                ),
               ),
               const SizedBox(width: 16),
               Expanded(
@@ -231,22 +415,30 @@ class TeacherCard extends StatelessWidget {
                   children: [
                     Text(
                       name,
-                      style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                        fontWeight: FontWeight.bold,
+                      style: GoogleFonts.poppins(
+                        fontSize: 16,
+                        fontWeight: FontWeight.w600,
+                        color: Colors.black,
                       ),
                     ),
                     const SizedBox(height: 4),
                     Text(
                       department,
-                      style: Theme.of(context).textTheme.bodyMedium,
+                      style: GoogleFonts.poppins(
+                        fontSize: 14,
+                        color: Colors.black54,
+                      ),
                     ),
-                    const SizedBox(height: 8),
+                    const SizedBox(height: 10),
                     Row(
                       children: [
                         Container(
-                          padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                          padding: const EdgeInsets.symmetric(
+                              horizontal: 8, vertical: 4),
                           decoration: BoxDecoration(
-                            color: isAvailable ? Colors.green.shade50 : Colors.red.shade50,
+                            color: isAvailable
+                                ? Colors.green.withOpacity(0.1)
+                                : Colors.red.withOpacity(0.1),
                             borderRadius: BorderRadius.circular(12),
                           ),
                           child: Row(
@@ -254,15 +446,17 @@ class TeacherCard extends StatelessWidget {
                             children: [
                               Icon(
                                 isAvailable ? Icons.check_circle : Icons.cancel,
-                                size: 16,
+                                size: 14,
                                 color: isAvailable ? Colors.green : Colors.red,
                               ),
                               const SizedBox(width: 4),
                               Text(
                                 isAvailable ? 'Available' : 'Not Available',
-                                style: TextStyle(
-                                  color: isAvailable ? Colors.green : Colors.red,
+                                style: GoogleFonts.poppins(
+                                  color:
+                                      isAvailable ? Colors.green : Colors.red,
                                   fontSize: 12,
+                                  fontWeight: FontWeight.w500,
                                 ),
                               ),
                             ],
@@ -270,9 +464,10 @@ class TeacherCard extends StatelessWidget {
                         ),
                         const SizedBox(width: 8),
                         Container(
-                          padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                          padding: const EdgeInsets.symmetric(
+                              horizontal: 8, vertical: 4),
                           decoration: BoxDecoration(
-                            color: Colors.blue.shade50,
+                            color: Color(0xFF186CAC).withOpacity(0.1),
                             borderRadius: BorderRadius.circular(12),
                           ),
                           child: Row(
@@ -280,15 +475,16 @@ class TeacherCard extends StatelessWidget {
                             children: [
                               Icon(
                                 Icons.people,
-                                size: 16,
-                                color: Colors.blue,
+                                size: 14,
+                                color: Color(0xFF186CAC),
                               ),
                               const SizedBox(width: 4),
                               Text(
                                 '$appointmentsBooked/$totalTimeSlots booked',
-                                style: TextStyle(
-                                  color: Colors.blue,
+                                style: GoogleFonts.poppins(
+                                  color: Color(0xFF186CAC),
                                   fontSize: 12,
+                                  fontWeight: FontWeight.w500,
                                 ),
                               ),
                             ],
@@ -300,10 +496,18 @@ class TeacherCard extends StatelessWidget {
                 ),
               ),
               if (canBook)
-                Icon(
-                  Icons.arrow_forward_ios,
-                  size: 16,
-                  color: Colors.grey,
+                Container(
+                  width: 28,
+                  height: 28,
+                  decoration: BoxDecoration(
+                    color: Colors.deepOrange,
+                    shape: BoxShape.circle,
+                  ),
+                  child: Icon(
+                    Icons.arrow_forward,
+                    size: 18,
+                    color: Colors.white,
+                  ),
                 ),
             ],
           ),
