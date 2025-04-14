@@ -84,12 +84,24 @@ class StudentProfilePage extends StatelessWidget {
                               ),
                             ),
                             const SizedBox(height: 5),
-                            Text(
-                              profile.department ?? 'Computer Science',
-                              style: GoogleFonts.poppins(
-                                fontSize: 16,
-                                color: Colors.deepOrange,
-                              ),
+                            Row(
+                              children: [
+                                Text(
+                                  profile.department ?? 'Computer Science',
+                                  style: GoogleFonts.poppins(
+                                    fontSize: 16,
+                                    color: Colors.deepOrange,
+                                  ),
+                                ),
+                                SizedBox(width: 5,),
+                                Text(
+                                 '(${ profile.section})',
+                                  style: GoogleFonts.poppins(
+                                    fontSize: 16,
+                                    color: Colors.deepOrange,
+                                  ),
+                                ),
+                              ],
                             ),
                           ],
                         ),

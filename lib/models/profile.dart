@@ -7,6 +7,7 @@ class Profile {
   final String department;
   final String year;
   final String semester;
+  final String section;
   final String? profileImageUrl;
   final String? bio; // Add bio field
   final String? interest; // Add interest field
@@ -20,6 +21,7 @@ class Profile {
     required this.department,
     required this.year,
     required this.semester,
+    required this.section,
     this.profileImageUrl,
     this.bio, // Initialize bio
     this.interest, // Initialize interest
@@ -35,6 +37,7 @@ class Profile {
       department: json['department'],
       year: json['year'],
       semester: json['semester'],
+      section: json['section'],
       profileImageUrl: json['profileImageUrl'],
       bio: json['bio'], // Assign bio from the JSON response
       interest: json['interest'], // Assign interest from the JSON response
