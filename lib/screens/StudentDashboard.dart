@@ -308,7 +308,7 @@ class _DashboardState extends State<Dashboard> {
                   statusColor = Colors.orange;
                 } else {
                   status = 'COMPLETED CLASS';
-                  statusColor = Colors.grey;
+                  statusColor = Colors.red;
                 }
 
                 return _buildTimelineCard(
@@ -360,7 +360,7 @@ class _DashboardState extends State<Dashboard> {
               const SizedBox(height: 5),
               Text(
                 'By $teacher',
-                style: GoogleFonts.poppins(fontSize: 14, color: Colors.black54),
+                style: GoogleFonts.poppins(fontSize: 14, color: Colors.black),
               ),
               const SizedBox(height: 5),
               Text(
