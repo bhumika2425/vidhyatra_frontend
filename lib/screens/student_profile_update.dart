@@ -28,20 +28,20 @@ class _StudentProfileUpdatePageState extends State<StudentProfileUpdatePage> {
   String? _department;
   String? _year;
   String? _semester;
+  String? _section;
   XFile? _profileImage;
   String? _existingProfileImageUrl;
   bool _isImageChanged = false;
   bool _isLoading = true;
 
-  // Dropdown options updated to match backend
   final List<String> _yearOptions = ['1st Year', '2nd Year', '3rd Year'];
   final List<String> _semesterOptions = ['Semester 1', 'Semester 2'];
-  final List<String> _departmentOptions = ['BBA', 'BIT', 'Computer Science'];
+  final List<String> _departmentOptions = ['BBA', 'BIT'];
+  final List<String> _sectionOptions = ['C1', 'C2', 'C3', 'C4', 'C5', 'C6', 'C7', 'C8', 'C9', 'C10'];
 
-  // Color theme
   final Color primaryColor = const Color(0xFF186CAC);
   final Color secondaryColor = Colors.deepOrange;
-  final Color backgroundColor = Colors.grey[100]!;
+  final Color backgroundColor = Colors.grey[200]!;
   final Color textColor = const Color(0xFF333333);
 
   @override
@@ -69,12 +69,10 @@ class _StudentProfileUpdatePageState extends State<StudentProfileUpdatePage> {
       final token = Get.find<LoginController>().token.value;
 
       if (token.isEmpty) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: const Text('Please log in to view profile'),
-            backgroundColor: Colors.red,
-            behavior: SnackBarBehavior.floating,
-          ),
+        Get.snackbar(
+          "Error",
+          "Please log in to view profile",
+          snackPosition: SnackPosition.TOP,
         );
         setState(() {
           _isLoading = false;
@@ -97,7 +95,7 @@ class _StudentProfileUpdatePageState extends State<StudentProfileUpdatePage> {
       );
 
       if (response.statusCode == 200) {
-        final data = jsonDecode(response.body)['profile']; // Changed from 'data' to 'profile'
+        final data = jsonDecode(response.body)['profile'];
 
         setState(() {
           _fullnameController.text = data['full_name']?.toString() ?? '';
@@ -113,8 +111,11 @@ class _StudentProfileUpdatePageState extends State<StudentProfileUpdatePage> {
           _semester = _semesterOptions.contains(data['semester'])
               ? data['semester']
               : null;
+          _section = _sectionOptions.contains(data['section'])
+              ? data['section']
+              : null;
 
-          _existingProfileImageUrl = data['profileImageUrl']?.toString(); // Changed from 'profile_image'
+          _existingProfileImageUrl = data['profileImageUrl']?.toString();
           _isLoading = false;
         });
       } else {
@@ -142,7 +143,6 @@ class _StudentProfileUpdatePageState extends State<StudentProfileUpdatePage> {
       );
       setState(() {
         _isLoading = false;
-        print('StudentProfileUpdatePage: _isLoading set to false due to JSON error');
       });
     } on SocketException catch (e, stackTrace) {
       print('StudentProfileUpdatePage: Network error: $e');
@@ -156,7 +156,6 @@ class _StudentProfileUpdatePageState extends State<StudentProfileUpdatePage> {
       );
       setState(() {
         _isLoading = false;
-        print('StudentProfileUpdatePage: _isLoading set to false due to network error');
       });
     } catch (e, stackTrace) {
       print('StudentProfileUpdatePage: Unexpected error in _fetchUserProfile: $e');
@@ -170,7 +169,6 @@ class _StudentProfileUpdatePageState extends State<StudentProfileUpdatePage> {
       );
       setState(() {
         _isLoading = false;
-        print('StudentProfileUpdatePage: _isLoading set to false due to unexpected error');
       });
     }
   }
@@ -184,7 +182,6 @@ class _StudentProfileUpdatePageState extends State<StudentProfileUpdatePage> {
           _profileImage = pickedFile;
           _isImageChanged = true;
           print('StudentProfileUpdatePage: Image picked: ${pickedFile.path}');
-          print('StudentProfileUpdatePage: _isImageChanged set to true');
         });
       } else {
         print('StudentProfileUpdatePage: No image selected');
@@ -289,6 +286,7 @@ class _StudentProfileUpdatePageState extends State<StudentProfileUpdatePage> {
         ..fields['department'] = _department ?? ''
         ..fields['year'] = _year ?? ''
         ..fields['semester'] = _semester ?? ''
+        ..fields['section'] = _section ?? ''
         ..fields['bio'] = _bioController.text
         ..fields['interest'] = _interestController.text;
 
@@ -299,7 +297,7 @@ class _StudentProfileUpdatePageState extends State<StudentProfileUpdatePage> {
           print('StudentProfileUpdatePage: Adding image to request: ${_profileImage!.path}');
           request.files.add(
             await http.MultipartFile.fromPath(
-              'profileImage', // Adjust if backend expects different field name
+              'profileImage',
               _profileImage!.path,
             ),
           );
@@ -316,12 +314,9 @@ class _StudentProfileUpdatePageState extends State<StudentProfileUpdatePage> {
           );
           setState(() {
             _isLoading = false;
-            print('StudentProfileUpdatePage: _isLoading set to false due to image error');
           });
           return;
         }
-      } else {
-        print('StudentProfileUpdatePage: No image update requested');
       }
 
       try {
@@ -338,7 +333,6 @@ class _StudentProfileUpdatePageState extends State<StudentProfileUpdatePage> {
 
         setState(() {
           _isLoading = false;
-          print('StudentProfileUpdatePage: _isLoading set to false after update');
         });
 
         if (response.statusCode == 200) {
@@ -382,7 +376,6 @@ class _StudentProfileUpdatePageState extends State<StudentProfileUpdatePage> {
         );
         setState(() {
           _isLoading = false;
-          print('StudentProfileUpdatePage: _isLoading set to false due to JSON error');
         });
       } on SocketException catch (e, stackTrace) {
         print('StudentProfileUpdatePage: Network error in update: $e');
@@ -396,7 +389,6 @@ class _StudentProfileUpdatePageState extends State<StudentProfileUpdatePage> {
         );
         setState(() {
           _isLoading = false;
-          print('StudentProfileUpdatePage: _isLoading set to false due to network error');
         });
       } catch (e, stackTrace) {
         print('StudentProfileUpdatePage: Unexpected error in _updateProfile: $e');
@@ -410,7 +402,6 @@ class _StudentProfileUpdatePageState extends State<StudentProfileUpdatePage> {
         );
         setState(() {
           _isLoading = false;
-          print('StudentProfileUpdatePage: _isLoading set to false due to unexpected error');
         });
       }
     } else {
@@ -426,15 +417,16 @@ class _StudentProfileUpdatePageState extends State<StudentProfileUpdatePage> {
       appBar: AppBar(
         elevation: 0,
         backgroundColor: primaryColor,
+
         title: Text(
           'Update Profile',
           style: GoogleFonts.poppins(
             color: Colors.white,
             fontWeight: FontWeight.w600,
-            fontSize: 18,
+            fontSize: 20,
           ),
         ),
-        centerTitle: true,
+        centerTitle: false,
         leading: IconButton(
           icon: const Icon(Icons.arrow_back_ios, color: Colors.white),
           onPressed: () => Get.back(),
@@ -455,7 +447,6 @@ class _StudentProfileUpdatePageState extends State<StudentProfileUpdatePage> {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                // Profile picture section
                 Center(
                   child: Column(
                     children: [
@@ -503,7 +494,7 @@ class _StudentProfileUpdatePageState extends State<StudentProfileUpdatePage> {
                       Text(
                         "Tap to change profile picture",
                         style: GoogleFonts.poppins(
-                          fontSize: 13,
+                          fontSize: 15,
                           color: Colors.grey[600],
                           fontStyle: FontStyle.italic,
                         ),
@@ -512,16 +503,13 @@ class _StudentProfileUpdatePageState extends State<StudentProfileUpdatePage> {
                   ),
                 ),
                 const SizedBox(height: 30),
-
                 Form(
                   key: _formKey,
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      // Personal Information Section
                       _buildSectionHeader('Personal Information', Icons.person_outline),
                       const SizedBox(height: 16),
-
                       _buildTextField(
                         label: 'Nickname',
                         hint: 'Enter your preferred name',
@@ -529,8 +517,7 @@ class _StudentProfileUpdatePageState extends State<StudentProfileUpdatePage> {
                         controller: _fullnameController,
                         validator: (value) => value!.isEmpty ? 'Please enter your nickname' : null,
                       ),
-                      const SizedBox(height: 18),
-
+                      const SizedBox(height: 12),
                       GestureDetector(
                         onTap: () => _selectDate(context),
                         child: AbsorbPointer(
@@ -544,8 +531,7 @@ class _StudentProfileUpdatePageState extends State<StudentProfileUpdatePage> {
                           ),
                         ),
                       ),
-                      const SizedBox(height: 18),
-
+                      const SizedBox(height: 12),
                       _buildTextField(
                         label: 'Location',
                         hint: 'City, Country',
@@ -553,8 +539,7 @@ class _StudentProfileUpdatePageState extends State<StudentProfileUpdatePage> {
                         controller: _locationController,
                         validator: (value) => value!.isEmpty ? 'Please enter your location' : null,
                       ),
-                      const SizedBox(height: 18),
-
+                      const SizedBox(height: 12),
                       _buildTextField(
                         label: 'Bio',
                         hint: 'Tell us a bit about yourself...',
@@ -562,8 +547,7 @@ class _StudentProfileUpdatePageState extends State<StudentProfileUpdatePage> {
                         controller: _bioController,
                         maxLines: 3,
                       ),
-                      const SizedBox(height: 18),
-
+                      const SizedBox(height: 12),
                       _buildTextField(
                         label: 'Interests',
                         hint: 'Reading, Sports, Music, etc.',
@@ -571,12 +555,9 @@ class _StudentProfileUpdatePageState extends State<StudentProfileUpdatePage> {
                         controller: _interestController,
                         maxLines: 2,
                       ),
-                      const SizedBox(height: 30),
-
-                      // Academic Information Section
+                      const SizedBox(height: 18),
                       _buildSectionHeader('Academic Information', Icons.school_outlined),
-                      const SizedBox(height: 16),
-
+                      const SizedBox(height: 12),
                       _buildDropdown(
                         label: 'Department',
                         hint: 'Select your department',
@@ -586,8 +567,7 @@ class _StudentProfileUpdatePageState extends State<StudentProfileUpdatePage> {
                         onChanged: (value) => setState(() => _department = value),
                         validator: (value) => value == null ? 'Please select a department' : null,
                       ),
-                      const SizedBox(height: 18),
-
+                      const SizedBox(height: 12),
                       Row(
                         children: [
                           Expanded(
@@ -601,7 +581,7 @@ class _StudentProfileUpdatePageState extends State<StudentProfileUpdatePage> {
                               validator: (value) => value == null ? 'Please select a year' : null,
                             ),
                           ),
-                          const SizedBox(width: 16),
+                          const SizedBox(width: 12),
                           Expanded(
                             child: _buildDropdown(
                               label: 'Semester',
@@ -615,9 +595,17 @@ class _StudentProfileUpdatePageState extends State<StudentProfileUpdatePage> {
                           ),
                         ],
                       ),
+                      const SizedBox(height: 12),
+                      _buildDropdown(
+                        label: 'Section',
+                        hint: 'Select section',
+                        icon: Icons.group_outlined,
+                        value: _section,
+                        items: _sectionOptions,
+                        onChanged: (value) => setState(() => _section = value),
+                        validator: (value) => value == null ? 'Please select a section' : null,
+                      ),
                       const SizedBox(height: 40),
-
-                      // Save button
                       Center(
                         child: IntrinsicWidth(
                           child: ElevatedButton(
@@ -627,15 +615,15 @@ class _StudentProfileUpdatePageState extends State<StudentProfileUpdatePage> {
                               foregroundColor: Colors.white,
                               padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 12),
                               shape: RoundedRectangleBorder(
-                                borderRadius: BorderRadius.circular(30),
+                                borderRadius: BorderRadius.circular(10),
                               ),
                               elevation: 2,
                             ),
                             child: Row(
                               mainAxisSize: MainAxisSize.min,
                               children: [
-                                const Icon(Icons.save_outlined, size: 18),
-                                const SizedBox(width: 8),
+
+                                // const SizedBox(width: 8),
                                 Text(
                                   'Save Changes',
                                   style: GoogleFonts.poppins(
@@ -661,7 +649,6 @@ class _StudentProfileUpdatePageState extends State<StudentProfileUpdatePage> {
     );
   }
 
-  // Section header
   Widget _buildSectionHeader(String title, IconData icon) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
@@ -697,7 +684,6 @@ class _StudentProfileUpdatePageState extends State<StudentProfileUpdatePage> {
     );
   }
 
-  // Text field
   Widget _buildTextField({
     required String label,
     required String hint,
@@ -713,7 +699,7 @@ class _StudentProfileUpdatePageState extends State<StudentProfileUpdatePage> {
         Text(
           label,
           style: GoogleFonts.poppins(
-            fontSize: 13,
+            fontSize: 15,
             fontWeight: FontWeight.w500,
             color: Colors.grey[700],
           ),
@@ -727,29 +713,29 @@ class _StudentProfileUpdatePageState extends State<StudentProfileUpdatePage> {
             hintStyle: TextStyle(color: Colors.grey[400], fontSize: 14),
             prefixIcon: Icon(icon, color: Colors.grey[600], size: 20),
             suffixIcon: suffix,
-            contentPadding: const EdgeInsets.symmetric(vertical: 16, horizontal: 12),
+            contentPadding: const EdgeInsets.symmetric(vertical: 20, horizontal: 16),
             border: OutlineInputBorder(
-              borderRadius: BorderRadius.circular(10),
+              borderRadius: BorderRadius.circular(16),
               borderSide: BorderSide(color: Colors.grey[300]!, width: 1),
             ),
             enabledBorder: OutlineInputBorder(
-              borderRadius: BorderRadius.circular(10),
+              borderRadius: BorderRadius.circular(16),
               borderSide: BorderSide(color: Colors.grey[300]!, width: 1),
             ),
             focusedBorder: OutlineInputBorder(
-              borderRadius: BorderRadius.circular(10),
+              borderRadius: BorderRadius.circular(16),
               borderSide: BorderSide(color: primaryColor, width: 1.5),
             ),
             errorBorder: OutlineInputBorder(
-              borderRadius: BorderRadius.circular(10),
+              borderRadius: BorderRadius.circular(16),
               borderSide: BorderSide(color: Colors.red.shade400, width: 1),
             ),
             filled: true,
-            fillColor: Colors.grey[50],
+            fillColor: Colors.white,
           ),
           style: GoogleFonts.poppins(
             fontSize: 14,
-            color: textColor,
+            color: Colors.black,
           ),
           validator: validator,
         ),
@@ -757,7 +743,6 @@ class _StudentProfileUpdatePageState extends State<StudentProfileUpdatePage> {
     );
   }
 
-  // Dropdown
   Widget _buildDropdown({
     required String label,
     required String hint,
@@ -784,29 +769,29 @@ class _StudentProfileUpdatePageState extends State<StudentProfileUpdatePage> {
             hintText: hint,
             hintStyle: TextStyle(color: Colors.grey[400], fontSize: 14),
             prefixIcon: Icon(icon, color: Colors.grey[600], size: 20),
-            contentPadding: const EdgeInsets.symmetric(vertical: 16, horizontal: 12),
+            contentPadding: const EdgeInsets.symmetric(vertical: 20, horizontal: 16),
             border: OutlineInputBorder(
-              borderRadius: BorderRadius.circular(10),
+              borderRadius: BorderRadius.circular(16),
               borderSide: BorderSide(color: Colors.grey[300]!, width: 1),
             ),
             enabledBorder: OutlineInputBorder(
-              borderRadius: BorderRadius.circular(10),
+              borderRadius: BorderRadius.circular(16),
               borderSide: BorderSide(color: Colors.grey[300]!, width: 1),
             ),
             focusedBorder: OutlineInputBorder(
-              borderRadius: BorderRadius.circular(10),
+              borderRadius: BorderRadius.circular(16),
               borderSide: BorderSide(color: primaryColor, width: 1.5),
             ),
             errorBorder: OutlineInputBorder(
-              borderRadius: BorderRadius.circular(10),
+              borderRadius: BorderRadius.circular(16),
               borderSide: BorderSide(color: Colors.red.shade400, width: 1),
             ),
             filled: true,
-            fillColor: Colors.grey[50],
+            fillColor: Colors.white,
           ),
           style: GoogleFonts.poppins(
             fontSize: 14,
-            color: textColor,
+            color: Colors.black,
           ),
           value: value,
           isExpanded: true,
@@ -819,7 +804,7 @@ class _StudentProfileUpdatePageState extends State<StudentProfileUpdatePage> {
               child: Text(
                 item,
                 style: GoogleFonts.poppins(
-                  color: textColor,
+                  color: Colors.black,
                   fontSize: 14,
                 ),
               ),

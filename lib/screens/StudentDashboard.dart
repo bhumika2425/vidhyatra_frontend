@@ -18,7 +18,7 @@ import '../controllers/deadline_controller.dart';
 import '../models/EventsModel.dart';
 import 'EventDetailsPage.dart';
 import 'NotesScreen.dart';
-import 'Timetable.dart';
+import 'Routine.dart';
 
 class Dashboard extends StatefulWidget {
   const Dashboard({super.key});
@@ -264,24 +264,8 @@ class _DashboardState extends State<Dashboard> {
       if (routineController.isLoading.value) {
         return const Center(child: CircularProgressIndicator(color: Color(0xFF186CAC)));
       }
-      if (routineController.errorMessage.isNotEmpty) {
-        return Center(
-          child: Text(
-            routineController.errorMessage.value,
-            style: GoogleFonts.poppins(color: Colors.red),
-          ),
-        );
-      }
 
       final todayRoutine = routineController.getTodayRoutine();
-      if (todayRoutine.isEmpty) {
-        return Center(
-          child: Text(
-            'No classes scheduled for today',
-            style: GoogleFonts.poppins(fontSize: 16),
-          ),
-        );
-      }
 
       return Column(
         children: [
@@ -293,7 +277,7 @@ class _DashboardState extends State<Dashboard> {
                 style: GoogleFonts.poppins(fontSize: 18, fontWeight: FontWeight.bold),
               ),
               TextButton(
-                onPressed: () => Get.to(() => TimetableScreen()),
+                onPressed: () => Get.to(() => Routine()),
                 child: Text(
                   "View Full Schedule",
                   style: GoogleFonts.poppins(color: const Color(0xFF186CAC)),
@@ -301,7 +285,9 @@ class _DashboardState extends State<Dashboard> {
               ),
             ],
           ),
-          SingleChildScrollView(
+          todayRoutine.isEmpty
+              ? _buildEmptyRoutineState()
+              : SingleChildScrollView(
             scrollDirection: Axis.horizontal,
             child: Row(
               children: todayRoutine.map((entry) {
@@ -418,11 +404,6 @@ class _DashboardState extends State<Dashboard> {
         Obx(() {
           if (eventController.isLoading.value) {
             return const Center(child: CircularProgressIndicator());
-          } else if (eventController.errorMessage.value.isNotEmpty) {
-            return Text(
-              eventController.errorMessage.value,
-              style: GoogleFonts.poppins(fontSize: 14, color: Colors.deepOrange),
-            );
           } else {
             List<Event> upcomingEvents = eventController.events.where((event) {
               DateTime eventDate = DateTime.parse(event.eventDate);
@@ -430,10 +411,7 @@ class _DashboardState extends State<Dashboard> {
             }).toList();
 
             if (upcomingEvents.isEmpty) {
-              return Text(
-                'No upcoming events.',
-                style: GoogleFonts.poppins(fontSize: 14, color: Colors.deepOrange),
-              );
+              return _buildEmptyAnnouncementsState();
             } else {
               int eventCount =
               upcomingEvents.length > 2 ? 2 : upcomingEvents.length;
@@ -444,8 +422,6 @@ class _DashboardState extends State<Dashboard> {
                 itemBuilder: (context, index) {
                   Event event = upcomingEvents[index];
                   return Card(
-                    // margin:
-                    // const EdgeInsets.symmetric(vertical: 5, horizontal: 10),
                     elevation: 2,
                     child: ListTile(
                       title: Text(
@@ -453,7 +429,7 @@ class _DashboardState extends State<Dashboard> {
                         style: GoogleFonts.poppins(
                           fontSize: 16,
                           fontWeight: FontWeight.bold,
-                          color: Colors.deepOrange,
+                          color: Color(0xFF186CAC),
                         ),
                       ),
                       subtitle: Column(
@@ -467,7 +443,7 @@ class _DashboardState extends State<Dashboard> {
                             'Date: ${event.eventDate}',
                             style: GoogleFonts.poppins(
                               fontSize: 12,
-                              color: const Color(0xFF186CAC),
+                              color: Colors.deepOrange,
                             ),
                           ),
                         ],
@@ -519,9 +495,7 @@ class _DashboardState extends State<Dashboard> {
             ? const Center(
             child: CircularProgressIndicator(color: Color(0xFF186CAC)))
             : deadlineController.deadlines.isEmpty
-            ? const Center(
-            child: Text('No deadlines available',
-                style: TextStyle(color: Colors.grey)))
+            ? _buildEmptyDeadlinesState()
             : Column(
           children: [
             ListView.builder(
@@ -597,10 +571,24 @@ class _DashboardState extends State<Dashboard> {
         : hour < 17
         ? 'Good Afternoon'
         : 'Good Evening';
+
+    final String displayName = profileController.isNewUser.value
+        ? 'Student'
+        : (profileController.profile.value?.fullname ?? 'Student');
+
     return Container(
       width: double.infinity,
       decoration: BoxDecoration(
-          borderRadius: BorderRadius.circular(15), color: Colors.white),
+          borderRadius: BorderRadius.circular(15), color: Colors.white,
+      boxShadow: [
+        BoxShadow(
+          color: Colors.black.withOpacity(0.1),
+          spreadRadius: 2,
+          blurRadius: 8,
+          offset: Offset(0, 4),
+        ),
+      ],
+      ),
       child: Padding(
         padding: const EdgeInsets.all(16),
         child: Column(
@@ -608,27 +596,48 @@ class _DashboardState extends State<Dashboard> {
           children: [
             Text(greeting,
                 style: GoogleFonts.poppins(fontSize: 16, color: Colors.grey)),
-            Text(profileController.profile.value?.fullname ?? 'Student',
+            Text(displayName,
                 style: GoogleFonts.poppins(
                     fontSize: 23, fontWeight: FontWeight.bold)),
             const SizedBox(height: 6),
             Text(today,
                 style: GoogleFonts.poppins(fontSize: 14, color: Colors.grey)),
             const SizedBox(height: 10),
-            Text("Welcome back! Here's your day at a glance.",
+            profileController.isNewUser.value
+                ? Row(
+              children: [
+                Icon(Icons.info_outline, color: Color(0xFF186CAC), size: 16),
+                SizedBox(width: 8),
+                Expanded(
+                  child: Text(
+                    "Complete your profile to get personalized content",
+                    style: GoogleFonts.poppins(fontSize: 14, color: Color(0xFF186CAC)),
+                  ),
+                ),
+                TextButton(
+                  onPressed: () => Get.to(() => ProfileCreationPage()),
+                  child: Text("Complete Now",
+                      style: GoogleFonts.poppins(
+                          color: Colors.deepOrange,
+                          fontWeight: FontWeight.bold
+                      )
+                  ),
+                )
+              ],
+            )
+                : Text("Welcome back! Here's your day at a glance.",
                 style: GoogleFonts.poppins(fontSize: 14)),
           ],
         ),
       ),
     );
   }
-
   Widget _buildQuickAccessGrid() {
     final List<Map<String, dynamic>> quickAccessItems = [
       {
         'title': 'Timetable',
         'icon': Icons.schedule,
-        'screen': () => TimetableScreen(),
+        'screen': () => Routine(),
       },
       {
         'title': 'Appointment',
@@ -777,6 +786,130 @@ class _DashboardState extends State<Dashboard> {
               break;
           }
         },
+      ),
+    );
+  }
+
+  Widget _buildEmptyDeadlinesState() {
+    return Container(
+      padding: EdgeInsets.symmetric(vertical: 14, horizontal: 10),
+      decoration: BoxDecoration(
+        color: Colors.white,
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withOpacity(0.1),
+            spreadRadius: 2,
+            blurRadius: 8,
+            offset: Offset(0, 4),
+          ),
+        ],
+        borderRadius: BorderRadius.circular(10),
+      ),
+      child: Column(
+        children: [
+          Icon(
+            Icons.assignment_outlined,
+            size: 50,
+            color: Color(0xFFC0C0C0),
+          ),
+          SizedBox(height: 10),
+          Text(
+            "Assignment Deadlines",
+            style: GoogleFonts.poppins(
+              fontSize: 16,
+              fontWeight: FontWeight.bold,
+            ),
+          ),
+          SizedBox(height: 5),
+          Text(
+            "Your upcoming assignment deadlines will appear here",
+            textAlign: TextAlign.center,
+            style: GoogleFonts.poppins(
+              fontSize: 14,
+              color: Colors.deepOrange,
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildEmptyRoutineState() {
+    return Container(
+      padding: EdgeInsets.symmetric(vertical: 16, horizontal: 58),
+      decoration: BoxDecoration(
+        color: Colors.white,
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withOpacity(0.1),
+            spreadRadius: 2,
+            blurRadius: 8,
+            offset: Offset(0, 4),
+          ),
+        ],
+        borderRadius: BorderRadius.circular(10),
+      ),
+      child: Column(
+        children: [
+          Icon(
+            Icons.calendar_today,
+            size: 50,
+            color: Color(0xFFC0C0C0),
+          ),
+          SizedBox(height: 10),
+          Text(
+            "Daily Schedule",
+            style: GoogleFonts.poppins(
+              fontSize: 16,
+              fontWeight: FontWeight.bold,
+            ),
+          ),
+          SizedBox(height: 5),
+          Text(
+            "Your daily schedule will appear here",
+            textAlign: TextAlign.center,
+            style: GoogleFonts.poppins(
+              fontSize: 14,
+              color: Colors.deepOrange,
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildEmptyAnnouncementsState() {
+    return Container(
+      padding: EdgeInsets.symmetric(vertical: 6, horizontal: 45),
+      decoration: BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(10),
+      ),
+      child: Column(
+        children: [
+          Icon(
+            Icons.campaign_outlined,
+            size: 50,
+            color: Color(0xFFC0C0C0),
+          ),
+          SizedBox(height: 10),
+          Text(
+            "No Announcements",
+            style: GoogleFonts.poppins(
+              fontSize: 16,
+              fontWeight: FontWeight.bold,
+            ),
+          ),
+          SizedBox(height: 5),
+          Text(
+            "Stay tuned for important announcements",
+            textAlign: TextAlign.center,
+            style: GoogleFonts.poppins(
+              fontSize: 14,
+              color: Colors.deepOrange,
+            ),
+          ),
+        ],
       ),
     );
   }

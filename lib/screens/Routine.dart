@@ -5,11 +5,10 @@ import 'package:google_fonts/google_fonts.dart';
 import 'package:intl/intl.dart';
 import '../controllers/RoutineController.dart';
 
-
-class TimetableScreen extends StatelessWidget {
+class Routine extends StatelessWidget {
   final RoutineController routineController = Get.find<RoutineController>();
 
-  TimetableScreen({super.key});
+  Routine({super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -38,9 +37,20 @@ class TimetableScreen extends StatelessWidget {
         }
         if (routineController.errorMessage.isNotEmpty) {
           return Center(
-            child: Text(
-              routineController.errorMessage.value,
-              style: GoogleFonts.poppins(color: Colors.red, fontSize: 16),
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                Text(
+                  routineController.errorMessage.value,
+                  style: GoogleFonts.poppins(
+                    color: Colors.deepOrange,
+                    fontSize: 16,
+                    fontWeight: FontWeight.w500,
+                  ),
+                  textAlign: TextAlign.center,
+                ),
+
+              ],
             ),
           );
         }
@@ -80,7 +90,6 @@ class TimetableScreen extends StatelessWidget {
 
   int _getInitialTabIndex() {
     final today = DateTime.now().weekday;
-    // Map weekday (1=Mon, 7=Sun) to tab index (0=Sun, 1=Mon, ..., 5=Fri)
     return today == 7 ? 0 : today;
   }
 

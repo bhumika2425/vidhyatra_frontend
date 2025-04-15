@@ -119,11 +119,19 @@ class StudentProfilePage extends StatelessWidget {
                       // Bio Section
                       _buildSectionTitle('Bio'),
                       _buildInfoCard([
-                        Text(
-                          profile.bio ?? 'Describe Yourself',
+                        profile.bio != null
+                            ? Text(
+                          profile.bio!,
                           style: GoogleFonts.poppins(
                             fontSize: 15,
                             color: Colors.grey[800],
+                          ),
+                        )
+                            : Text(
+                          'Describe Yourself',
+                          style: GoogleFonts.poppins(
+                            fontSize: 15,
+                            color: Colors.grey[600],
                           ),
                         ),
                       ]),
@@ -187,14 +195,14 @@ class StudentProfilePage extends StatelessWidget {
                             ? Text(
                           profile.interest!,
                           style: GoogleFonts.poppins(
-                            fontSize: 16,
+                            fontSize: 15,
                             color: Colors.grey[800],
                           ),
                         )
                             : Text(
                           'Let others know you',
                           style: GoogleFonts.poppins(
-                            fontSize: 16,
+                            fontSize: 15,
                             color: Colors.grey[600],
                           ),
                         ),

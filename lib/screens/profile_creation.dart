@@ -20,6 +20,7 @@ class _ProfileCreationPageState extends State<ProfileCreationPage> {
   String? _department;
   String? _year;
   String? _semester;
+  String? _section;
   XFile? _profileImage;
   String? _bio;
   String? _interest;
@@ -29,8 +30,10 @@ class _ProfileCreationPageState extends State<ProfileCreationPage> {
   final LoginController loginController = Get.find<LoginController>();
 
   // Dropdown options
+  final List<String> _departmentOptions = ['BIT', 'BBA'];
   final List<String> _yearOptions = ['1st Year', '2nd Year', '3rd Year'];
   final List<String> _semesterOptions = ['Semester 1', 'Semester 2'];
+  final List<String> _sectionOptions = ['C1', 'C2', 'C3', 'C4', 'C5', 'C6', 'C7', 'C8', 'C9', 'C10'];
 
   // Color theme
   final Color primaryColor = Color(0xFF186CAC);
@@ -56,7 +59,7 @@ class _ProfileCreationPageState extends State<ProfileCreationPage> {
   Future<void> _selectDate(BuildContext context) async {
     final DateTime? pickedDate = await showDatePicker(
       context: context,
-      initialDate: DateTime.now().subtract(Duration(days: 365 * 18)), // Default to 18 years ago
+      initialDate: DateTime.now().subtract(Duration(days: 365 * 18)),
       firstDate: DateTime(1900),
       lastDate: DateTime.now(),
       builder: (context, child) {
@@ -94,9 +97,9 @@ class _ProfileCreationPageState extends State<ProfileCreationPage> {
         ..fields['department'] = _department ?? ''
         ..fields['year'] = _year ?? ''
         ..fields['semester'] = _semester ?? ''
+        ..fields['section'] = _section ?? ''
         ..fields['bio'] = _bio ?? ''
         ..fields['interest'] = _interest ?? '';
-
 
       if (_profileImage != null) {
         request.files.add(
@@ -155,13 +158,12 @@ class _ProfileCreationPageState extends State<ProfileCreationPage> {
         backgroundColor: primaryColor,
         title: Text(
           'Create Profile',
-          style: TextStyle(
-            fontFamily: 'Poppins',
+          style: GoogleFonts.poppins(
             color: Colors.white,
             fontWeight: FontWeight.w500,
           ),
         ),
-        centerTitle: true,
+
       ),
       body: SafeArea(
         child: Container(
@@ -169,14 +171,12 @@ class _ProfileCreationPageState extends State<ProfileCreationPage> {
           child: SingleChildScrollView(
             child: Column(
               children: [
-                // Header section with profile image
                 Container(
                   width: double.infinity,
                   padding: EdgeInsets.only(bottom: 30),
-                  color: Colors.white,
+                  color: Colors.grey[200],
                   child: Column(
                     children: [
-                      // Small colored top accent
                       Container(
                         width: double.infinity,
                         color: Colors.grey[200],
@@ -186,32 +186,29 @@ class _ProfileCreationPageState extends State<ProfileCreationPage> {
                             if (userName != null)
                               Text(
                                 'Hello, $userName!',
-                                style: TextStyle(
-                                  fontFamily: 'Poppins',
-                                  color: Colors.black,
-                                  fontSize: 16,
+                                style: GoogleFonts.poppins(
+                                  color: Colors.deepOrange,
+                                  fontSize: 18,
                                 ),
                               ),
                             SizedBox(height: 5),
                             Text(
                               'Let\'s set up your profile',
-                              style: TextStyle(
-                                fontFamily: 'Poppins',
+                              style: GoogleFonts.poppins(
                                 color: Colors.black.withOpacity(0.9),
-                                fontSize: 14,
+                                fontSize: 15,
                               ),
                             ),
                           ],
                         ),
                       ),
-                      SizedBox(height: 30),
-                      // Profile image picker
+                      SizedBox(height: 5),
                       Stack(
                         alignment: Alignment.center,
                         children: [
                           Container(
                             decoration: BoxDecoration(
-                              color: Colors.grey[200],
+                              color: Colors.white,
                               shape: BoxShape.circle,
                               boxShadow: [
                                 BoxShadow(
@@ -226,7 +223,7 @@ class _ProfileCreationPageState extends State<ProfileCreationPage> {
                               backgroundColor: Colors.white,
                               child: CircleAvatar(
                                 radius: 60,
-                                backgroundColor: Colors.grey[200],
+                                backgroundColor: Colors.white,
                                 backgroundImage: _profileImage != null
                                     ? FileImage(File(_profileImage!.path))
                                     : null,
@@ -275,12 +272,10 @@ class _ProfileCreationPageState extends State<ProfileCreationPage> {
                     ],
                   ),
                 ),
-
-                // Form section
                 Container(
-                  color:Colors.grey[200],
-                  margin: EdgeInsets.only(top: 10),
-                  padding: const EdgeInsets.fromLTRB(20, 25, 20, 30),
+                  color: Colors.grey[200],
+                  // margin: EdgeInsets.only(top: 10),
+                  padding: const EdgeInsets.fromLTRB(20, 0, 20, 30),
                   child: Form(
                     key: _formKey,
                     child: Column(
@@ -288,16 +283,24 @@ class _ProfileCreationPageState extends State<ProfileCreationPage> {
                       children: [
                         Text(
                           'Personal Information',
-                          style: TextStyle(
-                            fontFamily: 'Poppins',
+                          style: GoogleFonts.poppins(
                             fontSize: 18,
                             fontWeight: FontWeight.bold,
                             color: textColor,
                           ),
                         ),
-                        SizedBox(height: 20),
+                        SizedBox(height: 15),
+                        Text(
+                          'Nickname',
+                          style: GoogleFonts.poppins(
+                            fontSize: 14,
+                            color: textColor,
+                            fontWeight: FontWeight.w500,
+                          ),
+                        ),
+                        SizedBox(height: 8),
                         _buildInputField(
-                          label: 'Nickname',
+                          label: '',
                           icon: Icons.person_outline,
                           onSaved: (value) => _fullname = value,
                           validator: (value) {
@@ -307,12 +310,21 @@ class _ProfileCreationPageState extends State<ProfileCreationPage> {
                             return null;
                           },
                         ),
-                        SizedBox(height: 16),
+                        SizedBox(height: 20),
+                        Text(
+                          'Date of Birth',
+                          style: GoogleFonts.poppins(
+                            fontSize: 14,
+                            color: textColor,
+                            fontWeight: FontWeight.w500,
+                          ),
+                        ),
+                        SizedBox(height: 6),
                         GestureDetector(
                           onTap: () => _selectDate(context),
                           child: AbsorbPointer(
                             child: _buildInputField(
-                              label: 'Date of Birth',
+                              label: '',
                               icon: Icons.calendar_today_outlined,
                               controller: _dateOfBirthController,
                               validator: (value) {
@@ -324,9 +336,20 @@ class _ProfileCreationPageState extends State<ProfileCreationPage> {
                             ),
                           ),
                         ),
-                        SizedBox(height: 16),
+                        SizedBox(height: 20),
+                        Text(
+                          'Location',
+                          style: GoogleFonts.poppins(
+                            fontSize: 14,
+                            color: textColor,
+                            fontWeight: FontWeight.w500,
+                          ),
+                        ),
+
+                        SizedBox(height: 8),
+
                         _buildInputField(
-                          label: 'Location',
+                          label: '',
                           icon: Icons.location_on_outlined,
                           onSaved: (value) => _location = value,
                           validator: (value) {
@@ -336,112 +359,202 @@ class _ProfileCreationPageState extends State<ProfileCreationPage> {
                             return null;
                           },
                         ),
-                        SizedBox(height: 16),
+                        SizedBox(height: 20),
+                        Text(
+                          'Bio',
+                          style: GoogleFonts.poppins(
+                            fontSize: 14,
+                            color: textColor,
+                            fontWeight: FontWeight.w500,
+                          ),
+                        ),
+                        SizedBox(height: 8),
                         _buildTextAreaField(
-                          label: 'Bio',
+                          label: '',
                           icon: Icons.description_outlined,
                           maxLines: 3,
                           onSaved: (value) => _bio = value,
                           hintText: 'Tell us a bit about yourself...',
+
                         ),
                         SizedBox(height: 16),
+                        Text(
+                          'Interests',
+                          style: GoogleFonts.poppins(
+                            fontSize: 14,
+                            color: textColor,
+                            fontWeight: FontWeight.w500,
+                          ),
+                        ),
+                        SizedBox(height: 8),
                         _buildTextAreaField(
-                          label: 'Interests',
+                          label: '',
                           icon: Icons.interests_outlined,
                           maxLines: 2,
                           onSaved: (value) => _interest = value,
                           hintText: 'Reading, Sports, Music, etc.',
                         ),
-
                         SizedBox(height: 30),
                         Text(
                           'Academic Information',
-                          style: TextStyle(
-                            fontFamily: 'Poppins',
+                          style: GoogleFonts.poppins(
                             fontSize: 18,
                             fontWeight: FontWeight.bold,
                             color: textColor,
                           ),
                         ),
                         SizedBox(height: 20),
-                        _buildInputField(
-                          label: 'Department',
+                        Text(
+                          'Department',
+                          style: GoogleFonts.poppins(
+                            fontSize: 14,
+                            color: textColor,
+                            fontWeight: FontWeight.w500,
+                          ),
+                        ),
+                        SizedBox(height: 8),
+                        _buildDropdownField(
+                          label: '',
                           icon: Icons.school_outlined,
-                          onSaved: (value) => _department = value,
+                          value: _department,
+                          items: _departmentOptions,
+                          onChanged: (String? newValue) {
+                            setState(() {
+                              _department = newValue;
+                            });
+                          },
                           validator: (value) {
-                            if (value == null || value.isEmpty) {
-                              return 'Please enter your department';
+                            if (value == null) {
+                              return 'Please select';
                             }
                             return null;
                           },
+                          onSaved: (value) => _department = value,
                         ),
                         SizedBox(height: 16),
                         Row(
                           children: [
                             Expanded(
-                              child: _buildDropdownField(
-                                label: 'Year',
-                                icon: Icons.calendar_view_month_outlined,
-                                value: _year,
-                                items: _yearOptions,
-                                onChanged: (String? newValue) {
-                                  setState(() {
-                                    _year = newValue;
-                                  });
-                                },
-                                validator: (value) {
-                                  if (value == null) {
-                                    return 'Please select';
-                                  }
-                                  return null;
-                                },
-                                onSaved: (value) => _year = value,
+                              child: Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  Text(
+                                    'Year',
+                                    style: GoogleFonts.poppins(
+                                      fontSize: 14,
+                                      color: textColor,
+                                      fontWeight: FontWeight.w500,
+                                    ),
+                                  ),
+                                  SizedBox(height: 8),
+                                  _buildDropdownField(
+                                    label: '',
+                                    icon: Icons.calendar_view_month_outlined,
+                                    value: _year,
+                                    items: _yearOptions,
+                                    onChanged: (String? newValue) {
+                                      setState(() {
+                                        _year = newValue;
+                                      });
+                                    },
+                                    validator: (value) {
+                                      if (value == null) {
+                                        return 'Please select';
+                                      }
+                                      return null;
+                                    },
+                                    onSaved: (value) => _year = value,
+                                  ),
+                                ],
                               ),
                             ),
                             SizedBox(width: 16),
                             Expanded(
-                              child: _buildDropdownField(
-                                label: 'Semester',
-                                icon: Icons.access_time_outlined,
-                                value: _semester,
-                                items: _semesterOptions,
-                                onChanged: (String? newValue) {
-                                  setState(() {
-                                    _semester = newValue;
-                                  });
-                                },
-                                validator: (value) {
-                                  if (value == null) {
-                                    return 'Please select';
-                                  }
-                                  return null;
-                                },
-                                onSaved: (value) => _semester = value,
+                              child: Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  Text(
+                                    'Semester',
+                                    style: GoogleFonts.poppins(
+                                      fontSize: 14,
+                                      color: textColor,
+                                      fontWeight: FontWeight.w500,
+                                    ),
+                                  ),
+                                  SizedBox(height: 8),
+                                  _buildDropdownField(
+                                    label: '',
+                                    icon: Icons.access_time_outlined,
+                                    value: _semester,
+                                    items: _semesterOptions,
+                                    onChanged: (String? newValue) {
+                                      setState(() {
+                                        _semester = newValue;
+                                      });
+                                    },
+                                    validator: (value) {
+                                      if (value == null) {
+                                        return 'Please select';
+                                      }
+                                      return null;
+                                    },
+                                    onSaved: (value) => _semester = value,
+                                  ),
+                                ],
                               ),
                             ),
                           ],
                         ),
+                        SizedBox(height: 16),
+                        Text(
+                          'Section',
+                          style: GoogleFonts.poppins(
+                            fontSize: 14,
+                            color: textColor,
+                            fontWeight: FontWeight.w500,
+                          ),
+                        ),
+                        SizedBox(height: 8),
+                        _buildDropdownField(
+                          label: '',
+                          icon: Icons.group_outlined,
+                          value: _section,
+                          items: _sectionOptions,
+                          onChanged: (String? newValue) {
+                            setState(() {
+                              _section = newValue;
+                            });
+                          },
+                          validator: (value) {
+                            if (value == null) {
+                              return 'Please select';
+                            }
+                            return null;
+                          },
+                          onSaved: (value) => _section = value,
+                        ),
                         SizedBox(height: 40),
-                        SizedBox(
-                          width: double.infinity,
-                          height: 55,
-                          child: ElevatedButton(
-                            onPressed: _submitForm,
-                            style: ElevatedButton.styleFrom(
-                              backgroundColor: primaryColor,
-                              foregroundColor: Colors.white,
-                              elevation: 1,
-                              shape: RoundedRectangleBorder(
-                                borderRadius: BorderRadius.circular(8),
+                        Center(
+                          child: SizedBox(
+                            width: 175,
+                            height: 55,
+                            child: ElevatedButton(
+                              onPressed: _submitForm,
+                              style: ElevatedButton.styleFrom(
+                                backgroundColor: Colors.deepOrange,
+                                foregroundColor: Colors.white,
+                                elevation: 1,
+                                shape: RoundedRectangleBorder(
+                                  borderRadius: BorderRadius.circular(15), // More curved corners
+                                ),
                               ),
-                            ),
-                            child: Text(
-                              'CREATE PROFILE',
-                              style: TextStyle(
-                                fontFamily: 'Poppins',
-                                fontSize: 16,
-                                fontWeight: FontWeight.bold,
-                                letterSpacing: 1,
+                              child: Text(
+                                'Create Profile',
+                                style: GoogleFonts.poppins(
+                                  fontSize: 16,
+                                  fontWeight: FontWeight.bold,
+                                  letterSpacing: 1,
+                                ),
                               ),
                             ),
                           ),
@@ -468,34 +581,32 @@ class _ProfileCreationPageState extends State<ProfileCreationPage> {
     return TextFormField(
       controller: controller,
       decoration: InputDecoration(
-        labelText: label,
-        prefixIcon: Icon(icon, color: Colors.grey[400], size: 22),
+        hintText: label.isNotEmpty ? label : null,
+        prefixIcon: Icon(icon, color: Colors.grey[500], size: 22),
         contentPadding: EdgeInsets.symmetric(vertical: 16, horizontal: 16),
         border: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(8),
-          borderSide: BorderSide(color: Colors.grey[400]!, width: 1),
+          borderRadius: BorderRadius.circular(15),
+          borderSide: BorderSide(color: Colors.white, width: 1),
         ),
         enabledBorder: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(8),
-          borderSide: BorderSide(color: Colors.grey[400]!, width: 1),
+          borderRadius: BorderRadius.circular(15),
+          borderSide: BorderSide(color: Colors.white, width: 1),
         ),
         focusedBorder: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(8),
+          borderRadius: BorderRadius.circular(15),
           borderSide: BorderSide(color: primaryColor, width: 1.5),
         ),
         errorBorder: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(8),
+          borderRadius: BorderRadius.circular(15),
           borderSide: BorderSide(color: Colors.red.shade400, width: 1),
         ),
         filled: true,
         fillColor: Colors.white,
-        labelStyle: TextStyle(
-          fontFamily: 'Poppins',
+        hintStyle: GoogleFonts.poppins(
           color: Colors.grey[600],
         ),
       ),
-      style: TextStyle(
-        fontFamily: 'Poppins',
+      style: GoogleFonts.poppins(
         fontSize: 16,
         color: Colors.grey[600],
       ),
@@ -514,8 +625,7 @@ class _ProfileCreationPageState extends State<ProfileCreationPage> {
     return TextFormField(
       maxLines: maxLines,
       decoration: InputDecoration(
-        labelText: label,
-        hintText: hintText,
+        hintText: hintText ?? (label.isNotEmpty ? label : null),
         prefixIcon: Padding(
           padding: const EdgeInsets.only(bottom: 0, top: 16, left: 12, right: 0),
           child: Icon(icon, color: Colors.grey[400], size: 22),
@@ -523,30 +633,24 @@ class _ProfileCreationPageState extends State<ProfileCreationPage> {
         alignLabelWithHint: true,
         contentPadding: EdgeInsets.symmetric(vertical: 16, horizontal: 16),
         border: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(8),
-          borderSide: BorderSide(color: Colors.grey[400]!, width: 1),
+          borderRadius: BorderRadius.circular(15),
+          borderSide: BorderSide(color: Colors.white, width: 1),
         ),
         enabledBorder: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(8),
-          borderSide: BorderSide(color: Colors.grey[400]!, width: 1),
+          borderRadius: BorderRadius.circular(15),
+          borderSide: BorderSide(color: Colors.white, width: 1),
         ),
         focusedBorder: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(8),
+          borderRadius: BorderRadius.circular(15),
           borderSide: BorderSide(color: primaryColor, width: 1.5),
         ),
         filled: true,
         fillColor: Colors.white,
-        labelStyle: TextStyle(
-          fontFamily: 'Poppins',
-          color: Colors.grey[600],
-        ),
-        hintStyle: TextStyle(
-          fontFamily: 'Poppins',
+        hintStyle: GoogleFonts.poppins(
           color: Colors.grey[400],
         ),
       ),
-      style: TextStyle(
-        fontFamily: 'Poppins',
+      style: GoogleFonts.poppins(
         fontSize: 16,
         color: Colors.grey[600],
       ),
@@ -565,34 +669,32 @@ class _ProfileCreationPageState extends State<ProfileCreationPage> {
   }) {
     return DropdownButtonFormField<String>(
       decoration: InputDecoration(
-        labelText: label,
+        hintText: label.isNotEmpty ? label : null,
         prefixIcon: Icon(icon, color: Colors.grey[400], size: 22),
-        contentPadding: EdgeInsets.symmetric(vertical: 16, horizontal: 16),
+        contentPadding: EdgeInsets.symmetric(vertical: 16, horizontal: 10),
         border: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(8),
-          borderSide: BorderSide(color: Colors.grey[400]!, width: 1),
+          borderRadius: BorderRadius.circular(15),
+          // borderSide: BorderSide(color: Colors.grey[400]!, width: 1),
         ),
         enabledBorder: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(8),
-          borderSide: BorderSide(color: Colors.grey[400]!, width: 1),
+          borderRadius: BorderRadius.circular(15),
+          borderSide: BorderSide(color: Colors.white, width: 1),
         ),
         focusedBorder: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(8),
+          borderRadius: BorderRadius.circular(15),
           borderSide: BorderSide(color: primaryColor, width: 1.5),
         ),
         errorBorder: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(8),
+          borderRadius: BorderRadius.circular(15),
           borderSide: BorderSide(color: Colors.red.shade400, width: 1),
         ),
         filled: true,
         fillColor: Colors.white,
-        labelStyle: TextStyle(
-          fontFamily: 'Poppins',
+        hintStyle: GoogleFonts.poppins(
           color: Colors.grey[600],
         ),
       ),
-      style: TextStyle(
-        fontFamily: 'Poppins',
+      style: GoogleFonts.poppins(
         fontSize: 16,
         color: Colors.grey[600],
       ),
@@ -601,11 +703,10 @@ class _ProfileCreationPageState extends State<ProfileCreationPage> {
         return DropdownMenuItem<String>(
           value: item,
           child: Text(
-              item,
-              style: TextStyle(
-                fontFamily: 'Poppins',
-                color: Colors.grey[600],
-              )
+            item,
+            style: GoogleFonts.poppins(
+              color: Colors.grey[600],
+            ),
           ),
         );
       }).toList(),
@@ -613,4 +714,5 @@ class _ProfileCreationPageState extends State<ProfileCreationPage> {
       validator: validator,
       onSaved: onSaved,
     );
-  }}
+  }
+}
