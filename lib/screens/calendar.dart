@@ -2,11 +2,13 @@ import 'dart:async';
 
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:google_fonts/google_fonts.dart'; // Added Google Fonts
+import 'package:google_fonts/google_fonts.dart';
 import 'package:intl/intl.dart';
 import 'package:table_calendar/table_calendar.dart';
 import 'package:vidhyatra_flutter/controllers/EventController.dart';
+import 'package:vidhyatra_flutter/controllers/AcademicController.dart';
 import '../models/EventsModel.dart';
+import '../models/AcademicModel.dart';
 import 'EventDetailsPage.dart';
 
 class Calendar extends StatefulWidget {
@@ -36,6 +38,10 @@ class _CalendarState extends State<Calendar> {
   late List<int> _years;
   late int _selectedYear;
 
+  // Controllers
+  final EventController eventController = Get.put(EventController());
+  final AcademicController academicController = Get.put(AcademicController());
+
   @override
   void initState() {
     super.initState();
@@ -47,23 +53,21 @@ class _CalendarState extends State<Calendar> {
     _lastDay = DateTime(DateTime.now().year + 10, 12, 31); // 10 years from now
 
     // Initialize years list and selected year (10 years before to 10 years after)
-    _years = List.generate(21, (index) => DateTime.now().year - 2 + index);
+    _years = List.generate(21, (index) => DateTime.now().year - 10 + index);
     _selectedYear = DateTime.now().year;
   }
 
   // Format date to show only the date part (no time)
   String _formatDate(DateTime date) {
-    return DateFormat('yyyy-MM-dd').format(date); // Adjust the format as needed
+    return DateFormat('yyyy-MM-dd').format(date);
   }
-
-  final EventController eventController = Get.put(EventController());
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: Colors.grey[200],
       appBar: AppBar(
-        backgroundColor: const Color(0xFF186CAC), // Always Color(0xFF186CAC)
+        backgroundColor: const Color(0xFF186CAC),
         elevation: 0,
         title: Text(
           _isSelected[0] ? 'Academic Calendar' : 'Event Calendar',
@@ -85,7 +89,7 @@ class _CalendarState extends State<Calendar> {
             },
             borderRadius: BorderRadius.circular(12),
             selectedColor: Colors.white,
-            fillColor: _isSelected[1] ? Colors.deepOrange : Colors.deepOrange, // Deep orange when Event is selected
+            fillColor: _isSelected[1] ? Colors.deepOrange : Colors.deepOrange,
             color: Colors.white,
             constraints: const BoxConstraints(
               minHeight: 30.0,
@@ -190,9 +194,7 @@ class _CalendarState extends State<Calendar> {
             ),
             // Display the selected calendar
             Expanded(
-              child: _isSelected[0]
-                  ? _buildAcademicCalendar() // Academic Calendar
-                  : _buildEventCalendar(), // Event Calendar
+              child: _isSelected[0] ? _buildAcademicCalendar() : _buildEventCalendar(),
             ),
           ],
         ),
@@ -201,22 +203,22 @@ class _CalendarState extends State<Calendar> {
   }
 
   Widget _buildAcademicCalendar() {
-    return Container(
-      decoration: BoxDecoration(
-        color: Colors.white,
-        borderRadius: BorderRadius.circular(20),
-        boxShadow: [
-          BoxShadow(
-            color: Colors.black.withOpacity(0.05),
-            blurRadius: 10,
-            offset: Offset(0, 4),
+    return Column(
+      children: [
+        Container(
+          decoration: BoxDecoration(
+            color: Colors.white,
+            borderRadius: BorderRadius.circular(20),
+            boxShadow: [
+              BoxShadow(
+                color: Colors.black.withOpacity(0.05),
+                blurRadius: 10,
+                offset: Offset(0, 4),
+              ),
+            ],
           ),
-        ],
-      ),
-      padding: EdgeInsets.all(16),
-      child: Column(
-        children: [
-          TableCalendar(
+          padding: EdgeInsets.all(16),
+          child: TableCalendar(
             firstDay: _firstDay,
             lastDay: _lastDay,
             focusedDay: _focusedAcademicDay,
@@ -224,10 +226,10 @@ class _CalendarState extends State<Calendar> {
               return isSameDay(day, _selectedAcademicDate);
             },
             onDaySelected: (selectedDay, focusedDay) {
+              _showAcademicEventDetailsDialog(selectedDay);
               setState(() {
                 _selectedAcademicDate = selectedDay;
                 _focusedAcademicDay = focusedDay;
-                // Update the event date when academic calendar is selected
                 _selectedEventDate = selectedDay;
               });
             },
@@ -260,9 +262,8 @@ class _CalendarState extends State<Calendar> {
                 color: Colors.white,
                 shape: BoxShape.circle,
               ),
-              // Highlight event dates in red
               markerDecoration: BoxDecoration(
-                color: Colors.deepOrange, // Event date color
+                color: Color(0xFF186CAC),
                 shape: BoxShape.circle,
               ),
               selectedTextStyle: GoogleFonts.poppins(
@@ -293,29 +294,176 @@ class _CalendarState extends State<Calendar> {
                 color: Colors.deepOrange,
               ),
             ),
+            eventLoader: (day) {
+              List<Academic> eventsForDay = academicController.academicEvents.where((event) {
+                DateTime eventDate = DateTime.parse(event.date);
+                return isSameDay(eventDate, day);
+              }).toList();
+              return eventsForDay.isNotEmpty ? [''] : [];
+            },
           ),
-          const SizedBox(height: 20),
-          Container(
-            padding: EdgeInsets.symmetric(vertical: 12, horizontal: 20),
-            decoration: BoxDecoration(
-              color: Color(0xFF186CAC).withOpacity(0.1),
-              borderRadius: BorderRadius.circular(10),
-              border: Border.all(
-                color: Color(0xFF186CAC).withOpacity(0.3),
-                width: 1,
-              ),
-            ),
+        ),
+        const SizedBox(height: 10),
+        Padding(
+          padding: const EdgeInsets.only(left: 4.0, top: 5.0, bottom: 5.0),
+          child: Align(
+            alignment: Alignment.centerLeft,
             child: Text(
-              'Selected Date: ${_formatDate(_selectedAcademicDate)}',
+              "Upcoming Exams",
               style: GoogleFonts.poppins(
-                fontSize: 15,
-                color: Color(0xFF186CAC),
-                fontWeight: FontWeight.w500,
+                fontWeight: FontWeight.w700,
+                fontSize: 19,
+                color: Colors.deepOrange,
               ),
             ),
           ),
-        ],
-      ),
+        ),
+        Expanded(
+          child: Obx(() {
+            if (academicController.isLoading.value) {
+              return Center(
+                child: CircularProgressIndicator(color: Color(0xFF186CAC)),
+              );
+            } else if (academicController.errorMessage.value.isNotEmpty) {
+              return Center(
+                child: Text(
+                  academicController.errorMessage.value,
+                  style: GoogleFonts.poppins(
+                    color: Color(0xFF186CAC),
+                    fontWeight: FontWeight.w500,
+                  ),
+                ),
+              );
+            } else {
+              List<Academic> upcomingEvents = academicController.academicEvents.where((event) {
+                DateTime eventDate = DateTime.parse(event.date);
+                return eventDate.isAfter(DateTime.now());
+              }).toList();
+
+              if (upcomingEvents.isEmpty) {
+                return Center(
+                  child: Column(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      Icon(
+                        Icons.event_busy,
+                        size: 48,
+                        color: Colors.grey,
+                      ),
+                      SizedBox(height: 16),
+                      Text(
+                        'No upcoming academic events',
+                        style: GoogleFonts.poppins(
+                          color: Colors.grey[600],
+                          fontSize: 16,
+                          fontWeight: FontWeight.w500,
+                        ),
+                      ),
+                    ],
+                  ),
+                );
+              } else {
+                return ListView.builder(
+                  shrinkWrap: true,
+                  itemCount: upcomingEvents.length,
+                  itemBuilder: (context, index) {
+                    Academic event = upcomingEvents[index];
+                    return Container(
+                      margin: EdgeInsets.symmetric(vertical: 6),
+                      decoration: BoxDecoration(
+                        color: Colors.white,
+                        borderRadius: BorderRadius.circular(15),
+                        boxShadow: [
+                          BoxShadow(
+                            color: Colors.black.withOpacity(0.05),
+                            blurRadius: 8,
+                            offset: Offset(0, 3),
+                          ),
+                        ],
+                      ),
+                      child: ListTile(
+                        contentPadding: EdgeInsets.symmetric(horizontal: 20, vertical: 12),
+                        title: Text(
+                          event.title,
+                          style: GoogleFonts.poppins(
+                            fontWeight: FontWeight.w600,
+                            fontSize: 16,
+                            color: Colors.black87,
+                          ),
+                        ),
+                        subtitle: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            SizedBox(height: 6),
+                            Text(
+                              event.description,
+                              style: GoogleFonts.poppins(
+                                fontSize: 14,
+                                color: Colors.black54,
+                              ),
+                              maxLines: 2,
+                              overflow: TextOverflow.ellipsis,
+                            ),
+                            SizedBox(height: 6),
+                            Container(
+                              padding: EdgeInsets.symmetric(horizontal: 10, vertical: 4),
+                              decoration: BoxDecoration(
+                                color: Color(0xFF186CAC).withOpacity(0.1),
+                                borderRadius: BorderRadius.circular(20),
+                              ),
+                              // child: Text: false,
+                              child: Text(
+                                'Date: ${event.date}',
+                                style: GoogleFonts.poppins(
+                                  fontSize: 12,
+                                  color: Color(0xFF186CAC),
+                                  fontWeight: FontWeight.w500,
+                                ),
+                              ),
+                            ),
+                            if (event.type != null) ...[
+                              SizedBox(height: 6),
+                              Container(
+                                padding: EdgeInsets.symmetric(horizontal: 10, vertical: 4),
+                                decoration: BoxDecoration(
+                                  color: Color(0xFF186CAC).withOpacity(0.1),
+                                  borderRadius: BorderRadius.circular(20),
+                                ),
+                                child: Text(
+                                  'Type: ${event.type}',
+                                  style: GoogleFonts.poppins(
+                                    fontSize: 12,
+                                    color: Color(0xFF186CAC),
+                                    fontWeight: FontWeight.w500,
+                                  ),
+                                ),
+                              ),
+                            ],
+                          ],
+                        ),
+                        trailing: Container(
+                          decoration: BoxDecoration(
+                            color: Color(0xFF186CAC).withOpacity(0.1),
+                            shape: BoxShape.circle,
+                          ),
+                          padding: EdgeInsets.all(8),
+                          child: Icon(
+                            Icons.arrow_forward,
+                            color: Color(0xFF186CAC),
+                          ),
+                        ),
+                        onTap: () {
+                          _showAcademicEventDetailsDialog(DateTime.parse(event.date));
+                        },
+                      ),
+                    );
+                  },
+                );
+              }
+            }
+          }),
+        ),
+      ],
     );
   }
 
@@ -343,10 +491,7 @@ class _CalendarState extends State<Calendar> {
               return isSameDay(day, _selectedEventDate);
             },
             onDaySelected: (selectedDay, focusedDay) {
-              // Trigger the dialog immediately when a single tap occurs
               _showEventDetailsDialog(selectedDay);
-
-              // Update selected date and focused day
               setState(() {
                 _selectedEventDate = selectedDay;
                 _focusedEventDay = focusedDay;
@@ -381,7 +526,6 @@ class _CalendarState extends State<Calendar> {
                 color: Colors.white,
                 fontWeight: FontWeight.w600,
               ),
-              // Default decoration for calendar days
               defaultDecoration: BoxDecoration(
                 color: Colors.white,
                 shape: BoxShape.circle,
@@ -390,9 +534,8 @@ class _CalendarState extends State<Calendar> {
                 color: Colors.white,
                 shape: BoxShape.circle,
               ),
-              // Highlight event dates in red
               markerDecoration: BoxDecoration(
-                color: Colors.deepOrange, // Event date color
+                color: Colors.deepOrange,
                 shape: BoxShape.circle,
               ),
               defaultTextStyle: GoogleFonts.poppins(
@@ -415,22 +558,18 @@ class _CalendarState extends State<Calendar> {
                 color: Colors.deepOrange,
               ),
             ),
-            // Function to mark the days with events
             eventLoader: (day) {
-              // Filter events to find out if the day has events
               List<Event> eventsForDay = eventController.events.where((event) {
-                DateTime eventDate = DateTime.parse(event.eventDate); // Assuming eventDate is in string format
-                return isSameDay(eventDate, day); // Check if the event date matches the selected day
+                DateTime eventDate = DateTime.parse(event.eventDate);
+                return isSameDay(eventDate, day);
               }).toList();
-
-              // Return the events for this day
-              return eventsForDay.isNotEmpty ? [''] : []; // If there are events, mark the day
+              return eventsForDay.isNotEmpty ? [''] : [];
             },
           ),
         ),
         const SizedBox(height: 10),
         Padding(
-          padding: const EdgeInsets.only(left: 4.0, top: 5.0, bottom: 5.0), // Adjust as needed
+          padding: const EdgeInsets.only(left: 4.0, top: 5.0, bottom: 5.0),
           child: Align(
             alignment: Alignment.centerLeft,
             child: Text(
@@ -443,16 +582,14 @@ class _CalendarState extends State<Calendar> {
             ),
           ),
         ),
-
         Expanded(
           child: Obx(() {
-            // Check if events are still loading
             if (eventController.isLoading.value) {
               return Center(
                 child: CircularProgressIndicator(
                   color: Colors.deepOrange,
                 ),
-              ); // Show a loading spinner while fetching data
+              );
             } else if (eventController.errorMessage.value.isNotEmpty) {
               return Center(
                 child: Text(
@@ -462,14 +599,12 @@ class _CalendarState extends State<Calendar> {
                     fontWeight: FontWeight.w500,
                   ),
                 ),
-              ); // Show error message if something goes wrong
+              );
             } else {
-              // Filter events to show only upcoming events (events after today's date)
               List<Event> upcomingEvents = eventController.events.where((event) {
-                DateTime eventDate = DateTime.parse(event.eventDate); // Assuming eventDate is in string format
-                return eventDate.isAfter(DateTime.now()); // Check if the event is after today's date
+                DateTime eventDate = DateTime.parse(event.eventDate);
+                return eventDate.isAfter(DateTime.now());
               }).toList();
-
               if (upcomingEvents.isEmpty) {
                 return Center(
                   child: Column(
@@ -579,16 +714,11 @@ class _CalendarState extends State<Calendar> {
   }
 
   void _showEventDetailsDialog(DateTime selectedDay) {
-    // Filter events for the selected day
     List<Event> eventsForSelectedDay = eventController.events.where((event) {
-      DateTime eventDate = DateTime.parse(event.eventDate); // Assuming eventDate is in string format
-      return isSameDay(eventDate, selectedDay); // Check if the event is on the selected date
+      DateTime eventDate = DateTime.parse(event.eventDate);
+      return isSameDay(eventDate, selectedDay);
     }).toList();
-
-    // Format the selected date for display
     String formattedDate = DateFormat('EEEE, MMMM d, yyyy').format(selectedDay);
-
-    // Show a dialog with the events for the selected day
     showDialog(
       context: context,
       builder: (BuildContext context) {
@@ -603,7 +733,7 @@ class _CalendarState extends State<Calendar> {
             child: Column(
               children: [
                 Text(
-                  'Events on ${formattedDate}',
+                  'Events on $formattedDate',
                   style: GoogleFonts.poppins(
                     fontSize: 18,
                     fontWeight: FontWeight.w600,
@@ -692,10 +822,141 @@ class _CalendarState extends State<Calendar> {
                 SizedBox(height: 16),
                 ElevatedButton(
                   onPressed: () {
-                    Navigator.pop(context); // Close the dialog
+                    Navigator.pop(context);
                   },
                   style: ElevatedButton.styleFrom(
                     backgroundColor: Colors.deepOrange,
+                    foregroundColor: Colors.white,
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(30),
+                    ),
+                    padding: EdgeInsets.symmetric(horizontal: 32, vertical: 12),
+                  ),
+                  child: Text(
+                    'Close',
+                    style: GoogleFonts.poppins(
+                      fontWeight: FontWeight.w500,
+                      fontSize: 16,
+                    ),
+                  ),
+                ),
+              ],
+            ),
+          ),
+        );
+      },
+    );
+  }
+
+  void _showAcademicEventDetailsDialog(DateTime selectedDay) {
+    List<Academic> eventsForSelectedDay = academicController.academicEvents.where((event) {
+      DateTime eventDate = DateTime.parse(event.date);
+      return isSameDay(eventDate, selectedDay);
+    }).toList();
+    String formattedDate = DateFormat('EEEE, MMMM d, yyyy').format(selectedDay);
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return Dialog(
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(20),
+          ),
+          child: Container(
+            height: Get.height * 0.5,
+            width: Get.width * 0.8,
+            padding: EdgeInsets.all(24),
+            child: Column(
+              children: [
+                Text(
+                  'Academic Events on $formattedDate',
+                  style: GoogleFonts.poppins(
+                    fontSize: 18,
+                    fontWeight: FontWeight.w600,
+                    color: Color(0xFF186CAC),
+                  ),
+                  textAlign: TextAlign.center,
+                ),
+                Divider(
+                  color: Colors.grey[300],
+                  thickness: 1,
+                  height: 24,
+                ),
+                Expanded(
+                  child: eventsForSelectedDay.isEmpty
+                      ? Center(
+                    child: Column(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        Icon(
+                          Icons.event_busy,
+                          size: 48,
+                          color: Colors.grey,
+                        ),
+                        SizedBox(height: 16),
+                        Text(
+                          'No academic events for this date.',
+                          style: GoogleFonts.poppins(
+                            fontSize: 16,
+                            color: Colors.grey[600],
+                          ),
+                        ),
+                      ],
+                    ),
+                  )
+                      : SingleChildScrollView(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: eventsForSelectedDay.map((event) {
+                        return Container(
+                          margin: EdgeInsets.only(bottom: 16),
+                          padding: EdgeInsets.all(16),
+                          decoration: BoxDecoration(
+                            color: Colors.grey[50],
+                            borderRadius: BorderRadius.circular(12),
+                            border: Border.all(
+                              color: Colors.grey[200]!,
+                              width: 1,
+                            ),
+                          ),
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Text(
+                                event.title,
+                                style: GoogleFonts.poppins(
+                                  fontWeight: FontWeight.w600,
+                                  fontSize: 16,
+                                  color: Colors.black87,
+                                ),
+                              ),
+                              SizedBox(height: 12),
+                              _buildEventDetailRow(
+                                Icons.description,
+                                'Description:',
+                                event.description,
+                              ),
+                              if (event.type != null) ...[
+                                SizedBox(height: 8),
+                                _buildEventDetailRow(
+                                  Icons.category,
+                                  'Type:',
+                                  event.type!,
+                                ),
+                              ],
+                            ],
+                          ),
+                        );
+                      }).toList(),
+                    ),
+                  ),
+                ),
+                SizedBox(height: 16),
+                ElevatedButton(
+                  onPressed: () {
+                    Navigator.pop(context);
+                  },
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: Color(0xFF186CAC),
                     foregroundColor: Colors.white,
                     shape: RoundedRectangleBorder(
                       borderRadius: BorderRadius.circular(30),
@@ -725,7 +986,7 @@ class _CalendarState extends State<Calendar> {
         Icon(
           icon,
           size: 18,
-          color: Colors.deepOrange,
+          color: _isSelected[0] ? Color(0xFF186CAC) : Colors.deepOrange,
         ),
         SizedBox(width: 8),
         Expanded(

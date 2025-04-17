@@ -55,6 +55,6 @@ static const initializePaymentWithEsewa = "${baseUrl}/api/payFees/initialize-ese
 
 
 static const getEvents = "${baseUrl}/api/eventCalender/getEvents";
-
+  static const getAcademic = "${baseUrl}/api/academic/getExams";
 
 }
