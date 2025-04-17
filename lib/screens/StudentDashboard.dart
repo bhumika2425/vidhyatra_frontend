@@ -5,8 +5,10 @@ import 'package:google_fonts/google_fonts.dart';
 import 'package:intl/intl.dart';
 import 'package:percent_indicator/circular_percent_indicator.dart';
 import 'package:vidhyatra_flutter/screens/FeesScreen.dart';
+import 'package:vidhyatra_flutter/screens/SettingsScreen.dart';
 import 'package:vidhyatra_flutter/screens/TeacherListScreen.dart';
 import 'package:vidhyatra_flutter/screens/blog_posting_page.dart';
+import 'package:vidhyatra_flutter/screens/feedback_form.dart';
 import 'package:vidhyatra_flutter/screens/profile_creation.dart';
 import 'package:vidhyatra_flutter/screens/DashboardTabs.dart'; // Import DashboardTabs
 import '../controllers/BlogController.dart';
@@ -149,24 +151,24 @@ class _DashboardState extends State<Dashboard> {
         "Vidhyatra",
         style: GoogleFonts.poppins(
           color: Colors.white,
-          fontSize: 20,
-          fontWeight: FontWeight.bold,
+          fontSize: 19,
+          // fontWeight: FontWeight.bold,
         ),
       ),
       actions: _isSearching
           ? []
           : [
-        IconButton(
-          icon: const Icon(Icons.search, color: Colors.white),
-          onPressed: () => setState(() => _isSearching = true),
-        ),
-        IconButton(
-          icon: const Badge(
-            label: Text('3'),
-            child: Icon(Icons.notifications, color: Colors.white),
-          ),
-          onPressed: () => Get.toNamed('/notifications'),
-        ),
+        // IconButton(
+        //   icon: const Icon(Icons.search, color: Colors.white),
+        //   onPressed: () => setState(() => _isSearching = true),
+        // ),
+        // IconButton(
+        //   icon: const Badge(
+        //     label: Text('3'),
+        //     child: Icon(Icons.notifications, color: Colors.white),
+        //   ),
+        //   onPressed: () => Get.toNamed('/notifications'),
+        // ),
         GestureDetector(
           onTap: () => _checkAndNavigateToProfile(context),
           child: Padding(
@@ -220,23 +222,92 @@ class _DashboardState extends State<Dashboard> {
               ],
             ),
           ),
-          _buildDrawerItem(Icons.dashboard, 'Dashboard'),
-          _buildDrawerItem(Icons.book_online, 'Appointment'),
-          _buildDrawerItem(Icons.library_books, 'Library'),
-          _buildDrawerItem(Icons.note_alt, 'Notes'),
-          _buildDrawerItem(Icons.help, 'Help & Support'),
-          _buildDrawerItem(Icons.settings, 'Settings'),
-          _buildDrawerItem(Icons.logout, 'Logout', color: Colors.red),
+          _buildDrawerItem(
+            Icons.dashboard,
+            'Dashboard',
+            onTap: () {
+              Navigator.pop(context); // Close the drawer
+              // Already on Dashboard, no need to navigate
+            },
+          ),
+          _buildDrawerItem(
+            Icons.book_online,
+            'Appointment',
+            onTap: () {
+              Navigator.pop(context); // Close the drawer
+              Get.to(() => TeacherListScreen());
+            },
+          ),
+          _buildDrawerItem(
+            Icons.library_books,
+            'Library',
+            onTap: () {
+              Navigator.pop(context); // Close the drawer
+              // Navigate to Library screen (create or use an existing one)
+              // Get.to(() => LibraryScreen()); // Placeholder, implement this screen
+            },
+          ),
+          _buildDrawerItem(
+            Icons.note_alt,
+            'Notes',
+            onTap: () {
+              Navigator.pop(context); // Close the drawer
+              Get.to(() => NotesScreen());
+            },
+          ),
+          _buildDrawerItem(
+            Icons.help,
+            'Feedback',
+            onTap: () {
+              Navigator.pop(context); // Close the drawer
+              // Navigate to Help & Support screen (create or use an existing one)
+              Get.to(() => FeedbackForm()); // Placeholder, implement this screen
+            },
+          ),
+          _buildDrawerItem(
+            Icons.settings,
+            'Settings',
+            onTap: () {
+              Navigator.pop(context); // Close the drawer
+              // Navigate to Settings screen (create or use an existing one)
+              Get.to(() => SettingsScreen()); // Placeholder, implement this screen
+            },
+          ),
+          _buildDrawerItem(
+            Icons.logout,
+            'Logout',
+            color: Colors.red,
+            onTap: () {
+              Navigator.pop(context); // Close the drawer
+              Get.defaultDialog(
+                title: 'Logout',
+                content: Text('Are you sure you want to logout?'),
+                // confirm: TextButton(
+                //   // onPressed: () {
+                //   //   loginController.logout();
+                //   //   Get.offAllNamed('/login');
+                //   // },
+                //   child: Text('Yes'),
+                // ),
+                cancel: TextButton(
+                  onPressed: () => Get.back(),
+                  child: Text('No'),
+                ),
+              );
+            },
+          ),
         ],
       ),
     );
   }
 
+
   Widget _buildDrawerItem(IconData icon, String title,
-      {Color color = const Color(0xFF186CAC)}) {
+      {Color color = const Color(0xFF186CAC), VoidCallback? onTap}) {
     return ListTile(
       leading: Icon(icon, color: color),
       title: Text(title, style: GoogleFonts.poppins()),
+      onTap: onTap,
     );
   }
 

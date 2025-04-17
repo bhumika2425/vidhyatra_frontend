@@ -19,10 +19,11 @@ class StudentProfilePage extends StatelessWidget {
     return Scaffold(
       backgroundColor: Colors.grey[200], // Updated background color
       appBar: AppBar(
+        iconTheme: const IconThemeData(color: Colors.white),
         title: Text(
           'Student Profile',
           style: GoogleFonts.poppins(
-            fontWeight: FontWeight.bold,
+            // fontWeight: FontWeight.bold,
             fontSize: 19,
             color: Colors.white,
           ),

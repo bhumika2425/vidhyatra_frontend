@@ -22,8 +22,8 @@ class Routine extends StatelessWidget {
           'Weekly Timetable',
           style: GoogleFonts.poppins(
             color: Colors.white,
-            fontSize: 20,
-            fontWeight: FontWeight.bold,
+            fontSize: 19,
+            // fontWeight: FontWeight.bold,
           ),
         ),
         leading: IconButton(

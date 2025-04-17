@@ -34,8 +34,8 @@ class FeesScreen extends StatelessWidget {
           "Fee Management",
           style: GoogleFonts.poppins(
             color: Colors.white,
-            fontSize: 20,
-            fontWeight: FontWeight.bold,
+            fontSize: 19,
+            // fontWeight: FontWeight.bold,
           ),
         ),
         elevation: 0,
@@ -287,7 +287,7 @@ class FeesScreen extends StatelessWidget {
           }),
           // Bottom pay now button
           Positioned(
-            bottom: 16,
+            bottom: 70,
             left: screenWidth * 0.25,
             right: screenWidth * 0.25,
             child: ElevatedButton.icon(

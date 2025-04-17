@@ -415,15 +415,14 @@ class _StudentProfileUpdatePageState extends State<StudentProfileUpdatePage> {
     return Scaffold(
       backgroundColor: backgroundColor,
       appBar: AppBar(
-        elevation: 0,
         backgroundColor: primaryColor,
 
         title: Text(
           'Update Profile',
           style: GoogleFonts.poppins(
             color: Colors.white,
-            fontWeight: FontWeight.w600,
-            fontSize: 20,
+            // fontWeight: FontWeight.w600,
+            fontSize: 19,
           ),
         ),
         centerTitle: false,

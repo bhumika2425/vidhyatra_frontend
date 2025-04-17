@@ -12,16 +12,17 @@ class FeedbackForm extends StatelessWidget {
     return Scaffold(
       backgroundColor: Colors.grey[200],
       appBar: AppBar(
-        backgroundColor: Colors.grey[200],
+        iconTheme: const IconThemeData(color: Colors.white),
+        backgroundColor: Color(0xFF186CAC),
         elevation: 0,
         title: Text(
           "Feedback",
           style: GoogleFonts.poppins(
-            color: Colors.black,
-            fontSize: 22,
+            color: Colors.white,
+            fontSize: 20,
           ),
         ),
-        centerTitle: true,
+
       ),
       body: SafeArea(
         child: Center(
@@ -55,7 +56,7 @@ class FeedbackForm extends StatelessWidget {
                         "Feedback Type",
                         style: GoogleFonts.poppins(
                           fontSize: 15,
-                          color: Colors.grey[600],
+                          color: Colors.grey[800],
                         ),
                       ),
                     ),
@@ -99,7 +100,7 @@ class FeedbackForm extends StatelessWidget {
                         filled: true,
                         fillColor: Colors.white,
                         contentPadding: EdgeInsets.symmetric(
-                            vertical: 12, horizontal: 16),
+                            vertical: 15, horizontal: 16),
                       ),
                       style: GoogleFonts.poppins(color: Colors.black),
                       validator: (value) {
@@ -118,7 +119,7 @@ class FeedbackForm extends StatelessWidget {
                         "Feedback Content",
                         style: GoogleFonts.poppins(
                           fontSize: 15,
-                          color: Colors.grey[600],
+                          color: Colors.grey[800],
                         ),
                       ),
                     ),

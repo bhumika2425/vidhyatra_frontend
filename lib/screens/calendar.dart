@@ -67,12 +67,13 @@ class _CalendarState extends State<Calendar> {
     return Scaffold(
       backgroundColor: Colors.grey[200],
       appBar: AppBar(
+        iconTheme: const IconThemeData(color: Colors.white),
         backgroundColor: const Color(0xFF186CAC),
         elevation: 0,
         title: Text(
           _isSelected[0] ? 'Academic Calendar' : 'Event Calendar',
           style: GoogleFonts.poppins(
-            fontWeight: FontWeight.w600,
+            // fontWeight: FontWeight.w600,
             color: Colors.white,
             fontSize: 19,
           ),

@@ -267,59 +267,62 @@ class _BlogPostPageState extends State<BlogPostPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: Colors.grey[200],
-      appBar: AppBar(
-        backgroundColor: Colors.grey[200],
-        title: Text(
-          'Create Post',
-          style: GoogleFonts.poppins(
-            color: Colors.black,
-            fontSize: 19,
-          ),
-        ),
-        leading: IconButton(
-          icon: const Icon(Icons.close, color: Colors.black),
-          onPressed: () {
-            Get.back();
-          },
-        ),
-        bottom: PreferredSize(
-          preferredSize: const Size.fromHeight(2.0),
-          child: Container(
-            color: Colors.grey,
-            height: 0.2,
-          ),
-        ),
-        actions: [
-          Obx(() => Padding(
-            padding: const EdgeInsets.all(8.0),
-            child: TextButton(
-              onPressed: blogController.isButtonEnabled.value
-                  ? () {
-                blogController.postBlog();
-              }
-                  : null,
-              style: TextButton.styleFrom(
-                backgroundColor: blogController.isButtonEnabled.value
-                    ? const Color(0xFF186CAC)
-                    : Colors.grey[400],
-                foregroundColor: Colors.white,
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(8.0),
-                ),
-              ),
-              child: Text(
-                'Post',
-                style: GoogleFonts.poppins(
-                  color: blogController.isButtonEnabled.value
-                      ? Colors.white
-                      : Colors.grey[600],
-                ),
-              ),
+        appBar: AppBar(
+          backgroundColor: const Color(0xFF186CAC),
+          title: Text(
+            'Create Post',
+            style: GoogleFonts.poppins(
+              color: Colors.white,
+              fontSize: 19,
             ),
-          )),
-        ],
-      ),
-      body: Column(
+          ),
+          leading: IconButton(
+            icon: const Icon(Icons.close, color: Colors.white),
+            onPressed: () {
+              Get.back();
+            },
+          ),
+          bottom: PreferredSize(
+            preferredSize: const Size.fromHeight(2.0),
+            child: Container(
+              color: Colors.grey,
+              height: 0.2,
+            ),
+          ),
+          actions: [
+            Obx(() => Padding(
+              padding: const EdgeInsets.all(8.0),
+              child: TextButton(
+                onPressed: blogController.isButtonEnabled.value
+                    ? () {
+                  blogController.postBlog();
+                }
+                    : null,
+                style: TextButton.styleFrom(
+                  backgroundColor: blogController.isButtonEnabled.value
+                      ? Colors.deepOrange
+                      :Colors.grey[200], // default: grey
+                  foregroundColor: blogController.isButtonEnabled.value
+                      ? Colors.white
+                      : Colors.black, // default: black
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(8.0),
+                  ),
+                ),
+                child: Text(
+                  'Post',
+                  style: GoogleFonts.poppins(
+                    color: blogController.isButtonEnabled.value
+                        ? Colors.white
+                        : Colors.deepOrange,
+                  ),
+                ),
+              ),
+            )),
+          ],
+        ),
+
+        body: Column(
         children: [
           Padding(
             padding: const EdgeInsets.all(16.0),

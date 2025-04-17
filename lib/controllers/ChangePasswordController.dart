@@ -3,23 +3,32 @@ import 'package:get/get.dart';
 import 'package:http/http.dart' as http;
 import 'package:vidhyatra_flutter/constants/api_endpoints.dart';
 import 'package:vidhyatra_flutter/controllers/LoginController.dart';
+import 'package:vidhyatra_flutter/models/ChangePasswordModel.dart';
 
 class ChangePasswordController extends GetxController {
-  final LoginController loginController = Get.find<LoginController>(); // Access token from LoginController
+  final LoginController loginController = Get.find<LoginController>();
   RxBool isLoading = false.obs;
   RxString errorMessage = ''.obs;
 
+  // Observable variables for password visibility
+  RxBool currentPasswordVisible = false.obs;
+  RxBool newPasswordVisible = false.obs;
+  RxBool confirmPasswordVisible = false.obs;
+
+  // Toggle password visibility functions
+  void toggleCurrentPasswordVisibility() {
+    currentPasswordVisible.value = !currentPasswordVisible.value;
+  }
+
+  void toggleNewPasswordVisibility() {
+    newPasswordVisible.value = !newPasswordVisible.value;
+  }
+
+  void toggleConfirmPasswordVisibility() {
+    confirmPasswordVisible.value = !confirmPasswordVisible.value;
+  }
+
   Future<void> changePassword(String currentPassword, String newPassword, String confirmPassword) async {
-    if (currentPassword.isEmpty || newPassword.isEmpty || confirmPassword.isEmpty) {
-      Get.snackbar("Error", "All fields are required");
-      return;
-    }
-
-    if (newPassword != confirmPassword) {
-      Get.snackbar("Error", "New password and confirmation do not match");
-      return;
-    }
-
     isLoading.value = true;
     errorMessage.value = '';
 
