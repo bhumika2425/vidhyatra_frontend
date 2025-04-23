@@ -144,7 +144,7 @@ class TeacherListController extends GetxController {
           return {
             'user_id': teacher['user_id'],
             'name': teacher['name'],
-            'department': 'Unknown',
+            'department': 'BIT',
             'available': teacher['availableTimeSlots'] > 0,
             'image': 'assets/teacher$imageIndex.png',
             'appointmentsBooked': teacher['totalTimeSlots'] - teacher['availableTimeSlots'],

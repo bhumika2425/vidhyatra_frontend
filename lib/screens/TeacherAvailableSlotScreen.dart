@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:google_fonts/google_fonts.dart';
 
 import '../controllers/TeacherAvailableSlotController.dart';
 import 'AppointmentBookingScreen.dart';
@@ -10,18 +11,26 @@ class TeacherAvailableSlotsScreen extends StatelessWidget {
   const TeacherAvailableSlotsScreen({Key? key, required this.teacher}) : super(key: key);
 
   @override
-  @override
   Widget build(BuildContext context) {
     final controller = Get.put(TeacherAvailableSlotsController(teacher));
+    final deepOrangeColor = Colors.deepOrange;
 
     return Scaffold(
+      backgroundColor: Colors.grey[200],
       appBar: AppBar(
-        title: Text('Book with ${teacher['name']}'),
+        leading: IconButton(
+          icon: Icon(Icons.arrow_back, color: Colors.white),
+          onPressed: () => Get.back(),
+        ),
+        backgroundColor: const Color(0xFF186CAC),
+        title: Text('Book with ${teacher['name']}',
+          style: GoogleFonts.poppins(color: Colors.white, fontSize: 19),),
         elevation: 0,
         actions: [
           IconButton(
             icon: const Icon(Icons.refresh),
             onPressed: controller.fetchAvailableSlots,
+            color: Colors.white,
           ),
         ],
       ),
@@ -29,11 +38,11 @@ class TeacherAvailableSlotsScreen extends StatelessWidget {
         padding: const EdgeInsets.all(16.0),
         child: Obx(() {
           if (controller.isLoading.value) {
-            return const Center(child: CircularProgressIndicator());
+            return const Center(child: CircularProgressIndicator(color: Colors.deepOrange));
           } else if (controller.errorMessage.value != null) {
-            return _buildErrorWidget(controller);
+            return _buildErrorWidget(controller, deepOrangeColor);
           } else {
-            return _buildContentWidget(context, controller);
+            return _buildContentWidget(context, controller, deepOrangeColor);
           }
         }),
       ),
@@ -41,49 +50,79 @@ class TeacherAvailableSlotsScreen extends StatelessWidget {
   }
 
 
-  Widget _buildErrorWidget(TeacherAvailableSlotsController controller) {
+  Widget _buildErrorWidget(TeacherAvailableSlotsController controller, Color themeColor) {
     return Center(
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
-          Text(controller.errorMessage.value ?? ''),
+          Text(
+            controller.errorMessage.value ?? '',
+            style: GoogleFonts.poppins(),
+          ),
           const SizedBox(height: 16),
           ElevatedButton(
+            style: ElevatedButton.styleFrom(
+              backgroundColor: Colors.deepOrange,
+            ),
             onPressed: controller.fetchAvailableSlots,
-            child: const Text('Retry'),
+            child: Text(
+              'Retry',
+              style: GoogleFonts.poppins(color: Colors.white),
+            ),
           ),
         ],
       ),
     );
   }
 
-  Widget _buildContentWidget(BuildContext context, TeacherAvailableSlotsController controller) {
+  Widget _buildContentWidget(BuildContext context, TeacherAvailableSlotsController controller, Color themeColor) {
     return SingleChildScrollView(
       padding: const EdgeInsets.all(16.0),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          _buildTeacherInfoCard(context),
-          const SizedBox(height: 24),
-          Text('Select Date', style: Theme.of(context).textTheme.titleLarge),
+          // Teacher info card removed from here
+          Text(
+            'Select Date',
+            style: GoogleFonts.poppins(
+              fontSize: 18,
+              fontWeight: FontWeight.w600,
+            ),
+          ),
           const SizedBox(height: 16),
-          _buildDateSelection(controller),
+          _buildDateSelection(controller, themeColor),
           const SizedBox(height: 24),
-          Text('Available Time Slots', style: Theme.of(context).textTheme.titleLarge),
+          Text(
+            'Available Time Slots',
+            style: GoogleFonts.poppins(
+              fontSize: 18,
+              fontWeight: FontWeight.w600,
+            ),
+          ),
           const SizedBox(height: 16),
           Obx(() {
             if (controller.availableSlots.isEmpty) {
-              return const Center(
-                  child: Padding(
-                      padding: EdgeInsets.all(32.0),
-                      child: Text('No available slots found')));
+              return Center(
+                child: Padding(
+                  padding: EdgeInsets.all(32.0),
+                  child: Text(
+                    'No available slots found',
+                    style: GoogleFonts.poppins(),
+                  ),
+                ),
+              );
             } else if (controller.filteredSlots.isEmpty) {
-              return const Center(
-                  child: Padding(
-                      padding: EdgeInsets.all(32.0),
-                      child: Text('No slots for selected date')));
+              return Center(
+                child: Padding(
+                  padding: EdgeInsets.all(32.0),
+                  child: Text(
+                    'No slots for selected date',
+                    style: GoogleFonts.poppins(),
+                  ),
+                ),
+              );
             } else {
-              return _buildTimeSlots(context, controller);
+              return _buildTimeSlots(context, controller, themeColor);
             }
           }),
         ],
@@ -91,7 +130,7 @@ class TeacherAvailableSlotsScreen extends StatelessWidget {
     );
   }
 
-  Widget _buildTeacherInfoCard(BuildContext context) {
+  Widget _buildTeacherInfoCard(BuildContext context, Color themeColor) {
     return Card(
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
       child: Padding(
@@ -111,16 +150,28 @@ class TeacherAvailableSlotsScreen extends StatelessWidget {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Text(teacher['name'], style: Theme.of(context).textTheme.titleMedium?.copyWith(fontWeight: FontWeight.bold)),
+                  Text(
+                    teacher['name'],
+                    style: GoogleFonts.poppins(
+                      fontSize: 16,
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
                   const SizedBox(height: 4),
-                  Text(teacher['department'] ?? 'Teacher'),
+                  Text(
+                    teacher['department'] ?? 'Teacher',
+                    style: GoogleFonts.poppins(fontSize: 14),
+                  ),
                   const SizedBox(height: 8),
                   if (teacher['rating'] != null)
                     Row(
                       children: [
                         const Icon(Icons.star, color: Colors.amber, size: 16),
                         const SizedBox(width: 4),
-                        Text('${teacher['rating']}', style: Theme.of(context).textTheme.bodySmall),
+                        Text(
+                          '${teacher['rating']}',
+                          style: GoogleFonts.poppins(fontSize: 12),
+                        ),
                       ],
                     ),
                 ],
@@ -132,7 +183,7 @@ class TeacherAvailableSlotsScreen extends StatelessWidget {
     );
   }
 
-  Widget _buildDateSelection(TeacherAvailableSlotsController controller) {
+  Widget _buildDateSelection(TeacherAvailableSlotsController controller, Color themeColor) {
     return SizedBox(
       height: 100,
       child: ListView.builder(
@@ -151,10 +202,10 @@ class TeacherAvailableSlotsScreen extends StatelessWidget {
                 width: 70,
                 margin: const EdgeInsets.only(right: 12),
                 decoration: BoxDecoration(
-                  color: isSelected ? Theme.of(context).primaryColor : Colors.white,
+                  color: isSelected ? Colors.deepOrange : Colors.white,
                   borderRadius: BorderRadius.circular(12),
                   border: Border.all(
-                    color: isSelected ? Theme.of(context).primaryColor : Colors.grey.shade300,
+                    color: isSelected ? Colors.deepOrange : Colors.grey.shade300,
                   ),
                 ),
                 child: Column(
@@ -162,15 +213,16 @@ class TeacherAvailableSlotsScreen extends StatelessWidget {
                   children: [
                     Text(
                       ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'][date.weekday - 1],
-                      style: TextStyle(
+                      style: GoogleFonts.poppins(
                         color: isSelected ? Colors.white : Colors.grey.shade600,
                         fontWeight: FontWeight.bold,
+                        fontSize: 12,
                       ),
                     ),
                     const SizedBox(height: 8),
                     Text(
                       date.day.toString(),
-                      style: TextStyle(
+                      style: GoogleFonts.poppins(
                         fontSize: 22,
                         color: isSelected ? Colors.white : Colors.black,
                         fontWeight: FontWeight.bold,
@@ -179,7 +231,7 @@ class TeacherAvailableSlotsScreen extends StatelessWidget {
                     const SizedBox(height: 4),
                     Text(
                       '${date.month}/${date.year.toString().substring(2)}',
-                      style: TextStyle(
+                      style: GoogleFonts.poppins(
                         fontSize: 12,
                         color: isSelected ? Colors.white : Colors.grey.shade600,
                       ),
@@ -194,7 +246,7 @@ class TeacherAvailableSlotsScreen extends StatelessWidget {
     );
   }
 
-  Widget _buildTimeSlots(BuildContext context, TeacherAvailableSlotsController controller) {
+  Widget _buildTimeSlots(BuildContext context, TeacherAvailableSlotsController controller, Color themeColor) {
     return GridView.builder(
       shrinkWrap: true,
       physics: const NeverScrollableScrollPhysics(),
@@ -215,21 +267,29 @@ class TeacherAvailableSlotsScreen extends StatelessWidget {
           onTap: () => Get.to(() => AppointmentBookingScreen(teacher: teacher, slot: slot)),
           child: Container(
             decoration: BoxDecoration(
-              color: Theme.of(context).primaryColor.withOpacity(0.1),
+              color: Color(0xFF186CAC).withOpacity(0.1),
               borderRadius: BorderRadius.circular(8),
-              border: Border.all(color: Theme.of(context).primaryColor.withOpacity(0.3)),
+              border: Border.all(color: Color(0xFF186CAC).withOpacity(0.3)),
             ),
             alignment: Alignment.center,
             child: Column(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
-                Text(timeSlot,
-                    style: TextStyle(
-                      color: Theme.of(context).primaryColor,
+                Text(
+                    timeSlot,
+                    style: GoogleFonts.poppins(
+                      color: Color(0xFF186CAC),
                       fontWeight: FontWeight.bold,
-                    )),
+                    )
+                ),
                 const SizedBox(height: 4),
-                Text('Available', style: TextStyle(fontSize: 12, color: Colors.green.shade700)),
+                Text(
+                    'Available',
+                    style: GoogleFonts.poppins(
+                        fontSize: 12,
+                        color: Colors.green.shade700
+                    )
+                ),
               ],
             ),
           ),

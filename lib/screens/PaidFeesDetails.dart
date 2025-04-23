@@ -1,8 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:intl/intl.dart';
 import 'package:vidhyatra_flutter/controllers/LoginController.dart';
 import 'package:vidhyatra_flutter/controllers/PaymentController.dart';
+import '../controllers/ProfileController.dart';
 import '../models/user.dart';
 
 class PaidFeesDetails extends StatelessWidget {
@@ -12,13 +14,18 @@ class PaidFeesDetails extends StatelessWidget {
   Widget build(BuildContext context) {
     final PaymentController paymentController = Get.find();
     final LoginController loginController = Get.find<LoginController>();
+    final ProfileController profileController = Get.find<ProfileController>();
 
     final paidFeesData = paymentController.paidFeesData;
     final paymentData = paymentController.paymentData;
 
-    final semester = 'First'.obs;
-    final year = 'First'.obs;
     final paymentType = 'esewa'.obs;
+    final isLoading = true.obs; // Add loading state
+
+    // Simulate 1-second delay for loading
+    Future.delayed(const Duration(seconds: 1), () {
+      isLoading.value = false;
+    });
 
     void handlePayment() {
       double amount = paidFeesData['totalPrice']?.toDouble() ?? 0.0;
@@ -39,26 +46,51 @@ class PaidFeesDetails extends StatelessWidget {
       paymentController.initiateToEsewaPayment(amount, transactionUuid, signature);
     }
 
+    // Helper function to format the date
+    String formatDate(String? dateStr) {
+      if (dateStr == null || dateStr.isEmpty) return 'N/A';
+      try {
+        final date = DateTime.parse(dateStr);
+        return DateFormat('dd MMM yyyy').format(date);
+      } catch (e) {
+        print('Error parsing date: $dateStr, Error: $e');
+        return 'N/A';
+      }
+    }
+
     return Scaffold(
       backgroundColor: Colors.grey[200],
       appBar: AppBar(
+        leading: IconButton(
+          icon: const Icon(Icons.arrow_back, color: Colors.white),
+          onPressed: () => Get.back(),
+        ),
         title: Text(
           'Fee Details',
           style: GoogleFonts.poppins(
-              fontWeight: FontWeight.w600,
-              color: Colors.white
-          ),
+              fontWeight: FontWeight.w600, color: Colors.white),
         ),
         elevation: 0,
-        backgroundColor: Color(0xFF186CAC),
+        backgroundColor: const Color(0xFF186CAC),
         foregroundColor: Colors.white,
-        centerTitle: true,
       ),
       body: Obx(() {
-        if (loginController.user.value == null) {
-          return const Center(child: CircularProgressIndicator());
+        // Show CircularProgressIndicator for 1 second with custom color
+        if (isLoading.value) {
+          return Center(
+            child: CircularProgressIndicator(
+              valueColor: AlwaysStoppedAnimation<Color>(Colors.deepOrange), // Custom color
+            ),
+          );
         }
 
+        if (loginController.user.value == null) {
+          return Center(
+            child: CircularProgressIndicator(
+              valueColor: AlwaysStoppedAnimation<Color>(Colors.deepOrange), // Custom color
+            ),
+          );
+        }
         User currentUser = loginController.user.value!;
 
         return SingleChildScrollView(
@@ -69,16 +101,14 @@ class PaidFeesDetails extends StatelessWidget {
                 width: double.infinity,
                 padding: const EdgeInsets.symmetric(vertical: 16, horizontal: 20),
                 decoration: BoxDecoration(
-                  color: Colors.grey[200], // Changed from blue to grey[200]
+                  color: Colors.grey[200],
                 ),
                 child: Column(
                   children: [
-                    // User profile section and information in same line
                     Row(
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: [
                         Container(
-                          padding: const EdgeInsets.all(12),
                           decoration: BoxDecoration(
                             color: Colors.white,
                             borderRadius: BorderRadius.circular(50),
@@ -90,13 +120,17 @@ class PaidFeesDetails extends StatelessWidget {
                               ),
                             ],
                           ),
-                          child: Icon(
-                            Icons.person_rounded,
-                            size: 30,
-                            color: Color(0xFF186CAC),
-                          ),
+                          child: Obx(() => CircleAvatar(
+                            radius: 30,
+                            backgroundImage: profileController.profile.value?.profileImageUrl != null
+                                ? NetworkImage(profileController.profile.value!.profileImageUrl!)
+                                : const AssetImage('assets/default_profile.png') as ImageProvider,
+                            onBackgroundImageError: (_, __) {
+                              print('Failed to load profile image');
+                            },
+                          )),
                         ),
-                        const SizedBox(width: 16), // Space between icon and text
+                        const SizedBox(width: 16),
                         Expanded(
                           child: Column(
                             crossAxisAlignment: CrossAxisAlignment.start,
@@ -129,9 +163,11 @@ class PaidFeesDetails extends StatelessWidget {
 
               // Main content
               Padding(
-                padding: const EdgeInsets.only(left: 20.0, right: 20.0, bottom: 20.0),
+                padding:
+                const EdgeInsets.only(left: 20.0, right: 20.0, bottom: 20.0),
                 child: Card(
                   elevation: 2,
+                  color: Colors.white,
                   shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(12),
                   ),
@@ -149,31 +185,8 @@ class PaidFeesDetails extends StatelessWidget {
                           ),
                         ),
                         const Divider(height: 30),
-
-                        _buildSectionTitle("Academic Details"),
-                        const SizedBox(height: 15),
-
-                        Text(
-                          "Select Year",
-                          style: GoogleFonts.poppins(fontSize: 15),
-                        ),
-                        const SizedBox(height: 8),
-                        _buildDropdown(year, ['First', 'Second', 'Third']),
-
-                        const SizedBox(height: 20),
-
-                        Text(
-                          "Select Semester",
-                          style: GoogleFonts.poppins(fontSize: 15),
-                        ),
-                        const SizedBox(height: 8),
-                        _buildDropdown(semester, ['First', 'Second']),
-
-                        const SizedBox(height: 25),
                         _buildSectionTitle("Payment Method"),
                         const SizedBox(height: 10),
-
-                        // Only eSewa option
                         Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
@@ -186,8 +199,10 @@ class PaidFeesDetails extends StatelessWidget {
                               decoration: BoxDecoration(
                                 borderRadius: BorderRadius.circular(8),
                                 border: Border.all(color: Colors.grey.shade300),
+                                color: Colors.grey[100],
                               ),
-                              padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+                              padding: const EdgeInsets.symmetric(
+                                  horizontal: 12, vertical: 8),
                               child: Row(
                                 children: [
                                   Radio<String>(
@@ -213,11 +228,9 @@ class PaidFeesDetails extends StatelessWidget {
                             )),
                           ],
                         ),
-
                         const SizedBox(height: 30),
                         _buildSectionTitle("Payment Summary"),
                         const SizedBox(height: 15),
-
                         Container(
                           padding: const EdgeInsets.all(16),
                           decoration: BoxDecoration(
@@ -227,24 +240,20 @@ class PaidFeesDetails extends StatelessWidget {
                           ),
                           child: Column(
                             children: [
-                              _buildInfoRow("Amount", "NPR ${paidFeesData['totalPrice'] ?? 0.00}"),
+                              _buildInfoRow(
+                                  "Amount", "NPR ${paidFeesData['totalPrice'] ?? 0.00}"),
                               const SizedBox(height: 10),
-                              _buildInfoRow("Transaction ID", paidFeesData['paidFeesId'] ?? 'N/A'),
-                              const SizedBox(height: 10),
-                              _buildInfoRow("Date", paidFeesData['paidDate'] ?? 'N/A'),
+                              _buildInfoRow("Date", formatDate(paidFeesData['paidDate'])),
                             ],
                           ),
                         ),
-
                         const SizedBox(height: 30),
-
                         Obx(() => Center(
                           child: Container(
-                            width: double.infinity,
                             height: 50,
                             decoration: BoxDecoration(
                               borderRadius: BorderRadius.circular(10),
-                              color: Colors.deepOrange,
+                              color: Colors.green,
                             ),
                             child: TextButton(
                               onPressed: handlePayment,
@@ -284,7 +293,7 @@ class PaidFeesDetails extends StatelessWidget {
 
   Widget _buildDropdown(RxString selectedValue, List<String> items) {
     return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 15, vertical: 5),
+      padding: const EdgeInsets.symmetric(horizontal: 15, vertical: 1),
       decoration: BoxDecoration(
         border: Border.all(color: Colors.grey.shade300),
         borderRadius: BorderRadius.circular(10),

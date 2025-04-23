@@ -16,7 +16,7 @@ class _RegisterPageState extends State<RegisterPage> with SingleTickerProviderSt
   String email = '';
   String collegeId = '';
   String password = '';
-  String role = 'student';
+  String role = 'Student';
   bool _obscurePassword = true;
   late AnimationController _animationController;
 
@@ -64,38 +64,67 @@ class _RegisterPageState extends State<RegisterPage> with SingleTickerProviderSt
         print('Response status code: ${response.statusCode}');
         print('Response body: ${response.body}');
 
+        final responseData = jsonDecode(response.body);
+
         if (response.statusCode == 201) {
           print('Registration successful');
-          Navigator.pushNamed(context, '/login');
-          Get.snackbar('Registration Successful', 'You have been registered to the app successfully');
+          Get.offNamed('/login'); // Use GetX navigation for consistency
+          Get.snackbar(
+            'Registration Successful',
+            'You have been registered to the app successfully',
+            snackPosition: SnackPosition.TOP,
+            // backgroundColor: Colors.green,
+            // colorText: Colors.white,
+            duration: Duration(seconds: 3),
+          );
+        } else if (response.statusCode == 409) {
+          // Handle duplicate email case
+          print('Duplicate email detected');
+          Get.snackbar(
+            'Registration Failed',
+            responseData['message'] ?? 'User already registered with this email.',
+            snackPosition: SnackPosition.TOP,
+            // backgroundColor: Colors.red,
+            // colorText: Colors.white,
+            duration: Duration(seconds: 3),
+            // icon: Icon(Icons.error, color: Colors.white),
+          );
         } else {
-          final responseData = jsonDecode(response.body);
+          // Handle other errors (400, 500, etc.)
           print('Registration failed: ${responseData['message']}');
-          _showErrorDialog(responseData['message']);
+          Get.snackbar(
+            'Registration Failed',
+            responseData['message'] ?? 'An error occurred. Please try again.',
+            snackPosition: SnackPosition.TOP,
+            // backgroundColor: Colors.red,
+            // colorText: Colors.white,
+            duration: Duration(seconds: 3),
+            // icon: Icon(Icons.error, color: Colors.white),
+          );
         }
       } catch (error) {
         print('Error during registration: $error');
-        _showErrorDialog('An error occurred. Please try again.');
+        Get.snackbar(
+          'Registration Failed',
+          'Network error: Please check your connection and try again.',
+          snackPosition: SnackPosition.TOP,
+          // backgroundColor: Colors.red,
+          // colorText: Colors.white,
+          duration: Duration(seconds: 3),
+          icon: Icon(Icons.error, color: Colors.white),
+        );
       }
     } else {
       print('Form validation failed');
+      Get.snackbar(
+        'Form Error',
+        'Please fill all required fields correctly.',
+        snackPosition: SnackPosition.TOP,
+        // backgroundColor: Colors.red,
+        // colorText: Colors.white,
+        duration: Duration(seconds: 3),
+      );
     }
-  }
-  void _showErrorDialog(String message) {
-    showDialog(
-      context: context,
-      builder: (ctx) => AlertDialog(
-        backgroundColor: Colors.black,
-        title: Text('Registration Error', style: TextStyle(color: Colors.white)),
-        content: Text(message, style: TextStyle(color: Colors.white)),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.of(ctx).pop(),
-            child: Text('OK', style: TextStyle(color: Colors.white)),
-          ),
-        ],
-      ),
-    );
   }
 
   InputDecoration _buildInputDecoration({
@@ -288,7 +317,7 @@ class _RegisterPageState extends State<RegisterPage> with SingleTickerProviderSt
                             screenWidth: screenWidth,
                           ),
                           style: GoogleFonts.poppins(color: Colors.black),
-                          items: ['student', 'teacher']
+                          items: ['Student', 'Teacher']
                               .map((roleValue) => DropdownMenuItem<String>(
                             value: roleValue,
                             child: Text(roleValue, style: GoogleFonts.poppins()),

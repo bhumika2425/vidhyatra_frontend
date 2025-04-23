@@ -341,8 +341,8 @@ class _StudentProfileUpdatePageState extends State<StudentProfileUpdatePage> {
           ScaffoldMessenger.of(context).showSnackBar(
             SnackBar(
               content: const Text('Profile updated successfully'),
-              backgroundColor: secondaryColor,
-              behavior: SnackBarBehavior.floating,
+              // backgroundColor: secondaryColor,
+              // behavior: SnackBarBehavior.floating,
               shape: RoundedRectangleBorder(
                 borderRadius: BorderRadius.circular(10),
               ),
@@ -356,8 +356,8 @@ class _StudentProfileUpdatePageState extends State<StudentProfileUpdatePage> {
           ScaffoldMessenger.of(context).showSnackBar(
             SnackBar(
               content: Text('Update failed: $errorMessage'),
-              backgroundColor: Colors.red,
-              behavior: SnackBarBehavior.floating,
+              // backgroundColor: Colors.red,
+              // behavior: SnackBarBehavior.floating,
               shape: RoundedRectangleBorder(
                 borderRadius: BorderRadius.circular(10),
               ),
@@ -370,8 +370,8 @@ class _StudentProfileUpdatePageState extends State<StudentProfileUpdatePage> {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
             content: const Text('Invalid response format from server'),
-            backgroundColor: Colors.red,
-            behavior: SnackBarBehavior.floating,
+            // backgroundColor: Colors.red,
+            // behavior: SnackBarBehavior.floating,
           ),
         );
         setState(() {
@@ -383,8 +383,8 @@ class _StudentProfileUpdatePageState extends State<StudentProfileUpdatePage> {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
             content: const Text('Network error: Unable to connect to server'),
-            backgroundColor: Colors.red,
-            behavior: SnackBarBehavior.floating,
+            // backgroundColor: Colors.red,
+            // behavior: SnackBarBehavior.floating,
           ),
         );
         setState(() {
@@ -396,8 +396,8 @@ class _StudentProfileUpdatePageState extends State<StudentProfileUpdatePage> {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
             content: Text('Error updating profile: $e'),
-            backgroundColor: Colors.red,
-            behavior: SnackBarBehavior.floating,
+            // backgroundColor: Colors.red,
+            // behavior: SnackBarBehavior.floating,
           ),
         );
         setState(() {

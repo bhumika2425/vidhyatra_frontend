@@ -154,6 +154,10 @@ class _ProfileCreationPageState extends State<ProfileCreationPage> {
     return Scaffold(
       backgroundColor: Colors.grey[200],
       appBar: AppBar(
+        leading: IconButton(
+          icon: Icon(Icons.arrow_back, color: Colors.white),
+          onPressed: () => Get.back(),
+        ),
         elevation: 0,
         backgroundColor: primaryColor,
         title: Text(

@@ -1,7 +1,11 @@
 import 'dart:convert';
 
+import 'package:flutter/material.dart';
+import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:get/get.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import 'package:vidhyatra_flutter/screens/TeacherDashboard.dart';
+import 'package:vidhyatra_flutter/screens/login.dart';
 
 import '../constants/api_endpoints.dart';
 import '../models/user.dart';
@@ -21,6 +25,11 @@ class LoginController extends GetxController {
   void togglePasswordVisibility() {
     isPasswordVisible.value = !isPasswordVisible.value; // Toggle the value
   }
+
+  // // After successful login, store the token
+  // Future<void> storeAuthToken(String tokenValue) async {
+  //   await storage.write(key: 'auth_token', value: tokenValue);
+  // }
   // Login function
   Future<void> loginUser() async {
     if (emailOrID.value.isEmpty || password.value.isEmpty) {
@@ -107,6 +116,27 @@ class LoginController extends GetxController {
       print("❌ Unexpected Error: ${error.toString()}");
       Get.snackbar("Error", "An error occurred. Please try again.",
           snackPosition: SnackPosition.TOP);
+    }
+  }
+
+  Future<void> logout() async {
+    try {
+
+      // Reset observable values
+      token.value = '';
+      user.value = null;
+      userId.value = 0;
+
+      // Navigate to login screen
+      Get.offAllNamed('/login');
+    } catch (e) {
+      print('❌ Logout Error: $e');
+      Get.snackbar(
+        'Error',
+        'Failed to logout properly. Please try again.',
+        backgroundColor: Colors.red.withOpacity(0.1),
+        colorText: Colors.red,
+      );
     }
   }
 }

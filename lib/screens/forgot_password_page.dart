@@ -1,19 +1,23 @@
 import 'dart:convert';
 import 'package:flutter/material.dart';
-import 'package:http/http.dart' as http;
-import 'package:vidhyatra_flutter/constants/api_endpoints.dart';
+import 'package:get/get.dart';
+import 'package:google_fonts/google_fonts.dart';
+import 'package:http/http.dart' as http; // Import http package
 
+import '../constants/api_endpoints.dart';
 import 'EnterOtpPage.dart';
 
-class ForgotPasswordScreen extends StatefulWidget {
+class ForgotPasswordPage extends StatefulWidget {
+  const ForgotPasswordPage({super.key});
+
   @override
-  _ForgotPasswordScreenState createState() => _ForgotPasswordScreenState();
+  _ForgotPasswordPageState createState() => _ForgotPasswordPageState();
 }
 
-class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
+class _ForgotPasswordPageState extends State<ForgotPasswordPage> {
   final _emailController = TextEditingController();
   String? _errorMessage;
-  bool _isLoading = false; // Track loading state
+  bool _isLoading = false;
 
   // Submit the Forgot Password request
   Future<void> _submitForgotPassword() async {
@@ -31,6 +35,7 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
       });
       return;
     }
+
     try {
       final response = await http.post(
         Uri.parse(ApiEndPoints.forgotPassword),
@@ -46,13 +51,13 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
 
       if (response.statusCode == 200) {
         // OTP sent successfully
-        ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-          content: Text(responseData['message']),
-        ));
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text(responseData['message'])),
+        );
         Navigator.push(
           context,
           MaterialPageRoute(
-            builder: (context) => EnterOTPPage(email: email),
+            builder: (context) => EnterOtpPage(email: email),
           ),
         );
       } else {
@@ -76,92 +81,104 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      backgroundColor: Colors.grey[200],
       appBar: AppBar(
+        leading: IconButton(
+          icon: const Icon(Icons.arrow_back, color: Colors.white),
+          onPressed: () => Get.back(),
+        ),
+        backgroundColor: const Color(0xFF186CAC),
         title: Text(
-          'Forgot Your Password?',
-          style: TextStyle(
-            fontSize: 24,
-            fontWeight: FontWeight.bold,
-            color: Colors.black,
+          'Forgot Password?',
+          style: GoogleFonts.poppins(
+            color: Colors.white,
           ),
         ),
-        centerTitle: true,
       ),
-      body: Stack(
-        // Use Stack to overlay the loading indicator
-        children: [
-          Padding(
-            padding: const EdgeInsets.all(20.0),
-            child: Column(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                // Image.asset(
-                //   'assets/images/passwordReset.png',
-                //   // Ensure the image is added to assets folder
-                //   width: 200, // Adjust the width as needed
-                //   height: 200, // Adjust the height as needed
-                // ),
-                SizedBox(height: 30),
-
-                // Email Input Field
-                TextFormField(
-                  controller: _emailController,
-                  // validator: _validateEmail,
-                  keyboardType: TextInputType.emailAddress,
-                  decoration: InputDecoration(
-                    labelText: 'Enter your email',
-                    hintText: 'example@mail.com',
-                    prefixIcon: Icon(Icons.email),
-                    border: OutlineInputBorder(),
-                    filled: true,
-                    fillColor: Colors.white,
-                    contentPadding:
-                    EdgeInsets.symmetric(vertical: 15, horizontal: 20),
+      body: Padding(
+        padding: const EdgeInsets.symmetric(horizontal: 3.0),
+        child: Column(
+          children: [
+            Image.asset(
+              'assets/forgot_pw.png', // Ensure this image exists
+              height: 400,
+            ),
+            const SizedBox(height: 30),
+            Text(
+              'Enter your registered email address to receive password reset instructions.',
+              textAlign: TextAlign.center,
+              style: GoogleFonts.poppins(
+                fontSize: 14,
+                color: Colors.black,
+              ),
+            ),
+            const SizedBox(height: 30),
+            Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 15.0),
+              child: TextField(
+                controller: _emailController,
+                decoration: InputDecoration(
+                  filled: true,
+                  fillColor: Colors.white,
+                  hintText: 'Enter your email',
+                  hintStyle: GoogleFonts.poppins(color: Colors.grey),
+                  border: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(12),
+                    borderSide: BorderSide.none,
                   ),
-                ),
-                SizedBox(height: 20),
-
-                // Disclaimer Text
-                Padding(
-                  padding: const EdgeInsets.symmetric(vertical: 10),
-                  child: Text(
-                    'By submitting, you will receive a link to reset your password. Please check your email for further instructions.',
-                    style: TextStyle(
-                      fontSize: 14,
-                      color: Colors.grey[600],
-                    ),
-                    textAlign: TextAlign.center,
-                  ),
-                ),
-
-                SizedBox(height: 20),
-
-                // Submit Button
-                ElevatedButton(
-                  onPressed: _submitForgotPassword,
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor: Color(0xFF971F20), // Button color
-                    padding: EdgeInsets.symmetric(vertical: 15, horizontal: 40),
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(8),
+                  focusedBorder: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(12),
+                    borderSide: const BorderSide(
+                      color: Color(0xFF186CAC),
+                      width: 2,
                     ),
                   ),
-                  child: Text(
-                    'Submit',
-                    style: TextStyle(fontSize: 18, color: Colors.white),
+                ),
+                style: GoogleFonts.poppins(color: Colors.black),
+              ),
+            ),
+            if (_errorMessage != null) ...[
+              const SizedBox(height: 10),
+              Text(
+                _errorMessage!,
+                style: GoogleFonts.poppins(color: Colors.red, fontSize: 12),
+              ),
+            ],
+            const SizedBox(height: 20),
+            SizedBox(
+              child: ElevatedButton(
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: Colors.deepOrange,
+                  padding: const EdgeInsets.symmetric(
+                    vertical: 15,
+                    horizontal: 25,
+                  ),
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(12),
+                  ),
+                  elevation: 4,
+                ),
+                onPressed: _isLoading ? null : _submitForgotPassword, // Call the correct method
+                child: _isLoading
+                    ? const CircularProgressIndicator(color: Colors.white)
+                    : Text(
+                  'Submit',
+                  style: GoogleFonts.poppins(
+                    fontSize: 19,
+                    color: Colors.white,
                   ),
                 ),
-                SizedBox(height: 20),
-              ],
+              ),
             ),
-          ),
-          // Overlay loading indicator on top of the screen
-          if (_isLoading)
-            Center(
-              child: CircularProgressIndicator(),
-            ),
-        ],
+          ],
+        ),
       ),
     );
+  }
+
+  @override
+  void dispose() {
+    _emailController.dispose();
+    super.dispose();
   }
 }

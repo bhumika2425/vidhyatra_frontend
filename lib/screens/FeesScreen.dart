@@ -311,13 +311,13 @@ class FeesScreen extends StatelessWidget {
               onPressed: () {
                 if (feeController.selectedFee.value != null) {
                   Fee selectedFee = feeController.selectedFee.value!;
-                  Get.snackbar(
-                    "Payment",
-                    "Processing payment for ${selectedFee.feeType}",
-                    snackPosition: SnackPosition.TOP,
-                    backgroundColor: const Color(0xFF186CAC),
-                    colorText: Colors.white,
-                  );
+                  // Get.snackbar(
+                  //   "Payment",
+                  //   "Processing payment for ${selectedFee.feeType}",
+                  //   snackPosition: SnackPosition.TOP,
+                  //   backgroundColor: const Color(0xFF186CAC),
+                  //   colorText: Colors.white,
+                  // );
                   paymentController.payFee(selectedFee.feeID, selectedFee.feeAmount);
                 } else {
                   Get.snackbar(

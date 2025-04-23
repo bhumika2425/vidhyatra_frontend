@@ -12,7 +12,7 @@ class Routine extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final days = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday'];
+    final days = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday','Saturday'];
 
     return Scaffold(
       backgroundColor: Colors.grey[200],

@@ -2,14 +2,18 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:intl/intl.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import 'package:timeago/timeago.dart';
 import 'package:vidhyatra_flutter/controllers/LoginController.dart';
 import 'package:vidhyatra_flutter/screens/TeacherAppointment.dart';
-import 'package:vidhyatra_flutter/screens/calendar.dart';
-import 'package:vidhyatra_flutter/screens/DashboardTabs.dart'; // Import DashboardTabs
+import 'package:vidhyatra_flutter/screens/Calendar.dart';
+import 'package:vidhyatra_flutter/screens/DashboardTabs.dart';
+import 'package:vidhyatra_flutter/screens/login.dart';
 import '../controllers/tryController.dart';
 import '../controllers/BlogController.dart';
 import 'package:timeago/timeago.dart' as timeago;
+
+import 'blog_posting_page.dart';
 
 class DashboardView extends GetView<DashboardController> {
   final DashboardController controller = Get.put(DashboardController());
@@ -56,6 +60,13 @@ class DashboardView extends GetView<DashboardController> {
           );
         },
       ),
+      floatingActionButton: FloatingActionButton(
+        onPressed: () => Get.to(() => BlogPostPage()), // Updated navigation
+        backgroundColor: Color(0xFF186CAC),
+        child: Icon(Icons.edit, color: Colors.white),
+        elevation: 4,
+      ),
+      floatingActionButtonLocation: FloatingActionButtonLocation.endFloat,
     );
   }
 
@@ -92,7 +103,7 @@ class DashboardView extends GetView<DashboardController> {
           'Messages',
           Icons.message,
           Color(0xFF186CAC),
-              () => Get.to(() => Calendar()),
+              () => Get.to(() => Calendar()), // Update to appropriate page later
           'Chat with students and colleagues',
           constraints,
         ),
@@ -101,7 +112,7 @@ class DashboardView extends GetView<DashboardController> {
           'Deadlines',
           Icons.assignment_late,
           Colors.deepOrange,
-              () => Get.to(() => Calendar()),
+              () => Get.to(() => Calendar()), // Update to appropriate page later
           'Manage assignment deadlines',
           constraints,
         ),
@@ -257,33 +268,19 @@ class DashboardView extends GetView<DashboardController> {
               _buildDrawerItem(Icons.help_outline, 'Help & Support',
                   Color(0xFF186CAC), () => Get.back()),
               _buildDrawerItem(Icons.logout, 'Logout', Colors.deepOrange, () {
-                Get.dialog(
-                  AlertDialog(
-                    title: Text('Logout',
-                        style:
-                        GoogleFonts.poppins(fontWeight: FontWeight.w600)),
-                    content: Text('Are you sure you want to logout?',
-                        style: GoogleFonts.poppins()),
-                    actions: [
-                      TextButton(
-                        onPressed: () => Get.back(),
-                        child: Text('Cancel',
-                            style:
-                            GoogleFonts.poppins(color: Color(0xFF186CAC))),
-                      ),
-                      ElevatedButton(
-                        onPressed: () {
-                          Get.back();
-                          // controller.logout();
-                        },
-                        child: Text('Logout',
-                            style: GoogleFonts.poppins(color: Colors.white)),
-                        style: ElevatedButton.styleFrom(
-                            backgroundColor: Colors.deepOrange),
-                      ),
-                    ],
-                  ),
-                );
+                  Navigator.pop(context);
+                  Get.defaultDialog(
+                    title: 'Logout',
+                    content: Text('Are you sure you want to logout?'),
+                    textConfirm: 'Yes',
+                    textCancel: 'No',
+                    confirmTextColor: Colors.white,
+                    onConfirm: () {
+                      // First close the dialog, then logout
+                      Get.back();
+                      loginController.logout();
+                    },
+                  );
               }),
             ],
           );
@@ -291,6 +288,8 @@ class DashboardView extends GetView<DashboardController> {
       ),
     );
   }
+
+
 
   Widget _buildDrawerItem(
       IconData icon, String title, Color color, VoidCallback onTap) {

@@ -1,3 +1,4 @@
+
 // import 'package:get/get.dart';
 // import 'package:http/http.dart' as http;
 // import 'package:vidhyatra_flutter/constants/api_endpoints.dart';
@@ -135,7 +136,7 @@ class RoutineController extends GetxController {
       'Thursday',
       'Friday',
       'Sunday',
-    ][today % 7]; // Adjust for Sunday as index 6
+    ][today % 6]; // Adjust for Sunday as index 6
     return routineByDay.value!.routinesByDay[dayName] ?? [];
   }
 }

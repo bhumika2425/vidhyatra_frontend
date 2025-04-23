@@ -10,7 +10,7 @@ import 'package:vidhyatra_flutter/screens/TeacherListScreen.dart';
 import 'package:vidhyatra_flutter/screens/blog_posting_page.dart';
 import 'package:vidhyatra_flutter/screens/feedback_form.dart';
 import 'package:vidhyatra_flutter/screens/profile_creation.dart';
-import 'package:vidhyatra_flutter/screens/DashboardTabs.dart'; // Import DashboardTabs
+import 'package:vidhyatra_flutter/screens/DashboardTabs.dart';
 import '../controllers/BlogController.dart';
 import '../controllers/EventController.dart';
 import '../controllers/LoginController.dart';
@@ -86,33 +86,25 @@ class _DashboardState extends State<Dashboard> {
       drawer: _buildDrawer(context),
       body: _isLoading
           ? const Center(
-          child: CircularProgressIndicator(color: Color(0xFF186CAC)))
+              child: CircularProgressIndicator(color: Color(0xFF186CAC)))
           : _errorMessage != null
-          ? Center(
-          child: Text(_errorMessage!,
-              style: GoogleFonts.poppins(color: Colors.red)))
-          : RefreshIndicator(
-        onRefresh: _refreshDashboard,
-        child: LayoutBuilder(
-          builder: (context, constraints) {
-            return Column(
-              children: [
-                Expanded(
-                  child: Padding(
-                    padding: const EdgeInsets.all(15.0),
-                    child: DashboardTabs(
-                      homeTabContent: _buildHomeTab(today),
+              ? Center(
+                  child: Text(_errorMessage!,
+                      style: GoogleFonts.poppins(color: Colors.red)))
+              : RefreshIndicator(
+                  onRefresh: _refreshDashboard,
+                  child: SingleChildScrollView(
+                    child: Padding(
+                      padding: const EdgeInsets.all(15.0),
+                      child: DashboardTabs(
+                        homeTabContent: _buildHomeTab(today),
+                      ),
                     ),
                   ),
                 ),
-              ],
-            );
-          },
-        ),
-      ),
       bottomNavigationBar: _buildBottomNavBar(),
       floatingActionButton: FloatingActionButton(
-        onPressed: () => Get.toNamed('/new-post'),
+        onPressed: () => Get.to(() => BlogPostPage()), // Updated navigation
         backgroundColor: Color(0xFF186CAC),
         child: Icon(Icons.edit, color: Colors.white),
         elevation: 4,
@@ -127,65 +119,53 @@ class _DashboardState extends State<Dashboard> {
       elevation: 0,
       leading: _isSearching
           ? IconButton(
-        icon: const Icon(Icons.arrow_back, color: Colors.black),
-        onPressed: () => setState(() {
-          _isSearching = false;
-          _searchController.clear();
-        }),
-      )
+              icon: const Icon(Icons.arrow_back, color: Colors.black),
+              onPressed: () => setState(() {
+                _isSearching = false;
+                _searchController.clear();
+              }),
+            )
           : Builder(
-        builder: (context) => IconButton(
-          icon: const Icon(Icons.menu, color: Colors.white),
-          onPressed: () => Scaffold.of(context).openDrawer(),
-        ),
-      ),
+              builder: (context) => IconButton(
+                icon: const Icon(Icons.menu, color: Colors.white),
+                onPressed: () => Scaffold.of(context).openDrawer(),
+              ),
+            ),
       title: _isSearching
           ? TextField(
-        controller: _searchController,
-        decoration: const InputDecoration(
-            hintText: 'Search...', border: InputBorder.none),
-        autofocus: true,
-        onChanged: (value) {},
-      )
+              controller: _searchController,
+              decoration: const InputDecoration(
+                  hintText: 'Search...', border: InputBorder.none),
+              autofocus: true,
+              onChanged: (value) {},
+            )
           : Text(
-        "Vidhyatra",
-        style: GoogleFonts.poppins(
-          color: Colors.white,
-          fontSize: 19,
-          // fontWeight: FontWeight.bold,
-        ),
-      ),
+              "Vidhyatra",
+              style: GoogleFonts.poppins(
+                color: Colors.white,
+                fontSize: 19,
+              ),
+            ),
       actions: _isSearching
           ? []
           : [
-        // IconButton(
-        //   icon: const Icon(Icons.search, color: Colors.white),
-        //   onPressed: () => setState(() => _isSearching = true),
-        // ),
-        // IconButton(
-        //   icon: const Badge(
-        //     label: Text('3'),
-        //     child: Icon(Icons.notifications, color: Colors.white),
-        //   ),
-        //   onPressed: () => Get.toNamed('/notifications'),
-        // ),
-        GestureDetector(
-          onTap: () => _checkAndNavigateToProfile(context),
-          child: Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 16),
-            child: CircleAvatar(
-              backgroundImage: profileController
-                  .profile.value?.profileImageUrl !=
-                  null
-                  ? NetworkImage(
-                  profileController.profile.value!.profileImageUrl!)
-                  : const AssetImage('assets/default_profile.png')
-              as ImageProvider,
-              radius: 18,
-            ),
-          ),
-        ),
-      ],
+              GestureDetector(
+                onTap: () => _checkAndNavigateToProfile(context),
+                child: Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 16),
+                  child: CircleAvatar(
+                    backgroundImage: profileController
+                                .profile.value?.profileImageUrl !=
+                            null
+                        ? NetworkImage(
+                            profileController.profile.value!.profileImageUrl!)
+                        : const AssetImage('assets/default_profile.png')
+                            as ImageProvider,
+                    radius: 18,
+                  ),
+                ),
+              ),
+            ],
     );
   }
 
@@ -202,11 +182,11 @@ class _DashboardState extends State<Dashboard> {
                 CircleAvatar(
                   radius: 35,
                   backgroundImage:
-                  profileController.profile.value?.profileImageUrl != null
-                      ? NetworkImage(
-                      profileController.profile.value!.profileImageUrl!)
-                      : const AssetImage('assets/default_profile.png')
-                  as ImageProvider,
+                      profileController.profile.value?.profileImageUrl != null
+                          ? NetworkImage(
+                              profileController.profile.value!.profileImageUrl!)
+                          : const AssetImage('assets/default_profile.png')
+                              as ImageProvider,
                 ),
                 const SizedBox(height: 10),
                 Text(
@@ -226,51 +206,31 @@ class _DashboardState extends State<Dashboard> {
             Icons.dashboard,
             'Dashboard',
             onTap: () {
-              Navigator.pop(context); // Close the drawer
-              // Already on Dashboard, no need to navigate
+              Navigator.pop(context);
             },
           ),
           _buildDrawerItem(
             Icons.book_online,
             'Appointment',
             onTap: () {
-              Navigator.pop(context); // Close the drawer
+              Navigator.pop(context);
               Get.to(() => TeacherListScreen());
-            },
-          ),
-          _buildDrawerItem(
-            Icons.library_books,
-            'Library',
-            onTap: () {
-              Navigator.pop(context); // Close the drawer
-              // Navigate to Library screen (create or use an existing one)
-              // Get.to(() => LibraryScreen()); // Placeholder, implement this screen
-            },
-          ),
-          _buildDrawerItem(
-            Icons.note_alt,
-            'Notes',
-            onTap: () {
-              Navigator.pop(context); // Close the drawer
-              Get.to(() => NotesScreen());
             },
           ),
           _buildDrawerItem(
             Icons.help,
             'Feedback',
             onTap: () {
-              Navigator.pop(context); // Close the drawer
-              // Navigate to Help & Support screen (create or use an existing one)
-              Get.to(() => FeedbackForm()); // Placeholder, implement this screen
+              Navigator.pop(context);
+              Get.to(() => FeedbackForm());
             },
           ),
           _buildDrawerItem(
             Icons.settings,
             'Settings',
             onTap: () {
-              Navigator.pop(context); // Close the drawer
-              // Navigate to Settings screen (create or use an existing one)
-              Get.to(() => SettingsScreen()); // Placeholder, implement this screen
+              Navigator.pop(context);
+              Get.to(() => SettingsScreen());
             },
           ),
           _buildDrawerItem(
@@ -278,21 +238,18 @@ class _DashboardState extends State<Dashboard> {
             'Logout',
             color: Colors.red,
             onTap: () {
-              Navigator.pop(context); // Close the drawer
+              Navigator.pop(context);
               Get.defaultDialog(
                 title: 'Logout',
                 content: Text('Are you sure you want to logout?'),
-                // confirm: TextButton(
-                //   // onPressed: () {
-                //   //   loginController.logout();
-                //   //   Get.offAllNamed('/login');
-                //   // },
-                //   child: Text('Yes'),
-                // ),
-                cancel: TextButton(
-                  onPressed: () => Get.back(),
-                  child: Text('No'),
-                ),
+                textConfirm: 'Yes',
+                textCancel: 'No',
+                confirmTextColor: Colors.white,
+                onConfirm: () {
+                  // First close the dialog, then logout
+                  Get.back();
+                  loginController.logout();
+                },
               );
             },
           ),
@@ -300,7 +257,6 @@ class _DashboardState extends State<Dashboard> {
       ),
     );
   }
-
 
   Widget _buildDrawerItem(IconData icon, String title,
       {Color color = const Color(0xFF186CAC), VoidCallback? onTap}) {
@@ -323,9 +279,8 @@ class _DashboardState extends State<Dashboard> {
         const SizedBox(height: 20),
         _buildUpcomingDeadlines(),
         const SizedBox(height: 20),
-        // _buildAttendanceOverview(),
-        // const SizedBox(height: 20),
         _buildLatestAnnouncements(),
+        const SizedBox(height: 90),
       ],
     );
   }
@@ -333,7 +288,8 @@ class _DashboardState extends State<Dashboard> {
   Widget _buildTodaySchedule() {
     return Obx(() {
       if (routineController.isLoading.value) {
-        return const Center(child: CircularProgressIndicator(color: Color(0xFF186CAC)));
+        return const Center(
+            child: CircularProgressIndicator(color: Color(0xFF186CAC)));
       }
 
       final todayRoutine = routineController.getTodayRoutine();
@@ -345,7 +301,8 @@ class _DashboardState extends State<Dashboard> {
             children: [
               Text(
                 "Today's Timeline",
-                style: GoogleFonts.poppins(fontSize: 18, fontWeight: FontWeight.bold),
+                style: GoogleFonts.poppins(
+                    fontSize: 18, fontWeight: FontWeight.bold),
               ),
               TextButton(
                 onPressed: () => Get.to(() => Routine()),
@@ -359,46 +316,54 @@ class _DashboardState extends State<Dashboard> {
           todayRoutine.isEmpty
               ? _buildEmptyRoutineState()
               : SingleChildScrollView(
-            scrollDirection: Axis.horizontal,
-            child: Row(
-              children: todayRoutine.map((entry) {
-                final now = DateTime.now();
-                final startTime = DateFormat('HH:mm:ss').parse(entry.startTime);
-                final endTime = DateFormat('HH:mm:ss').parse(entry.endTime);
-                final currentTime = DateTime(now.year, now.month, now.day, now.hour, now.minute);
-                final classStart = DateTime(now.year, now.month, now.day, startTime.hour, startTime.minute);
-                final classEnd = DateTime(now.year, now.month, now.day, endTime.hour, endTime.minute);
+                  scrollDirection: Axis.horizontal,
+                  child: Row(
+                    children: todayRoutine.map((entry) {
+                      final now = DateTime.now();
+                      final startTime =
+                          DateFormat('HH:mm:ss').parse(entry.startTime);
+                      final endTime =
+                          DateFormat('HH:mm:ss').parse(entry.endTime);
+                      final currentTime = DateTime(
+                          now.year, now.month, now.day, now.hour, now.minute);
+                      final classStart = DateTime(now.year, now.month, now.day,
+                          startTime.hour, startTime.minute);
+                      final classEnd = DateTime(now.year, now.month, now.day,
+                          endTime.hour, endTime.minute);
 
-                String status;
-                Color statusColor;
-                if (currentTime.isAfter(classStart) && currentTime.isBefore(classEnd)) {
-                  status = 'ONGOING CLASS';
-                  statusColor = Colors.green;
-                } else if (currentTime.isBefore(classStart)) {
-                  status = 'UPCOMING CLASS';
-                  statusColor = Colors.orange;
-                } else {
-                  status = 'COMPLETED CLASS';
-                  statusColor = Colors.red;
-                }
+                      String status;
+                      Color statusColor;
+                      if (currentTime.isAfter(classStart) &&
+                          currentTime.isBefore(classEnd)) {
+                        status = 'ONGOING CLASS';
+                        statusColor = Colors.green;
+                      } else if (currentTime.isBefore(classStart)) {
+                        status = 'UPCOMING CLASS';
+                        statusColor = Colors.orange;
+                      } else {
+                        status = 'COMPLETED CLASS';
+                        statusColor = Colors.red;
+                      }
 
-                return _buildTimelineCard(
-                  '${DateFormat('hh:mm a').format(startTime)} - ${DateFormat('hh:mm a').format(endTime)}',
-                  entry.room,
-                  entry.subject,
-                  status,
-                  statusColor,
-                  teacher: entry.teacher,
-                );
-              }).toList(),
-            ),
-          ),
+                      return _buildTimelineCard(
+                        '${DateFormat('hh:mm a').format(startTime)} - ${DateFormat('hh:mm a').format(endTime)}',
+                        entry.room,
+                        entry.subject,
+                        status,
+                        statusColor,
+                        teacher: entry.teacher,
+                      );
+                    }).toList(),
+                  ),
+                ),
         ],
       );
     });
   }
 
-  Widget _buildTimelineCard(String time, String location, String course, String status, Color statusColor, {required String teacher}) {
+  Widget _buildTimelineCard(String time, String location, String course,
+      String status, Color statusColor,
+      {required String teacher}) {
     return Card(
       margin: const EdgeInsets.symmetric(horizontal: 8.0),
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
@@ -414,13 +379,16 @@ class _DashboardState extends State<Dashboard> {
             children: [
               Row(
                 children: [
-                  const Icon(CupertinoIcons.time, size: 15, color: Colors.black87),
+                  const Icon(CupertinoIcons.time,
+                      size: 15, color: Colors.black87),
                   const SizedBox(width: 5),
                   Text(time, style: GoogleFonts.poppins(color: Colors.black87)),
                   const SizedBox(width: 15),
-                  const Icon(Icons.room_outlined, size: 15, color: Colors.black87),
+                  const Icon(Icons.room_outlined,
+                      size: 15, color: Colors.black87),
                   const SizedBox(width: 5),
-                  Text(location, style: GoogleFonts.poppins(color: Colors.black87)),
+                  Text(location,
+                      style: GoogleFonts.poppins(color: Colors.black87)),
                 ],
               ),
               const SizedBox(height: 5),
@@ -453,7 +421,7 @@ class _DashboardState extends State<Dashboard> {
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
             Text(
-              "Announcements",
+              "Upcoming Events",
               style: GoogleFonts.poppins(
                 fontSize: 18,
                 fontWeight: FontWeight.bold,
@@ -485,7 +453,7 @@ class _DashboardState extends State<Dashboard> {
               return _buildEmptyAnnouncementsState();
             } else {
               int eventCount =
-              upcomingEvents.length > 2 ? 2 : upcomingEvents.length;
+                  upcomingEvents.length > 2 ? 2 : upcomingEvents.length;
               return ListView.builder(
                 shrinkWrap: true,
                 physics: const NeverScrollableScrollPhysics(),
@@ -494,35 +462,37 @@ class _DashboardState extends State<Dashboard> {
                   Event event = upcomingEvents[index];
                   return Card(
                     elevation: 2,
-                    child: ListTile(
-                      title: Text(
-                        event.title,
-                        style: GoogleFonts.poppins(
-                          fontSize: 16,
-                          fontWeight: FontWeight.bold,
-                          color: Color(0xFF186CAC),
+                    child: Padding(
+                      padding: const EdgeInsets.all(3.0),
+                      child: ListTile(
+                        title: Text(
+                          event.title,
+                          style: GoogleFonts.poppins(
+                            fontSize: 16,
+                            fontWeight: FontWeight.bold,
+                            color: Color(0xFF186CAC),
+                          ),
                         ),
-                      ),
-                      subtitle: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Text(
-                            event.description,
-                            style: GoogleFonts.poppins(fontSize: 13),
-                          ),
-                          Text(
-                            'Date: ${event.eventDate}',
-                            style: GoogleFonts.poppins(
-                              fontSize: 12,
-                              color: Colors.deepOrange,
+                        subtitle: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Text(
+                              event.description,
+                              style: GoogleFonts.poppins(fontSize: 13),
                             ),
-                          ),
-                        ],
+                            Text(
+                              'Date: ${event.eventDate}',
+                              style: GoogleFonts.poppins(
+                                fontSize: 12,
+                                color: Colors.deepOrange,
+                              ),
+                            ),
+                          ],
+                        ),
+                        trailing: const Icon(Icons.arrow_forward),
+                        onTap: () =>
+                            Get.to(() => EventDetailsPage(event: event)),
                       ),
-                      trailing: const Icon(Icons.arrow_forward),
-                      onTap: () {
-                        Get.to(EventDetailsPage(event: event));
-                      },
                     ),
                   );
                 },
@@ -536,103 +506,97 @@ class _DashboardState extends State<Dashboard> {
 
   Widget _buildUpcomingDeadlines() {
     return Obx(() => Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        Row(
-          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Padding(
-              padding: const EdgeInsets.only(bottom: 10),
-              child: Text("Upcoming Deadlines",
-                  style: GoogleFonts.poppins(
-                      fontSize: 18, fontWeight: FontWeight.bold)),
-            ),
-            if (deadlineController.deadlines.length > 2)
-              Align(
-                alignment: Alignment.centerRight,
-                child: TextButton(
-                  onPressed: () => deadlineController.showAll.toggle(),
-                  child: Text(
-                    deadlineController.showAll.value
-                        ? 'View Less'
-                        : 'View All',
-                    style: const TextStyle(color: Color(0xFF186CAC)),
-                  ),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                Padding(
+                  padding: const EdgeInsets.only(bottom: 10),
+                  child: Text("Upcoming Deadlines",
+                      style: GoogleFonts.poppins(
+                          fontSize: 18, fontWeight: FontWeight.bold)),
                 ),
-              ),
-          ],
-        ),
-        deadlineController.isLoading.value
-            ? const Center(
-            child: CircularProgressIndicator(color: Color(0xFF186CAC)))
-            : deadlineController.deadlines.isEmpty
-            ? _buildEmptyDeadlinesState()
-            : Column(
-          children: [
-            ListView.builder(
-              shrinkWrap: true,
-              physics: const NeverScrollableScrollPhysics(),
-              itemCount: deadlineController.showAll.value
-                  ? deadlineController.deadlines.length
-                  : (deadlineController.deadlines.length > 2
-                  ? 2
-                  : deadlineController.deadlines.length),
-              itemBuilder: (context, index) {
-                final deadline =
-                deadlineController.deadlines[index];
-                final timeLeft =
-                deadline.deadline.difference(DateTime.now());
-                final timeLeftText = timeLeft.inDays > 0
-                    ? '${timeLeft.inDays} days left'
-                    : timeLeft.inHours > 0
-                    ? '${timeLeft.inHours} hours left'
-                    : '${timeLeft.inMinutes} mins left';
-
-                Color urgencyColor = Colors.green;
-                if (timeLeft.inDays < 1) {
-                  urgencyColor = Colors.red;
-                } else if (timeLeft.inDays < 3) {
-                  urgencyColor = Colors.orange;
-                }
-
-                return Card(
-                  margin: const EdgeInsets.only(bottom: 8),
-                  child: ListTile(
-                    leading: Container(
-                      padding: const EdgeInsets.all(8),
-                      decoration: BoxDecoration(
-                        color: urgencyColor.withOpacity(0.1),
-                        shape: BoxShape.circle,
+                if (deadlineController.deadlines.length > 2)
+                  Align(
+                    alignment: Alignment.centerRight,
+                    child: TextButton(
+                      onPressed: () => deadlineController.showAll.toggle(),
+                      child: Text(
+                        deadlineController.showAll.value
+                            ? 'View Less'
+                            : 'View All',
+                        style: const TextStyle(color: Color(0xFF186CAC)),
                       ),
-                      child: Icon(Icons.assignment_outlined,
-                          color: urgencyColor),
-                    ),
-                    title: Text(deadline.title,
-                        style: GoogleFonts.poppins(
-                            fontWeight: FontWeight.bold)),
-                    subtitle: Text(
-                        '${deadline.course} • $timeLeftText',
-                        style: GoogleFonts.poppins(
-                            color: Colors.grey)),
-                    trailing: Checkbox(
-                      activeColor: const Color(0xFF186CAC),
-                      value: deadline.isCompleted,
-                      onChanged: (value) {
-                        if (value != null) {
-                          deadlineController
-                              .markDeadlineCompleted(
-                              deadline.id, value);
-                        }
-                      },
                     ),
                   ),
-                );
-              },
+              ],
             ),
+            deadlineController.isLoading.value
+                ? const Center(
+                    child: CircularProgressIndicator(color: Color(0xFF186CAC)))
+                : deadlineController.deadlines.isEmpty
+                    ? _buildEmptyDeadlinesState()
+                    : ListView.builder(
+                        shrinkWrap: true,
+                        physics: const NeverScrollableScrollPhysics(),
+                        itemCount: deadlineController.showAll.value
+                            ? deadlineController.deadlines.length
+                            : (deadlineController.deadlines.length > 2
+                                ? 2
+                                : deadlineController.deadlines.length),
+                        itemBuilder: (context, index) {
+                          final deadline = deadlineController.deadlines[index];
+                          final timeLeft =
+                              deadline.deadline.difference(DateTime.now());
+                          final timeLeftText = timeLeft.inDays > 0
+                              ? '${timeLeft.inDays} days left'
+                              : timeLeft.inHours > 0
+                                  ? '${timeLeft.inHours} hours left'
+                                  : '${timeLeft.inMinutes} mins left';
+
+                          Color urgencyColor = Colors.green;
+                          if (timeLeft.inDays < 1) {
+                            urgencyColor = Colors.red;
+                          } else if (timeLeft.inDays < 3) {
+                            urgencyColor = Color(0xFF186CAC);
+                          }
+
+                          return Card(
+                            margin: const EdgeInsets.only(bottom: 8),
+                            child: ListTile(
+                              leading: Container(
+                                padding: const EdgeInsets.all(8),
+                                decoration: BoxDecoration(
+                                  color: urgencyColor.withOpacity(0.1),
+                                  shape: BoxShape.circle,
+                                ),
+                                child: Icon(Icons.assignment_outlined,
+                                    color: urgencyColor),
+                              ),
+                              title: Text(deadline.title,
+                                  style: GoogleFonts.poppins(
+                                      fontWeight: FontWeight.bold)),
+                              subtitle: Text(
+                                  '${deadline.course} • $timeLeftText',
+                                  style:
+                                      GoogleFonts.poppins(color: Colors.grey)),
+                              trailing: Checkbox(
+                                activeColor: const Color(0xFF186CAC),
+                                value: deadline.isCompleted,
+                                onChanged: (value) {
+                                  if (value != null) {
+                                    deadlineController.markDeadlineCompleted(
+                                        deadline.id, value);
+                                  }
+                                },
+                              ),
+                            ),
+                          );
+                        },
+                      ),
           ],
-        ),
-      ],
-    ));
+        ));
   }
 
   Widget _buildWelcomeCard(String today) {
@@ -640,8 +604,8 @@ class _DashboardState extends State<Dashboard> {
     final greeting = hour < 12
         ? 'Good Morning'
         : hour < 17
-        ? 'Good Afternoon'
-        : 'Good Evening';
+            ? 'Good Afternoon'
+            : 'Good Evening';
 
     final String displayName = profileController.isNewUser.value
         ? 'Student'
@@ -650,15 +614,16 @@ class _DashboardState extends State<Dashboard> {
     return Container(
       width: double.infinity,
       decoration: BoxDecoration(
-          borderRadius: BorderRadius.circular(15), color: Colors.white,
-      boxShadow: [
-        BoxShadow(
-          color: Colors.black.withOpacity(0.1),
-          spreadRadius: 2,
-          blurRadius: 8,
-          offset: Offset(0, 4),
-        ),
-      ],
+        borderRadius: BorderRadius.circular(15),
+        color: Colors.white,
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withOpacity(0.1),
+            spreadRadius: 2,
+            blurRadius: 8,
+            offset: Offset(0, 4),
+          ),
+        ],
       ),
       child: Padding(
         padding: const EdgeInsets.all(16),
@@ -676,33 +641,36 @@ class _DashboardState extends State<Dashboard> {
             const SizedBox(height: 10),
             profileController.isNewUser.value
                 ? Row(
-              children: [
-                Icon(Icons.info_outline, color: Color(0xFF186CAC), size: 16),
-                SizedBox(width: 8),
-                Expanded(
-                  child: Text(
-                    "Complete your profile to get personalized content",
-                    style: GoogleFonts.poppins(fontSize: 14, color: Color(0xFF186CAC)),
-                  ),
-                ),
-                TextButton(
-                  onPressed: () => Get.to(() => ProfileCreationPage()),
-                  child: Text("Complete Now",
-                      style: GoogleFonts.poppins(
-                          color: Colors.deepOrange,
-                          fontWeight: FontWeight.bold
-                      )
-                  ),
-                )
-              ],
-            )
+                    children: [
+                      Icon(Icons.info_outline,
+                          color: Color(0xFF186CAC), size: 16),
+                      SizedBox(width: 8),
+                      Expanded(
+                        child: Text(
+                          "Complete your profile to get personalized content",
+                          style: GoogleFonts.poppins(
+                              fontSize: 14, color: Color(0xFF186CAC)),
+                        ),
+                      ),
+                      TextButton(
+                        onPressed: () => Get.to(() => ProfileCreationPage()),
+                        child: Text(
+                          "Complete Now",
+                          style: GoogleFonts.poppins(
+                              color: Colors.deepOrange,
+                              fontWeight: FontWeight.bold),
+                        ),
+                      ),
+                    ],
+                  )
                 : Text("Welcome back! Here's your day at a glance.",
-                style: GoogleFonts.poppins(fontSize: 14)),
+                    style: GoogleFonts.poppins(fontSize: 14)),
           ],
         ),
       ),
     );
   }
+
   Widget _buildQuickAccessGrid() {
     final List<Map<String, dynamic>> quickAccessItems = [
       {
@@ -721,8 +689,8 @@ class _DashboardState extends State<Dashboard> {
         'screen': () => FeesScreen(),
       },
       {
-        'title': 'Notes',
-        'icon': Icons.note_alt,
+        'title': 'Feedback',
+        'icon': Icons.help,
         'screen': () => NotesScreen(),
       },
     ];
@@ -752,9 +720,7 @@ class _DashboardState extends State<Dashboard> {
           itemBuilder: (context, index) {
             final item = quickAccessItems[index];
             return InkWell(
-              onTap: () {
-                Get.to(item['screen']());
-              },
+              onTap: () => Get.to(item['screen']()),
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
@@ -788,12 +754,6 @@ class _DashboardState extends State<Dashboard> {
       ],
     );
   }
-
-
-
-
-
-
 
   void _checkAndNavigateToProfile(BuildContext context) {
     if (profileController.profile.value == null) {
@@ -833,8 +793,8 @@ class _DashboardState extends State<Dashboard> {
             label: 'Calendar',
           ),
           BottomNavigationBarItem(
-            icon: Icon(Icons.chat_bubble_outline),
-            label: 'Messages',
+            icon: Icon(Icons.settings),
+            label: 'Settings',
           ),
           BottomNavigationBarItem(
             icon: Icon(Icons.person),
@@ -850,7 +810,7 @@ class _DashboardState extends State<Dashboard> {
               Get.toNamed('/calendar');
               break;
             case 2:
-              Get.toNamed('/messages');
+              Get.toNamed('/settings');
               break;
             case 3:
               _checkAndNavigateToProfile(context);
@@ -863,7 +823,7 @@ class _DashboardState extends State<Dashboard> {
 
   Widget _buildEmptyDeadlinesState() {
     return Container(
-      padding: EdgeInsets.symmetric(vertical: 14, horizontal: 10),
+      padding: EdgeInsets.symmetric(vertical: 14, horizontal: 20),
       decoration: BoxDecoration(
         color: Colors.white,
         boxShadow: [
@@ -907,7 +867,7 @@ class _DashboardState extends State<Dashboard> {
 
   Widget _buildEmptyRoutineState() {
     return Container(
-      padding: EdgeInsets.symmetric(vertical: 16, horizontal: 58),
+      padding: EdgeInsets.symmetric(vertical: 16, horizontal: 78),
       decoration: BoxDecoration(
         color: Colors.white,
         boxShadow: [
