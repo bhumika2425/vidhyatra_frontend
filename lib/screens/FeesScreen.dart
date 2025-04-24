@@ -25,8 +25,9 @@ class FeesScreen extends StatelessWidget {
     return Scaffold(
       backgroundColor: Colors.grey[200],
       appBar: AppBar(
+        iconTheme: IconThemeData(color: Colors.white),
         leading: IconButton(
-          icon: Icon(Icons.arrow_back, color: Colors.white),
+          icon: Icon(Icons.arrow_back),
           onPressed: () => Get.back(),
         ),
         backgroundColor: const Color(0xFF186CAC),
@@ -38,6 +39,11 @@ class FeesScreen extends StatelessWidget {
             // fontWeight: FontWeight.bold,
           ),
         ),
+        actions: [
+          IconButton(onPressed: (){
+            Get.toNamed("/payment-history");
+          }, icon: Icon(Icons.history))
+        ],
         elevation: 0,
       ),
       body: Stack(
