@@ -1,269 +1,3 @@
-// import 'package:flutter/material.dart';
-// import 'package:google_fonts/google_fonts.dart';
-// import 'package:get/get.dart';
-// import 'package:intl/intl.dart';
-// import '../controllers/AppointmentController.dart';
-//
-// // Dialog for adding time slots
-// class TimeSlotDialog extends StatelessWidget {
-//   TimeSlotDialog({Key? key}) : super(key: key);
-//
-//   final startTimeController = TextEditingController();
-//   final endTimeController = TextEditingController();
-//   final controller = Get.put(AppointmentController());
-//
-//   @override
-//   Widget build(BuildContext context) {
-//     return AlertDialog(
-//       title: Text('Add Time Slot', style: GoogleFonts.poppins(fontWeight: FontWeight.bold)),
-//       content: Column(
-//         mainAxisSize: MainAxisSize.min,
-//         children: [
-//           TextField(
-//             controller: startTimeController,
-//             decoration: InputDecoration(
-//               labelText: 'Start Time (HH:MM)',
-//               labelStyle: GoogleFonts.poppins(),
-//             ),
-//             readOnly: true,
-//             onTap: () async {
-//               final TimeOfDay? pickedTime = await showTimePicker(
-//                 context: context,
-//                 initialTime: TimeOfDay.now(),
-//               );
-//               if (pickedTime != null) {
-//                 startTimeController.text = '${pickedTime.hour}:${pickedTime.minute.toString().padLeft(2, '0')}';
-//               }
-//             },
-//           ),
-//           const SizedBox(height: 16),
-//           TextField(
-//             controller: endTimeController,
-//             decoration: InputDecoration(
-//               labelText: 'End Time (HH:MM)',
-//               labelStyle: GoogleFonts.poppins(),
-//             ),
-//             readOnly: true,
-//             onTap: () async {
-//               final TimeOfDay? pickedTime = await showTimePicker(
-//                 context: context,
-//                 initialTime: TimeOfDay.now(),
-//               );
-//               if (pickedTime != null) {
-//                 endTimeController.text = '${pickedTime.hour}:${pickedTime.minute.toString().padLeft(2, '0')}';
-//               }
-//             },
-//           ),
-//         ],
-//       ),
-//       actions: [
-//         TextButton(
-//           onPressed: () => Get.back(),
-//           child: Text('Cancel', style: GoogleFonts.poppins()),
-//         ),
-//         ElevatedButton(
-//           onPressed: () {
-//             if (startTimeController.text.isEmpty || endTimeController.text.isEmpty) {
-//               Get.snackbar('Error', 'Please select both start and end times');
-//               return;
-//             }
-//
-//             final startParts = startTimeController.text.split(':');
-//             final endParts = endTimeController.text.split(':');
-//
-//             final selectedDate = controller.selectedDate.value;
-//             final startTime = DateTime(
-//               selectedDate.year,
-//               selectedDate.month,
-//               selectedDate.day,
-//               int.parse(startParts[0]),
-//               int.parse(startParts[1]),
-//             );
-//
-//             final endTime = DateTime(
-//               selectedDate.year,
-//               selectedDate.month,
-//               selectedDate.day,
-//               int.parse(endParts[0]),
-//               int.parse(endParts[1]),
-//             );
-//
-//             if (endTime.isBefore(startTime) || endTime.isAtSameMomentAs(startTime)) {
-//               Get.snackbar('Error', 'End time must be after start time');
-//               return;
-//             }
-//
-//             controller.addTimeSlot(startTime, endTime);
-//             Get.back();
-//           },
-//           child: Text('Save', style: GoogleFonts.poppins()),
-//         ),
-//       ],
-//     );
-//   }
-// }
-//
-// // Main widget for TeacherAppointment
-// class TeacherAppointment extends StatelessWidget {
-//   const TeacherAppointment({super.key});
-//
-//   @override
-//   Widget build(BuildContext context) {
-//     // Initialize the controller
-//     final controller = Get.put(AppointmentController());
-//
-//     return Scaffold(
-//       appBar: AppBar(
-//         title: Text('Manage Appointments', style: GoogleFonts.poppins()),
-//         actions: [
-//           IconButton(
-//             icon: const Icon(Icons.calendar_today),
-//             onPressed: () async {
-//               final DateTime? picked = await showDatePicker(
-//                 context: context,
-//                 initialDate: controller.selectedDate.value,
-//                 firstDate: DateTime.now(),
-//                 lastDate: DateTime.now().add(const Duration(days: 90)),
-//               );
-//
-//               if (picked != null) {
-//                 controller.selectDate(picked);
-//               }
-//             },
-//           ),
-//         ],
-//       ),
-//       body: Column(
-//         children: [
-//           // Date display
-//           Container(
-//             padding: const EdgeInsets.all(16),
-//             color: Colors.blue.shade50,
-//             child: Obx(() => Row(
-//               mainAxisAlignment: MainAxisAlignment.spaceBetween,
-//               children: [
-//                 Text(
-//                   'Date: ${DateFormat('EEEE, MMM d, yyyy').format(controller.selectedDate.value)}',
-//                   style: GoogleFonts.poppins(
-//                     fontWeight: FontWeight.w600,
-//                     fontSize: 16,
-//                   ),
-//                 ),
-//                 Text(
-//                   'Slots: ${_getSlotCount(controller)}',
-//                   style: GoogleFonts.poppins(
-//                     fontWeight: FontWeight.w500,
-//                     color: _getSlotCount(controller) >= 10 ? Colors.red : Colors.black,
-//                   ),
-//                 ),
-//               ],
-//             )),
-//           ),
-//
-//           // Time slots list
-//           Expanded(
-//             child: Obx(() {
-//               final formattedDate = DateFormat('yyyy-MM-dd').format(controller.selectedDate.value);
-//               final slots = controller.dateTimeSlots[formattedDate] ?? [];
-//
-//               if (slots.isEmpty) {
-//                 return Center(
-//                   child: Text(
-//                     'No time slots for this date.\nAdd slots using the + button.',
-//                     textAlign: TextAlign.center,
-//                     style: GoogleFonts.poppins(fontSize: 16),
-//                   ),
-//                 );
-//               }
-//
-//               return ListView.builder(
-//                 padding: const EdgeInsets.all(16),
-//                 itemCount: slots.length,
-//                 itemBuilder: (context, index) {
-//                   final slot = slots[index];
-//                   return Card(
-//                     elevation: 2,
-//                     margin: const EdgeInsets.only(bottom: 12),
-//                     child: ListTile(
-//                       leading: CircleAvatar(
-//                         backgroundColor: slot.isBooked ? Colors.red.shade100 : Colors.green.shade100,
-//                         child: Icon(
-//                           slot.isBooked ? Icons.event_busy : Icons.event_available,
-//                           color: slot.isBooked ? Colors.red : Colors.green,
-//                         ),
-//                       ),
-//                       title: Text(
-//                         '${DateFormat('h:mm a').format(slot.startTime)} - ${DateFormat('h:mm a').format(slot.endTime)}',
-//                         style: GoogleFonts.poppins(fontWeight: FontWeight.w600),
-//                       ),
-//                       subtitle: slot.isBooked
-//                           ? Text('Booked by: ${slot.studentName}', style: GoogleFonts.poppins())
-//                           : Text('Available', style: GoogleFonts.poppins()),
-//                       trailing: IconButton(
-//                         icon: const Icon(Icons.delete_outline),
-//                         onPressed: () {
-//                           if (slot.isBooked) {
-//                             Get.dialog(
-//                               AlertDialog(
-//                                 title: Text('Slot Booked', style: GoogleFonts.poppins()),
-//                                 content: Text(
-//                                   'This slot is already booked by a student. Deleting it will cancel their appointment.',
-//                                   style: GoogleFonts.poppins(),
-//                                 ),
-//                                 actions: [
-//                                   TextButton(
-//                                     onPressed: () => Get.back(),
-//                                     child: Text('Cancel', style: GoogleFonts.poppins()),
-//                                   ),
-//                                   ElevatedButton(
-//                                     onPressed: () {
-//                                       controller.deleteTimeSlot(formattedDate, slot.id);
-//                                       Get.back();
-//                                     },
-//                                     style: ElevatedButton.styleFrom(backgroundColor: Colors.red),
-//                                     child: Text('Delete Anyway', style: GoogleFonts.poppins()),
-//                                   ),
-//                                 ],
-//                               ),
-//                             );
-//                           } else {
-//                             controller.deleteTimeSlot(formattedDate, slot.id);
-//                           }
-//                         },
-//                       ),
-//                     ),
-//                   );
-//                 },
-//               );
-//             }),
-//           ),
-//         ],
-//       ),
-//       floatingActionButton: Obx(() {
-//         final formattedDate = DateFormat('yyyy-MM-dd').format(controller.selectedDate.value);
-//         final slots = controller.dateTimeSlots[formattedDate] ?? [];
-//
-//         // Only show FAB if we have less than 10 slots
-//         if (slots.length >= 10) {
-//           return const SizedBox.shrink();
-//         }
-//
-//         return FloatingActionButton(
-//           onPressed: () {
-//             Get.dialog(TimeSlotDialog());
-//           },
-//           child: const Icon(Icons.add),
-//         );
-//       }),
-//     );
-//   }
-//
-//   int _getSlotCount(AppointmentController controller) {
-//     final formattedDate = DateFormat('yyyy-MM-dd').format(controller.selectedDate.value);
-//     return controller.dateTimeSlots[formattedDate]?.length ?? 0;
-//   }
-// }
-
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:get/get.dart';
@@ -280,10 +14,19 @@ class TeacherAppointment extends StatelessWidget {
 
     return Scaffold(
       appBar: AppBar(
-        title: Text('Manage Appointments', style: GoogleFonts.poppins()),
+        iconTheme: IconThemeData(color: Colors.white),
+        leading: IconButton(
+          icon: Icon(Icons.arrow_back),
+          onPressed: () => Get.back(),
+        ),
+        title: Text(
+          'Manage Appointments',
+          style: GoogleFonts.poppins(color: Colors.white),
+        ),
+        backgroundColor: const Color(0xFF186CAC),
         actions: [
           IconButton(
-            icon: const Icon(Icons.calendar_today),
+            icon: const Icon(Icons.calendar_today, color: Colors.white),
             onPressed: () async {
               final DateTime? picked = await showDatePicker(
                 context: context,
@@ -304,7 +47,7 @@ class TeacherAppointment extends StatelessWidget {
           // Date display
           Container(
             padding: const EdgeInsets.all(16),
-            color: Colors.blue.shade50,
+            color: Colors.white,
             child: Obx(() => Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
@@ -313,13 +56,14 @@ class TeacherAppointment extends StatelessWidget {
                   style: GoogleFonts.poppins(
                     fontWeight: FontWeight.w600,
                     fontSize: 16,
+                    color: Colors.black,
                   ),
                 ),
                 Text(
                   'Slots: ${_getSlotCount(controller)}',
                   style: GoogleFonts.poppins(
                     fontWeight: FontWeight.w500,
-                    color: _getSlotCount(controller) >= 10 ? Colors.red : Colors.black,
+                    color: _getSlotCount(controller) >= 10 ? Colors.deepOrange : Colors.black,
                   ),
                 ),
               ],
@@ -330,7 +74,7 @@ class TeacherAppointment extends StatelessWidget {
           Expanded(
             child: Obx(() {
               if (controller.isLoading.value) {
-                return const Center(child: CircularProgressIndicator());
+                return const Center(child: CircularProgressIndicator(color: Color(0xFF186CAC)));
               }
 
               final formattedDate = DateFormat('yyyy-MM-dd').format(controller.selectedDate.value);
@@ -341,7 +85,7 @@ class TeacherAppointment extends StatelessWidget {
                   child: Text(
                     'No time slots for this date.\nAdd slots using the + button.',
                     textAlign: TextAlign.center,
-                    style: GoogleFonts.poppins(fontSize: 16),
+                    style: GoogleFonts.poppins(fontSize: 16, color: Colors.black),
                   ),
                 );
               }
@@ -354,44 +98,51 @@ class TeacherAppointment extends StatelessWidget {
                   return Card(
                     elevation: 2,
                     margin: const EdgeInsets.only(bottom: 12),
+                    color: Colors.white,
                     child: ListTile(
                       leading: CircleAvatar(
-                        backgroundColor: slot.isBooked ? Colors.red.shade100 : Colors.green.shade100,
+                        backgroundColor: slot.isBooked ? Colors.deepOrange.withOpacity(0.1) : Colors.black.withOpacity(0.1),
                         child: Icon(
                           slot.isBooked ? Icons.event_busy : Icons.event_available,
-                          color: slot.isBooked ? Colors.red : Colors.green,
+                          color: slot.isBooked ? Colors.deepOrange : Colors.black,
                         ),
                       ),
                       title: Text(
                         '${DateFormat('h:mm a').format(slot.startTime)} - ${DateFormat('h:mm a').format(slot.endTime)}',
-                        style: GoogleFonts.poppins(fontWeight: FontWeight.w600),
+                        style: GoogleFonts.poppins(fontWeight: FontWeight.w600, color: Colors.black),
                       ),
                       subtitle: slot.isBooked
-                          ? Text('Booked by: ${slot.studentName ?? 'Unknown'}', style: GoogleFonts.poppins())
-                          : Text('Available', style: GoogleFonts.poppins()),
+                          ? Text(
+                        'Booked by: ${slot.studentName ?? 'Unknown'}',
+                        style: GoogleFonts.poppins(color: Colors.black),
+                      )
+                          : Text(
+                        'Available',
+                        style: GoogleFonts.poppins(color: Colors.black),
+                      ),
                       trailing: IconButton(
-                        icon: const Icon(Icons.delete_outline),
+                        icon: const Icon(Icons.delete_outline, color: Colors.deepOrange),
                         onPressed: () {
                           if (slot.isBooked) {
                             Get.dialog(
                               AlertDialog(
-                                title: Text('Slot Booked', style: GoogleFonts.poppins()),
+                                title: Text('Slot Booked', style: GoogleFonts.poppins(color: Colors.black)),
                                 content: Text(
                                   'This slot is already booked by a student. Deleting it will cancel their appointment.',
-                                  style: GoogleFonts.poppins(),
+                                  style: GoogleFonts.poppins(color: Colors.black),
                                 ),
                                 actions: [
                                   TextButton(
                                     onPressed: () => Get.back(),
-                                    child: Text('Cancel', style: GoogleFonts.poppins()),
+                                    child: Text('Cancel', style: GoogleFonts.poppins(color: Colors.black)),
                                   ),
                                   ElevatedButton(
                                     onPressed: () {
                                       controller.deleteTimeSlot(formattedDate, slot.id);
                                       Get.back();
                                     },
-                                    style: ElevatedButton.styleFrom(backgroundColor: Colors.red),
-                                    child: Text('Delete Anyway', style: GoogleFonts.poppins()),
+                                    style: ElevatedButton.styleFrom(backgroundColor: Colors.deepOrange),
+                                    child: Text('Delete Anyway', style: GoogleFonts.poppins(color: Colors.white)),
                                   ),
                                 ],
                               ),
@@ -421,7 +172,8 @@ class TeacherAppointment extends StatelessWidget {
           onPressed: () {
             Get.dialog(TimeSlotDialog());
           },
-          child: const Icon(Icons.add),
+          backgroundColor: const Color(0xFF186CAC),
+          child: const Icon(Icons.add, color: Colors.white),
         );
       }),
     );
@@ -432,7 +184,6 @@ class TeacherAppointment extends StatelessWidget {
     return controller.dateTimeSlots[formattedDate]?.length ?? 0;
   }
 }
-
 
 // Dialog for adding time slots
 class TimeSlotDialog extends StatelessWidget {
@@ -445,7 +196,11 @@ class TimeSlotDialog extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return AlertDialog(
-      title: Text('Add Time Slot', style: GoogleFonts.poppins(fontWeight: FontWeight.bold)),
+      title: Text(
+        'Add Time Slot',
+        style: GoogleFonts.poppins(fontWeight: FontWeight.bold, color: Colors.black),
+      ),
+      backgroundColor: Colors.white,
       content: Column(
         mainAxisSize: MainAxisSize.min,
         children: [
@@ -453,7 +208,13 @@ class TimeSlotDialog extends StatelessWidget {
             controller: startTimeController,
             decoration: InputDecoration(
               labelText: 'Start Time (HH:MM)',
-              labelStyle: GoogleFonts.poppins(),
+              labelStyle: GoogleFonts.poppins(color: Colors.black),
+              enabledBorder: const UnderlineInputBorder(
+                borderSide: BorderSide(color: Colors.black),
+              ),
+              focusedBorder: const UnderlineInputBorder(
+                borderSide: BorderSide(color: Color(0xFF186CAC)),
+              ),
             ),
             readOnly: true,
             onTap: () async {
@@ -471,7 +232,13 @@ class TimeSlotDialog extends StatelessWidget {
             controller: endTimeController,
             decoration: InputDecoration(
               labelText: 'End Time (HH:MM)',
-              labelStyle: GoogleFonts.poppins(),
+              labelStyle: GoogleFonts.poppins(color: Colors.black),
+              enabledBorder: const UnderlineInputBorder(
+                borderSide: BorderSide(color: Colors.black),
+              ),
+              focusedBorder: const UnderlineInputBorder(
+                borderSide: BorderSide(color: Color(0xFF186CAC)),
+              ),
             ),
             readOnly: true,
             onTap: () async {
@@ -489,12 +256,13 @@ class TimeSlotDialog extends StatelessWidget {
       actions: [
         TextButton(
           onPressed: () => Get.back(),
-          child: Text('Cancel', style: GoogleFonts.poppins()),
+          child: Text('Cancel', style: GoogleFonts.poppins(color: Colors.black)),
         ),
         ElevatedButton(
           onPressed: () {
             if (startTimeController.text.isEmpty || endTimeController.text.isEmpty) {
-              Get.snackbar('Error', 'Please select both start and end times');
+              Get.snackbar('Error', 'Please select both start and end times',
+                  backgroundColor: Colors.deepOrange, colorText: Colors.white);
               return;
             }
 
@@ -519,14 +287,16 @@ class TimeSlotDialog extends StatelessWidget {
             );
 
             if (endTime.isBefore(startTime) || endTime.isAtSameMomentAs(startTime)) {
-              Get.snackbar('Error', 'End time must be after start time');
+              Get.snackbar('Error', 'End time must be after start time',
+                  backgroundColor: Colors.deepOrange, colorText: Colors.white);
               return;
             }
 
             controller.addTimeSlot(startTime, endTime);
             Get.back();
           },
-          child: Text('Save', style: GoogleFonts.poppins()),
+          style: ElevatedButton.styleFrom(backgroundColor: const Color(0xFF186CAC)),
+          child: Text('Save', style: GoogleFonts.poppins(color: Colors.white)),
         ),
       ],
     );

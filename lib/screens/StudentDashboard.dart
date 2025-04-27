@@ -5,6 +5,7 @@ import 'package:google_fonts/google_fonts.dart';
 import 'package:intl/intl.dart';
 import 'package:percent_indicator/circular_percent_indicator.dart';
 import 'package:vidhyatra_flutter/screens/FeesScreen.dart';
+import 'package:vidhyatra_flutter/screens/LostAndFound.dart';
 import 'package:vidhyatra_flutter/screens/SettingsScreen.dart';
 import 'package:vidhyatra_flutter/screens/TeacherListScreen.dart';
 import 'package:vidhyatra_flutter/screens/blog_posting_page.dart';
@@ -242,17 +243,29 @@ class _DashboardState extends State<Dashboard> {
               Get.defaultDialog(
                 title: 'Logout',
                 content: Text('Are you sure you want to logout?'),
-                textConfirm: 'Yes',
-                textCancel: 'No',
-                confirmTextColor: Colors.white,
-                onConfirm: () {
-                  // First close the dialog, then logout
-                  Get.back();
-                  loginController.logout();
-                },
+                confirm: ElevatedButton(
+                  style: ElevatedButton.styleFrom(
+                    // backgroundColor: Colors.red, // Yes button color
+                  ),
+                  onPressed: () {
+                    Get.back(); // Close the dialog
+                    loginController.logout();
+                  },
+                  child: Text('Yes', style: TextStyle(color: Color(0xFF186CAC))),
+                ),
+                cancel: ElevatedButton(
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: Color(0xFF186CAC), // No button color
+                  ),
+                  onPressed: () {
+                    Get.back(); // Just close the dialog
+                  },
+                  child: Text('No', style: TextStyle(color: Colors.white)),
+                ),
               );
             },
           ),
+
         ],
       ),
     );
@@ -689,9 +702,9 @@ class _DashboardState extends State<Dashboard> {
         'screen': () => FeesScreen(),
       },
       {
-        'title': 'Feedback',
-        'icon': Icons.help,
-        'screen': () => NotesScreen(),
+        'title': 'Lost & Found',
+        'icon': Icons.find_in_page,
+        'screen': () => LostAndFoundView(),
       },
     ];
 

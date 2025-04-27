@@ -73,47 +73,47 @@ class LoginController extends GetxController {
           token.value = tokenValue;
           userId.value = userIdValue;
 
-          print(
-              "✅ Login Successful - Token: $tokenValue, UserID: $userIdValue, Role: $userRole, isAdmin: $isAdmin");
+          // print(
+          //     "✅ Login Successful - Token: $tokenValue, UserID: $userIdValue, Role: $userRole, isAdmin: $isAdmin");
 
           Get.snackbar("Success", "Logged in successfully!",
               snackPosition: SnackPosition.TOP);
 
           // Debugging role-based navigation
           if (isAdmin) {
-            print("🔹 Navigating to /admin-dashboard");
+
             Get.toNamed('/admin-dashboard');
           } else if (userRole.toLowerCase() == 'teacher') {
-            print("🔹 Navigating to /teacher-dashboard");
+
             Get.to(DashboardView());
           } else if (userRole.toLowerCase() == 'student') {
-            print("🔹 Navigating to /student-dashboard");
+
             Get.toNamed('/student-dashboard');
           } else {
-            print("❌ Invalid Role: $userRole");
+            // print("❌ Invalid Role: $userRole");
             Get.snackbar("Error", "Invalid role assigned to user.",
                 snackPosition: SnackPosition.TOP);
           }
         } else {
-          print("❌ Missing token or user data in response");
+          // print("❌ Missing token or user data in response");
           Get.snackbar("Login Error", "Invalid response from server",
               snackPosition: SnackPosition.TOP);
         }
       } else {
         final responseData = jsonDecode(response.body);
         String errorMessage = responseData['message'] ?? "Invalid credentials";
-        print("❌ Login failed - Server Response: $errorMessage");
+        // print("❌ Login failed - Server Response: $errorMessage");
         Get.snackbar(
             "Login Error", errorMessage, snackPosition: SnackPosition.TOP);
       }
     } on http.ClientException catch (e) {
       isLoading.value = false;
-      print("❌ Network Error: ${e.toString()}");
+      // print("❌ Network Error: ${e.toString()}");
       Get.snackbar("Network Error", "Please check your internet connection.",
           snackPosition: SnackPosition.TOP);
     } catch (error) {
       isLoading.value = false;
-      print("❌ Unexpected Error: ${error.toString()}");
+      // print("❌ Unexpected Error: ${error.toString()}");
       Get.snackbar("Error", "An error occurred. Please try again.",
           snackPosition: SnackPosition.TOP);
     }
@@ -121,24 +121,29 @@ class LoginController extends GetxController {
 
   Future<void> logout() async {
     try {
-
       // Reset observable values
       token.value = '';
       user.value = null;
       userId.value = 0;
 
-      // Navigate to login screen
-      Get.offAllNamed('/login');
+      // Show success snackbar
+      Get.snackbar(
+        "Success",
+        "Logged out successfully!",
+        snackPosition: SnackPosition.TOP,
+        duration: Duration(seconds: 3),
+      );
+
+      Get.offAllNamed('/login', arguments: {'loggedOut': true});
     } catch (e) {
-      print('❌ Logout Error: $e');
       Get.snackbar(
         'Error',
         'Failed to logout properly. Please try again.',
-        backgroundColor: Colors.red.withOpacity(0.1),
-        colorText: Colors.red,
+
       );
     }
   }
+
 }
 
 

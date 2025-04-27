@@ -8,6 +8,7 @@ import 'package:vidhyatra_flutter/controllers/LoginController.dart';
 import 'package:vidhyatra_flutter/screens/TeacherAppointment.dart';
 import 'package:vidhyatra_flutter/screens/Calendar.dart';
 import 'package:vidhyatra_flutter/screens/DashboardTabs.dart';
+import 'package:vidhyatra_flutter/screens/TeacherDeadlinePosting.dart';
 import 'package:vidhyatra_flutter/screens/login.dart';
 import '../controllers/tryController.dart';
 import '../controllers/BlogController.dart';
@@ -112,7 +113,7 @@ class DashboardView extends GetView<DashboardController> {
           'Deadlines',
           Icons.assignment_late,
           Colors.deepOrange,
-              () => Get.to(() => Calendar()), // Update to appropriate page later
+              () => Get.to(() => DeadlineHomePage()), // Update to appropriate page later
           'Manage assignment deadlines',
           constraints,
         ),

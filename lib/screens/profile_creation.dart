@@ -6,6 +6,7 @@ import 'package:get/get.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:http/http.dart' as http;
 import 'package:vidhyatra_flutter/constants/api_endpoints.dart';
+import 'package:vidhyatra_flutter/controllers/ProfileController.dart';
 import '../controllers/LoginController.dart';
 
 class ProfileCreationPage extends StatefulWidget {
@@ -112,6 +113,7 @@ class _ProfileCreationPageState extends State<ProfileCreationPage> {
 
       try {
         final response = await request.send();
+        final ProfileController profileController = Get.put(ProfileController());
 
         if (response.statusCode == 201) {
           ScaffoldMessenger.of(context).showSnackBar(
@@ -121,28 +123,17 @@ class _ProfileCreationPageState extends State<ProfileCreationPage> {
               behavior: SnackBarBehavior.floating,
             ),
           );
+          profileController.fetchProfileData(token);
           Navigator.pop(context);
         } else {
           final responseData = await response.stream.bytesToString();
           final errorData = json.decode(responseData);
           final errorMessage = errorData['message'] ?? 'Profile creation failed';
 
-          ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(
-              content: Text(errorMessage),
-              backgroundColor: Colors.red,
-              behavior: SnackBarBehavior.floating,
-            ),
-          );
+          Get.snackbar('Error', errorMessage);
         }
       } catch (error) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Text('Error creating profile. Please try again.'),
-            backgroundColor: Colors.red,
-            behavior: SnackBarBehavior.floating,
-          ),
-        );
+        Get.snackbar('Error', 'Error creating profile. Please try again.');
       }
     }
   }

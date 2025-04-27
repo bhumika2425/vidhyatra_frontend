@@ -17,16 +17,20 @@ class PaymentDetailsView extends StatelessWidget {
 
   PaymentDetailsView({Key? key, required this.payment}) : super(key: key);
 
-  String capitalizeFirst(String s) => s.isNotEmpty ? s[0].toUpperCase() + s.substring(1) : s;
+  String capitalizeFirst(String s) =>
+      s.isNotEmpty ? s[0].toUpperCase() + s.substring(1) : s;
 
-  Future<Uint8List> _generatePdfIsolate(PaymentHistoryModel payment, BuildContext context) async {
+  Future<Uint8List> _generatePdfIsolate(PaymentHistoryModel payment,
+      BuildContext context) async {
     final pdf = pw.Document();
     try {
-      final fontData = await DefaultAssetBundle.of(context).load('assets/fonts/Roboto-Regular.ttf');
+      final fontData = await DefaultAssetBundle.of(context).load(
+          'assets/fonts/Roboto-Regular.ttf');
       if (fontData.lengthInBytes == 0) {
         throw Exception('Roboto-Regular.ttf is empty or not found');
       }
-      final boldFontData = await DefaultAssetBundle.of(context).load('assets/fonts/Roboto-Bold.ttf');
+      final boldFontData = await DefaultAssetBundle.of(context).load(
+          'assets/fonts/Roboto-Bold.ttf');
       if (boldFontData.lengthInBytes == 0) {
         throw Exception('Roboto-Bold.ttf is empty or not found');
       }
@@ -45,39 +49,64 @@ class PaymentDetailsView extends StatelessWidget {
                   style: pw.TextStyle(fontSize: 24, font: boldFont),
                 ),
                 pw.SizedBox(height: 20),
-                pw.Text('Paid Fee ID: ${payment.paidFeesId}', style: pw.TextStyle(fontSize: 16, font: font)),
-                pw.Text('Fee Type: ${payment.feeType}', style: pw.TextStyle(fontSize: 16, font: font)),
-                pw.Text('Description: ${payment.feeDescription}', style: pw.TextStyle(fontSize: 16, font: font)),
-                pw.Text('Total Amount: Rs. ${payment.totalPrice}', style: pw.TextStyle(fontSize: 16, font: font)),
-                pw.Text('Payment Method: ${capitalizeFirst(payment.paymentMethod)}', style: pw.TextStyle(fontSize: 16, font: font)),
-                pw.Text('Status: ${capitalizeFirst(payment.status)}', style: pw.TextStyle(fontSize: 16, font: font)),
+                pw.Text('Paid Fee ID: ${payment.paidFeesId}',
+                    style: pw.TextStyle(fontSize: 16, font: font)),
+                pw.Text('Fee Type: ${payment.feeType}',
+                    style: pw.TextStyle(fontSize: 16, font: font)),
+                pw.Text('Description: ${payment.feeDescription}',
+                    style: pw.TextStyle(fontSize: 16, font: font)),
+                pw.Text('Total Amount: Rs. ${payment.totalPrice}',
+                    style: pw.TextStyle(fontSize: 16, font: font)),
                 pw.Text(
-                  'Paid Date: ${payment.paidDate.isNotEmpty ? DateFormat('MMM dd, yyyy').format(DateTime.parse(payment.paidDate)) : 'N/A'}',
+                    'Payment Method: ${capitalizeFirst(payment.paymentMethod)}',
+                    style: pw.TextStyle(fontSize: 16, font: font)),
+                pw.Text('Status: ${capitalizeFirst(payment.status)}',
+                    style: pw.TextStyle(fontSize: 16, font: font)),
+                pw.Text(
+                  'Paid Date: ${payment.paidDate.isNotEmpty
+                      ? DateFormat('MMM dd, yyyy').format(
+                      DateTime.parse(payment.paidDate))
+                      : 'N/A'}',
                   style: pw.TextStyle(fontSize: 16, font: font),
                 ),
                 pw.Text(
-                  'Created At: ${DateFormat('MMM dd, yyyy').format(DateTime.parse(payment.createdAt))}',
+                  'Created At: ${DateFormat('MMM dd, yyyy').format(
+                      DateTime.parse(payment.createdAt))}',
                   style: pw.TextStyle(fontSize: 16, font: font),
                 ),
                 pw.Text(
-                  'Updated At: ${DateFormat('MMM dd, yyyy').format(DateTime.parse(payment.updatedAt))}',
+                  'Updated At: ${DateFormat('MMM dd, yyyy').format(
+                      DateTime.parse(payment.updatedAt))}',
                   style: pw.TextStyle(fontSize: 16, font: font),
                 ),
-                pw.Text('User ID: ${payment.userId}', style: pw.TextStyle(fontSize: 16, font: font)),
-                pw.Text('Fee ID: ${payment.feeId}', style: pw.TextStyle(fontSize: 16, font: font)),
-                pw.Text('Original Fee Amount: Rs. ${payment.feeAmount}', style: pw.TextStyle(fontSize: 16, font: font)),
+                pw.Text('User ID: ${payment.userId}',
+                    style: pw.TextStyle(fontSize: 16, font: font)),
+                pw.Text('Fee ID: ${payment.feeId}',
+                    style: pw.TextStyle(fontSize: 16, font: font)),
+                pw.Text('Original Fee Amount: Rs. ${payment.feeAmount}',
+                    style: pw.TextStyle(fontSize: 16, font: font)),
                 pw.Text(
-                  'Due Date: ${payment.dueDate.isNotEmpty ? DateFormat('MMM dd, yyyy').format(DateTime.parse(payment.dueDate)) : 'N/A'}',
+                  'Due Date: ${payment.dueDate.isNotEmpty
+                      ? DateFormat('MMM dd, yyyy').format(
+                      DateTime.parse(payment.dueDate))
+                      : 'N/A'}',
                   style: pw.TextStyle(fontSize: 16, font: font),
                 ),
                 if (payment.payment != null) ...[
                   pw.SizedBox(height: 20),
-                  pw.Text('Payment Details:', style: pw.TextStyle(fontSize: 18, font: boldFont)),
-                  pw.Text('Transaction ID: ${payment.payment!.transactionId}', style: pw.TextStyle(fontSize: 16, font: font)),
-                  pw.Text('Amount: Rs. ${payment.payment!.amount}', style: pw.TextStyle(fontSize: 16, font: font)),
-                  pw.Text('Status: ${capitalizeFirst(payment.payment!.status)}', style: pw.TextStyle(fontSize: 16, font: font)),
+                  pw.Text('Payment Details:',
+                      style: pw.TextStyle(fontSize: 18, font: boldFont)),
+                  pw.Text('Transaction ID: ${payment.payment!.transactionId}',
+                      style: pw.TextStyle(fontSize: 16, font: font)),
+                  pw.Text('Amount: Rs. ${payment.payment!.amount}',
+                      style: pw.TextStyle(fontSize: 16, font: font)),
+                  pw.Text('Status: ${capitalizeFirst(payment.payment!.status)}',
+                      style: pw.TextStyle(fontSize: 16, font: font)),
                   pw.Text(
-                    'Payment Date: ${payment.payment!.paymentDate.isNotEmpty ? DateFormat('MMM dd, yyyy').format(DateTime.parse(payment.payment!.paymentDate)) : 'N/A'}',
+                    'Payment Date: ${payment.payment!.paymentDate.isNotEmpty
+                        ? DateFormat('MMM dd, yyyy').format(
+                        DateTime.parse(payment.payment!.paymentDate))
+                        : 'N/A'}',
                     style: pw.TextStyle(fontSize: 16, font: font),
                   ),
                 ],
@@ -96,12 +125,16 @@ class PaymentDetailsView extends StatelessWidget {
   Future<void> _generateAndDownloadPdf(BuildContext context) async {
     try {
       isGenerating.value = true;
-      final fontData = await DefaultAssetBundle.of(context).load('assets/fonts/Roboto-Regular.ttf');
+      final fontData = await DefaultAssetBundle.of(context).load(
+          'assets/fonts/Roboto-Regular.ttf');
       print('Roboto-Regular.ttf size: ${fontData.lengthInBytes} bytes');
-      final boldFontData = await DefaultAssetBundle.of(context).load('assets/fonts/Roboto-Bold.ttf');
+      final boldFontData = await DefaultAssetBundle.of(context).load(
+          'assets/fonts/Roboto-Bold.ttf');
       print('Roboto-Bold.ttf size: ${boldFontData.lengthInBytes} bytes');
       final bytes = await _generatePdfIsolate(payment, context);
-      if (await Permission.storage.request().isGranted) {
+      if (await Permission.storage
+          .request()
+          .isGranted) {
         final dir = await getApplicationDocumentsDirectory();
         final file = File('${dir.path}/receipt_${payment.paidFeesId}.pdf');
         await file.writeAsBytes(bytes);
@@ -143,162 +176,116 @@ class PaymentDetailsView extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Colors.grey[200],
+      backgroundColor: Colors.grey[100],
       appBar: AppBar(
         iconTheme: const IconThemeData(color: Colors.white),
-        backgroundColor: const Color(0xFF186CAC),
+        backgroundColor: Color(0xFF186CAC),
         title: Text(
           'Payment Details',
           style: GoogleFonts.poppins(
             color: Colors.white,
-            fontSize: 19,
+            fontSize: 20,
+            fontWeight: FontWeight.w600,
           ),
         ),
-        elevation: 0,
+
       ),
       body: SafeArea(
         child: SingleChildScrollView(
-          padding: const EdgeInsets.all(16),
+          padding: const EdgeInsets.all(20),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Card(
-                elevation: 2,
-                child: ConstrainedBox(
-                  constraints: BoxConstraints(
-                    maxHeight: MediaQuery.of(context).size.height * 0.4,
+              _buildCard(
+                title: 'Fee Information',
+                children: [
+                  _buildDetailRow('Fee Type', payment.feeType, context),
+                  _buildDetailRow(
+                      'Description', payment.feeDescription, context),
+                  _buildDetailRow(
+                      'Total Amount', 'Rs. ${payment.totalPrice}', context),
+                  _buildDetailRow(
+                      'Original Fee Amount', 'Rs. ${payment.feeAmount}',
+                      context),
+                  _buildDetailRow(
+                    'Due Date',
+                    payment.dueDate.isNotEmpty
+                        ? DateFormat('MMM dd, yyyy').format(
+                        DateTime.parse(payment.dueDate))
+                        : 'N/A',
+                    context,
                   ),
-                  child: SingleChildScrollView(
-                    child: Padding(
-                      padding: const EdgeInsets.all(16),
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Text(
-                            'Fee Information',
-                            style: GoogleFonts.poppins(
-                              fontSize: 18,
-                              fontWeight: FontWeight.bold,
-                            ),
-                          ),
-                          const SizedBox(height: 8),
-                          _buildDetailRow('Paid Fee ID', payment.paidFeesId),
-                          _buildDetailRow('Fee Type', payment.feeType),
-                          _buildDetailRow('Description', payment.feeDescription),
-                          _buildDetailRow('Total Amount', 'Rs. ${payment.totalPrice}'),
-                          _buildDetailRow('Original Fee Amount', 'Rs. ${payment.feeAmount}'),
-                          _buildDetailRow(
-                            'Due Date',
-                            payment.dueDate.isNotEmpty
-                                ? DateFormat('MMM dd, yyyy').format(DateTime.parse(payment.dueDate))
-                                : 'N/A',
-                          ),
-                          _buildDetailRow('Fee ID', payment.feeId.toString()),
-                        ],
-                      ),
-                    ),
-                  ),
-                ),
+                ],
               ),
-              const SizedBox(height: 16),
-              Card(
-                elevation: 2,
-                child: ConstrainedBox(
-                  constraints: BoxConstraints(
-                    maxHeight: MediaQuery.of(context).size.height * 0.4,
+              const SizedBox(height: 20),
+              _buildCard(
+                title: 'Payment Information',
+                children: [
+                  _buildDetailRow(
+                      'Payment Method', payment.paymentMethod, context),
+                  _buildDetailRow('Status', payment.status, context),
+                  _buildDetailRow(
+                    'Paid Date',
+                    payment.paidDate.isNotEmpty
+                        ? DateFormat('MMM dd, yyyy').format(
+                        DateTime.parse(payment.paidDate))
+                        : 'N/A',
+                    context,
                   ),
-                  child: SingleChildScrollView(
-                    child: Padding(
-                      padding: const EdgeInsets.all(16),
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Text(
-                            'Payment Information',
-                            style: GoogleFonts.poppins(
-                              fontSize: 18,
-                              fontWeight: FontWeight.bold,
-                            ),
-                          ),
-                          const SizedBox(height: 8),
-                          _buildDetailRow('Payment Method', payment.paymentMethod),
-                          _buildDetailRow('Status', payment.status),
-                          _buildDetailRow(
-                            'Paid Date',
-                            payment.paidDate.isNotEmpty
-                                ? DateFormat('MMM dd, yyyy').format(DateTime.parse(payment.paidDate))
-                                : 'N/A',
-                          ),
-                          _buildDetailRow(
-                            'Created At',
-                            DateFormat('MMM dd, yyyy').format(DateTime.parse(payment.createdAt)),
-                          ),
-                          _buildDetailRow(
-                            'Updated At',
-                            DateFormat('MMM dd, yyyy').format(DateTime.parse(payment.updatedAt)),
-                          ),
-                          _buildDetailRow('User ID', payment.userId.toString()),
-                        ],
-                      ),
-                    ),
-                  ),
-                ),
+                ],
               ),
               if (payment.payment != null) ...[
-                const SizedBox(height: 16),
-                Card(
-                  elevation: 2,
-                  child: ConstrainedBox(
-                    constraints: BoxConstraints(
-                      maxHeight: MediaQuery.of(context).size.height * 0.4,
+                const SizedBox(height: 20),
+                _buildCard(
+                  title: 'Transaction Details',
+                  children: [
+                    _buildDetailRow(
+                        'Transaction ID', payment.payment!.transactionId,
+                        context),
+                    _buildDetailRow(
+                        'Amount', 'Rs. ${payment.payment!.amount}', context),
+                    _buildDetailRow('Status', payment.payment!.status, context),
+                    _buildDetailRow(
+                      'Payment Date',
+                      payment.payment!.paymentDate.isNotEmpty
+                          ? DateFormat('MMM dd, yyyy').format(
+                          DateTime.parse(payment.payment!.paymentDate))
+                          : 'N/A',
+                      context,
                     ),
-                    child: SingleChildScrollView(
-                      child: Padding(
-                        padding: const EdgeInsets.all(16),
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            Text(
-                              'Transaction Details',
-                              style: GoogleFonts.poppins(
-                                fontSize: 18,
-                                fontWeight: FontWeight.bold,
-                              ),
-                            ),
-                            const SizedBox(height: 8),
-                            _buildDetailRow('Transaction ID', payment.payment!.transactionId),
-                            _buildDetailRow('Amount', 'Rs. ${payment.payment!.amount}'),
-                            _buildDetailRow('Status', payment.payment!.status),
-                            _buildDetailRow(
-                              'Payment Date',
-                              payment.payment!.paymentDate.isNotEmpty
-                                  ? DateFormat('MMM dd, yyyy').format(DateTime.parse(payment.payment!.paymentDate))
-                                  : 'N/A',
-                            ),
-                          ],
-                        ),
-                      ),
-                    ),
-                  ),
+                  ],
                 ),
               ],
               const SizedBox(height: 24),
               Center(
-                child: Obx(() => ElevatedButton.icon(
-                  onPressed: isGenerating.value ? null : () => _generateAndDownloadPdf(context),
-                  icon: isGenerating.value
-                      ? const CircularProgressIndicator(color: Colors.white)
-                      : const Icon(Icons.download),
-                  label: Text(
-                    isGenerating.value ? 'Generating...' : 'Download Receipt',
-                    style: GoogleFonts.poppins(),
-                  ),
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor: const Color(0xFF186CAC),
-                    foregroundColor: Colors.white,
-                    padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 12),
-                  ),
-                )),
+                child: Obx(() =>
+                    ElevatedButton.icon(
+                      onPressed: isGenerating.value ? null : () =>
+                          _generateAndDownloadPdf(context),
+                      icon: isGenerating.value
+                          ? const CircularProgressIndicator(
+                          color: Colors.white, strokeWidth: 2)
+                          : const Icon(Icons.download, size: 20),
+                      label: Text(
+                        isGenerating.value
+                            ? 'Generating...'
+                            : 'Download Receipt',
+                        style: GoogleFonts.poppins(
+                          fontSize: 16,
+                          fontWeight: FontWeight.w600,
+                        ),
+                      ),
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: Color(0xFF186CAC),
+                        foregroundColor: Colors.white,
+                        padding: const EdgeInsets.symmetric(
+                            horizontal: 30, vertical: 14),
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(12),
+                        ),
+                        elevation: 2,
+                      ),
+                    )),
               ),
             ],
           ),
@@ -307,9 +294,60 @@ class PaymentDetailsView extends StatelessWidget {
     );
   }
 
-  Widget _buildDetailRow(String label, String value) {
+  Widget _buildCard({required String title, required List<Widget> children}) {
+    return AnimatedContainer(
+      duration: Duration(milliseconds: 300),
+      curve: Curves.easeInOut,
+      child: Card(
+        elevation: 3,
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(16),
+        ),
+        child: Container(
+          decoration: BoxDecoration(
+            borderRadius: BorderRadius.circular(16),
+            gradient: LinearGradient(
+              colors: [Colors.white, Colors.grey[50]!],
+              begin: Alignment.topLeft,
+              end: Alignment.bottomRight,
+            ),
+          ),
+          child: Padding(
+            padding: const EdgeInsets.all(20),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Row(
+                  children: [
+                    Icon(
+                      Icons.info_outline,
+                      color: Colors.deepOrange,
+                      size: 24,
+                    ),
+                    const SizedBox(width: 8),
+                    Text(
+                      title,
+                      style: GoogleFonts.poppins(
+                        fontSize: 18,
+                        fontWeight: FontWeight.w700,
+                        color: Color(0xFF186CAC),
+                      ),
+                    ),
+                  ],
+                ),
+                const SizedBox(height: 12),
+                ...children,
+              ],
+            ),
+          ),
+        ),
+      ),
+    );
+  }
+
+  Widget _buildDetailRow(String label, String value, BuildContext context) {
     return Padding(
-      padding: const EdgeInsets.symmetric(vertical: 4),
+      padding: const EdgeInsets.symmetric(vertical: 6),
       child: Row(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
@@ -318,7 +356,7 @@ class PaymentDetailsView extends StatelessWidget {
             style: GoogleFonts.poppins(
               fontWeight: FontWeight.w600,
               fontSize: 14,
-              color: Colors.grey[800],
+              color: Colors.black,
             ),
           ),
           Expanded(
@@ -326,6 +364,7 @@ class PaymentDetailsView extends StatelessWidget {
               value,
               style: GoogleFonts.poppins(
                 fontSize: 14,
+                fontWeight: FontWeight.w400,
                 color: Colors.grey[700],
               ),
               softWrap: true,
