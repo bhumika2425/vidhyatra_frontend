@@ -261,8 +261,7 @@ class TimeSlotDialog extends StatelessWidget {
         ElevatedButton(
           onPressed: () {
             if (startTimeController.text.isEmpty || endTimeController.text.isEmpty) {
-              Get.snackbar('Error', 'Please select both start and end times',
-                  backgroundColor: Colors.deepOrange, colorText: Colors.white);
+              Get.snackbar('Error', 'Please select both start and end times',);
               return;
             }
 
@@ -287,8 +286,7 @@ class TimeSlotDialog extends StatelessWidget {
             );
 
             if (endTime.isBefore(startTime) || endTime.isAtSameMomentAs(startTime)) {
-              Get.snackbar('Error', 'End time must be after start time',
-                  backgroundColor: Colors.deepOrange, colorText: Colors.white);
+              Get.snackbar('Error', 'End time must be after start time');
               return;
             }
 

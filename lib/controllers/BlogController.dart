@@ -33,8 +33,9 @@ class BlogController extends GetxController {
   }
 
   Future<void> postBlog() async {
-    if (descriptionController.text.isEmpty) {
-      Get.snackbar("Error", "Description is required");
+    if (descriptionController.text.trim().isEmpty) {
+      print("Empty blog detected - showing snack bar");
+      Get.snackbar("Error", "Blog post cannot be empty");
       return;
     }
 

@@ -161,7 +161,7 @@ class LostFoundItemCard extends StatelessWidget {
             scrollPhysics: const BouncingScrollPhysics(),
             backgroundDecoration: const BoxDecoration(color: Colors.black),
             pageController: PageController(initialPage: initialIndex),
-          ),
+          )
         ),
       ),
     );

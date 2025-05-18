@@ -8,6 +8,7 @@ import 'package:http/http.dart' as http;
 import 'package:intl/intl.dart';
 import '../constants/api_endpoints.dart';
 import '../controllers/LoginController.dart';
+import '../controllers/ProfileController.dart';
 
 class StudentProfileUpdatePage extends StatefulWidget {
   const StudentProfileUpdatePage({super.key});
@@ -43,6 +44,9 @@ class _StudentProfileUpdatePageState extends State<StudentProfileUpdatePage> {
   final Color secondaryColor = Colors.deepOrange;
   final Color backgroundColor = Colors.grey[200]!;
   final Color textColor = const Color(0xFF333333);
+
+  // Get the ProfileController
+  final ProfileController profileController = Get.find<ProfileController>();
 
   @override
   void initState() {
@@ -131,35 +135,7 @@ class _StudentProfileUpdatePageState extends State<StudentProfileUpdatePage> {
           _isLoading = false;
         });
       }
-    } on FormatException catch (e, stackTrace) {
-      print('StudentProfileUpdatePage: JSON parsing error: $e');
-      print('StudentProfileUpdatePage: Stack trace: $stackTrace');
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: const Text('Invalid response format from server'),
-          backgroundColor: Colors.red,
-          behavior: SnackBarBehavior.floating,
-        ),
-      );
-      setState(() {
-        _isLoading = false;
-      });
-    } on SocketException catch (e, stackTrace) {
-      print('StudentProfileUpdatePage: Network error: $e');
-      print('StudentProfileUpdatePage: Stack trace: $stackTrace');
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: const Text('Network error: Unable to connect to server'),
-          backgroundColor: Colors.red,
-          behavior: SnackBarBehavior.floating,
-        ),
-      );
-      setState(() {
-        _isLoading = false;
-      });
-    } catch (e, stackTrace) {
-      print('StudentProfileUpdatePage: Unexpected error in _fetchUserProfile: $e');
-      print('StudentProfileUpdatePage: Stack trace: $stackTrace');
+    } catch (e) {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
           content: Text('Error loading profile: $e'),
@@ -174,21 +150,15 @@ class _StudentProfileUpdatePageState extends State<StudentProfileUpdatePage> {
   }
 
   Future<void> _pickImage() async {
-    print('StudentProfileUpdatePage: _pickImage called');
     try {
       final pickedFile = await _picker.pickImage(source: ImageSource.gallery);
       if (pickedFile != null) {
         setState(() {
           _profileImage = pickedFile;
           _isImageChanged = true;
-          print('StudentProfileUpdatePage: Image picked: ${pickedFile.path}');
         });
-      } else {
-        print('StudentProfileUpdatePage: No image selected');
       }
-    } catch (e, stackTrace) {
-      print('StudentProfileUpdatePage: Error picking image: $e');
-      print('StudentProfileUpdatePage: Stack trace: $stackTrace');
+    } catch (e) {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
           content: Text('Error picking image: $e'),
@@ -200,7 +170,6 @@ class _StudentProfileUpdatePageState extends State<StudentProfileUpdatePage> {
   }
 
   Future<void> _selectDate(BuildContext context) async {
-    print('StudentProfileUpdatePage: _selectDate called');
     try {
       final DateTime? pickedDate = await showDatePicker(
         context: context,
@@ -230,14 +199,9 @@ class _StudentProfileUpdatePageState extends State<StudentProfileUpdatePage> {
       if (pickedDate != null) {
         setState(() {
           _dateOfBirthController.text = DateFormat('yyyy-MM-dd').format(pickedDate);
-          print('StudentProfileUpdatePage: Date of birth set to: ${_dateOfBirthController.text}');
         });
-      } else {
-        print('StudentProfileUpdatePage: No date selected');
       }
-    } catch (e, stackTrace) {
-      print('StudentProfileUpdatePage: Error selecting date: $e');
-      print('StudentProfileUpdatePage: Stack trace: $stackTrace');
+    } catch (e) {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
           content: Text('Error selecting date: $e'),
@@ -249,18 +213,14 @@ class _StudentProfileUpdatePageState extends State<StudentProfileUpdatePage> {
   }
 
   Future<void> _updateProfile() async {
-    print('StudentProfileUpdatePage: _updateProfile called');
     if (_formKey.currentState!.validate()) {
       setState(() {
         _isLoading = true;
-        print('StudentProfileUpdatePage: _isLoading set to true for update');
       });
 
       final token = Get.find<LoginController>().token.value;
-      print('StudentProfileUpdatePage: Token for update: $token');
 
       if (token.isEmpty) {
-        print('StudentProfileUpdatePage: Empty token detected for update');
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
             content: const Text('Please log in to update profile'),
@@ -270,13 +230,11 @@ class _StudentProfileUpdatePageState extends State<StudentProfileUpdatePage> {
         );
         setState(() {
           _isLoading = false;
-          print('StudentProfileUpdatePage: _isLoading set to false due to empty token');
         });
         return;
       }
 
       final uri = Uri.parse(ApiEndPoints.studentProfileUpdate);
-      print('StudentProfileUpdatePage: Updating profile at URL: $uri');
 
       final request = http.MultipartRequest('PUT', uri)
         ..headers['Authorization'] = 'Bearer $token'
@@ -290,21 +248,15 @@ class _StudentProfileUpdatePageState extends State<StudentProfileUpdatePage> {
         ..fields['bio'] = _bioController.text
         ..fields['interest'] = _interestController.text;
 
-      print('StudentProfileUpdatePage: Request fields: ${request.fields}');
-
       if (_isImageChanged && _profileImage != null) {
         try {
-          print('StudentProfileUpdatePage: Adding image to request: ${_profileImage!.path}');
           request.files.add(
             await http.MultipartFile.fromPath(
               'profileImage',
               _profileImage!.path,
             ),
           );
-          print('StudentProfileUpdatePage: Image added to request');
-        } catch (e, stackTrace) {
-          print('StudentProfileUpdatePage: Error adding image: $e');
-          print('StudentProfileUpdatePage: Stack trace: $stackTrace');
+        } catch (e) {
           ScaffoldMessenger.of(context).showSnackBar(
             SnackBar(
               content: Text('Error uploading image: $e'),
@@ -320,7 +272,6 @@ class _StudentProfileUpdatePageState extends State<StudentProfileUpdatePage> {
       }
 
       try {
-        print('StudentProfileUpdatePage: Sending update request');
         final response = await request.send().timeout(
           const Duration(seconds: 15),
           onTimeout: () {
@@ -328,100 +279,59 @@ class _StudentProfileUpdatePageState extends State<StudentProfileUpdatePage> {
           },
         );
         final responseBody = await response.stream.bytesToString();
-        print('StudentProfileUpdatePage: Response status: ${response.statusCode}');
-        print('StudentProfileUpdatePage: Response body: $responseBody');
 
         setState(() {
           _isLoading = false;
         });
 
         if (response.statusCode == 200) {
-          print('StudentProfileUpdatePage: Profile updated successfully');
-          _fetchUserProfile();
-          ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(
-              content: const Text('Profile updated successfully'),
-              // backgroundColor: secondaryColor,
-              // behavior: SnackBarBehavior.floating,
-              shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(10),
-              ),
-            ),
-          );
+          // Refresh the profile data in the profileController
+          final token = Get.find<LoginController>().token.value;
+          await profileController.fetchProfileData(token);
+
           Get.back(result: true);
+          // Replace ScaffoldMessenger with Get.snackbar
+          Get.snackbar(
+            'Success',
+            'Profile updated successfully',
+          );
+          // // Return to previous screen
+
         } else {
           final responseData = jsonDecode(responseBody);
           final errorMessage = responseData['message'] ?? 'Profile update failed';
-          print('StudentProfileUpdatePage: Update error: $errorMessage');
           ScaffoldMessenger.of(context).showSnackBar(
             SnackBar(
               content: Text('Update failed: $errorMessage'),
-              // backgroundColor: Colors.red,
-              // behavior: SnackBarBehavior.floating,
               shape: RoundedRectangleBorder(
                 borderRadius: BorderRadius.circular(10),
               ),
             ),
           );
         }
-      } on FormatException catch (e, stackTrace) {
-        print('StudentProfileUpdatePage: JSON parsing error in update: $e');
-        print('StudentProfileUpdatePage: Stack trace: $stackTrace');
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: const Text('Invalid response format from server'),
-            // backgroundColor: Colors.red,
-            // behavior: SnackBarBehavior.floating,
-          ),
-        );
-        setState(() {
-          _isLoading = false;
-        });
-      } on SocketException catch (e, stackTrace) {
-        print('StudentProfileUpdatePage: Network error in update: $e');
-        print('StudentProfileUpdatePage: Stack trace: $stackTrace');
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: const Text('Network error: Unable to connect to server'),
-            // backgroundColor: Colors.red,
-            // behavior: SnackBarBehavior.floating,
-          ),
-        );
-        setState(() {
-          _isLoading = false;
-        });
-      } catch (e, stackTrace) {
-        print('StudentProfileUpdatePage: Unexpected error in _updateProfile: $e');
-        print('StudentProfileUpdatePage: Stack trace: $stackTrace');
+      } catch (e) {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
             content: Text('Error updating profile: $e'),
-            // backgroundColor: Colors.red,
-            // behavior: SnackBarBehavior.floating,
           ),
         );
         setState(() {
           _isLoading = false;
         });
       }
-    } else {
-      print('StudentProfileUpdatePage: Form validation failed');
     }
   }
 
   @override
   Widget build(BuildContext context) {
-    print('StudentProfileUpdatePage: build called, _isLoading: $_isLoading');
     return Scaffold(
       backgroundColor: backgroundColor,
       appBar: AppBar(
         backgroundColor: primaryColor,
-
         title: Text(
           'Update Profile',
           style: GoogleFonts.poppins(
             color: Colors.white,
-            // fontWeight: FontWeight.w600,
             fontSize: 19,
           ),
         ),
@@ -618,20 +528,13 @@ class _StudentProfileUpdatePageState extends State<StudentProfileUpdatePage> {
                               ),
                               elevation: 2,
                             ),
-                            child: Row(
-                              mainAxisSize: MainAxisSize.min,
-                              children: [
-
-                                // const SizedBox(width: 8),
-                                Text(
-                                  'Save Changes',
-                                  style: GoogleFonts.poppins(
-                                    fontSize: 14,
-                                    fontWeight: FontWeight.w600,
-                                    letterSpacing: 0.5,
-                                  ),
-                                ),
-                              ],
+                            child: Text(
+                              'Save Changes',
+                              style: GoogleFonts.poppins(
+                                fontSize: 14,
+                                fontWeight: FontWeight.w600,
+                                letterSpacing: 0.5,
+                              ),
                             ),
                           ),
                         ),

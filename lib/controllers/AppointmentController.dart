@@ -141,8 +141,8 @@ class AppointmentController extends GetxController {
         );
         Get.snackbar('Success', 'Time slot added successfully!');
       } else {
-        print('Failed to add time slot - Status: ${response.statusCode}');
-        Get.snackbar('Error', 'Failed to add time slot: ${response.statusCode} - ${response.body}');
+
+        Get.snackbar('Error', 'Failed to add time slot, the slot overlaps the existing slot');
       }
     } catch (e) {
       print('Exception in addTimeSlot: $e');

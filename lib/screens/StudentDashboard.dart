@@ -519,99 +519,133 @@ class _DashboardState extends State<Dashboard> {
 
   Widget _buildUpcomingDeadlines() {
     return Obx(() => Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Row(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                Padding(
-                  padding: const EdgeInsets.only(bottom: 10),
-                  child: Text("Upcoming Deadlines",
-                      style: GoogleFonts.poppins(
-                          fontSize: 18, fontWeight: FontWeight.bold)),
-                ),
-                if (deadlineController.deadlines.length > 2)
-                  Align(
-                    alignment: Alignment.centerRight,
-                    child: TextButton(
-                      onPressed: () => deadlineController.showAll.toggle(),
-                      child: Text(
-                        deadlineController.showAll.value
-                            ? 'View Less'
-                            : 'View All',
-                        style: const TextStyle(color: Color(0xFF186CAC)),
-                      ),
-                    ),
-                  ),
-              ],
+            Padding(
+              padding: const EdgeInsets.only(bottom: 10),
+              child: Text("Upcoming Deadlines",
+                  style: GoogleFonts.poppins(
+                      fontSize: 18, fontWeight: FontWeight.bold)),
             ),
-            deadlineController.isLoading.value
-                ? const Center(
-                    child: CircularProgressIndicator(color: Color(0xFF186CAC)))
-                : deadlineController.deadlines.isEmpty
-                    ? _buildEmptyDeadlinesState()
-                    : ListView.builder(
-                        shrinkWrap: true,
-                        physics: const NeverScrollableScrollPhysics(),
-                        itemCount: deadlineController.showAll.value
-                            ? deadlineController.deadlines.length
-                            : (deadlineController.deadlines.length > 2
-                                ? 2
-                                : deadlineController.deadlines.length),
-                        itemBuilder: (context, index) {
-                          final deadline = deadlineController.deadlines[index];
-                          final timeLeft =
-                              deadline.deadline.difference(DateTime.now());
-                          final timeLeftText = timeLeft.inDays > 0
-                              ? '${timeLeft.inDays} days left'
-                              : timeLeft.inHours > 0
-                                  ? '${timeLeft.inHours} hours left'
-                                  : '${timeLeft.inMinutes} mins left';
-
-                          Color urgencyColor = Colors.green;
-                          if (timeLeft.inDays < 1) {
-                            urgencyColor = Colors.red;
-                          } else if (timeLeft.inDays < 3) {
-                            urgencyColor = Color(0xFF186CAC);
-                          }
-
-                          return Card(
-                            margin: const EdgeInsets.only(bottom: 8),
-                            child: ListTile(
-                              leading: Container(
-                                padding: const EdgeInsets.all(8),
-                                decoration: BoxDecoration(
-                                  color: urgencyColor.withOpacity(0.1),
-                                  shape: BoxShape.circle,
-                                ),
-                                child: Icon(Icons.assignment_outlined,
-                                    color: urgencyColor),
-                              ),
-                              title: Text(deadline.title,
-                                  style: GoogleFonts.poppins(
-                                      fontWeight: FontWeight.bold)),
-                              subtitle: Text(
-                                  '${deadline.course} • $timeLeftText',
-                                  style:
-                                      GoogleFonts.poppins(color: Colors.grey)),
-                              trailing: Checkbox(
-                                activeColor: const Color(0xFF186CAC),
-                                value: deadline.isCompleted,
-                                onChanged: (value) {
-                                  if (value != null) {
-                                    deadlineController.markDeadlineCompleted(
-                                        deadline.id, value);
-                                  }
-                                },
-                              ),
-                            ),
-                          );
-                        },
-                      ),
+            if (deadlineController.deadlines
+                .where((deadline) =>
+            deadline.deadline.isAfter(DateTime.now()) ||
+                deadline.deadline.isAtSameMomentAs(DateTime.now()))
+                .length >
+                2)
+              Align(
+                alignment: Alignment.centerRight,
+                child: TextButton(
+                  onPressed: () => deadlineController.showAll.toggle(),
+                  child: Text(
+                    deadlineController.showAll.value
+                        ? 'View Less'
+                        : 'View All',
+                    style: const TextStyle(color: Color(0xFF186CAC)),
+                  ),
+                ),
+              ),
           ],
-        ));
-  }
+        ),
+        deadlineController.isLoading.value
+            ? const Center(
+            child: CircularProgressIndicator(color: Color(0xFF186CAC)))
+            : deadlineController.deadlines
+            .where((deadline) =>
+        deadline.deadline.isAfter(DateTime.now()) ||
+            deadline.deadline.isAtSameMomentAs(DateTime.now()))
+            .isEmpty
+            ? _buildEmptyDeadlinesState()
+            : ListView.builder(
+          shrinkWrap: true,
+          physics: const NeverScrollableScrollPhysics(),
+          itemCount: deadlineController.showAll.value
+              ? deadlineController.deadlines
+              .where((deadline) =>
+          deadline.deadline.isAfter(DateTime.now()) ||
+              deadline.deadline
+                  .isAtSameMomentAs(DateTime.now()))
+              .length
+              : (deadlineController.deadlines
+              .where((deadline) =>
+          deadline.deadline
+              .isAfter(DateTime.now()) ||
+              deadline.deadline
+                  .isAtSameMomentAs(
+                  DateTime.now()))
+              .length >
+              2
+              ? 2
+              : deadlineController.deadlines
+              .where((deadline) =>
+          deadline.deadline
+              .isAfter(DateTime.now()) ||
+              deadline.deadline
+                  .isAtSameMomentAs(DateTime.now()))
+              .length),
+          itemBuilder: (context, index) {
+            final filteredDeadlines = deadlineController.deadlines
+                .where((deadline) =>
+            deadline.deadline.isAfter(DateTime.now()) ||
+                deadline.deadline
+                    .isAtSameMomentAs(DateTime.now()))
+                .toList();
+            final deadline = filteredDeadlines[index];
+            final timeLeft =
+            deadline.deadline.difference(DateTime.now());
+            final timeLeftText = timeLeft.inDays > 0
+                ? '${timeLeft.inDays} days left'
+                : timeLeft.inHours > 0
+                ? '${timeLeft.inHours} hours left'
+                : '${timeLeft.inMinutes} mins left';
 
+            Color urgencyColor = Colors.green;
+            if (timeLeft.inDays < 1) {
+              urgencyColor = Colors.red;
+            } else if (timeLeft.inDays < 3) {
+              urgencyColor = Color(0xFF186CAC);
+            }
+
+            return Card(
+              margin: const EdgeInsets.only(bottom: 8),
+              child: ListTile(
+                leading: Container(
+                  padding: const EdgeInsets.all(8),
+                  decoration: BoxDecoration(
+                    color: urgencyColor.withOpacity(0.1),
+                    shape: BoxShape.circle,
+                  ),
+                  child: Icon(Icons.assignment_outlined,
+                      color: urgencyColor),
+                ),
+                title: Text(deadline.title,
+                    style: GoogleFonts.poppins(
+                        fontWeight: FontWeight.bold)),
+                subtitle: Text(
+                    '${deadline.course} • $timeLeftText',
+                    style:
+                    GoogleFonts.poppins(color: Colors.grey)),
+                trailing: Checkbox(
+                  activeColor: const Color(0xFF186CAC),
+                  value: deadline.isCompleted,
+                  onChanged: (value) {
+                    if (value != null) {
+                      deadlineController.markDeadlineCompleted(
+                          deadline.id, value);
+                    }
+                  },
+                ),
+              ),
+            );
+          },
+        ),
+      ],
+    ));
+  }
+  
   Widget _buildWelcomeCard(String today) {
     final hour = DateTime.now().hour;
     final greeting = hour < 12

@@ -39,13 +39,11 @@ class AppointmentBookingController extends GetxController {
         'Content-Type': 'application/json',
       };
 
-      print('Fetching Appointments URL: $url'); // Debug
-      print('Fetching Headers: $headers'); // Debug
+
 
       final response = await http.get(url, headers: headers);
 
-      print('Appointments Response Status: ${response.statusCode}'); // Debug
-      print('Appointments Response Body: ${response.body}'); // Debug
+
 
       if (response.statusCode == 200) {
         final List<dynamic> appointmentData = json.decode(response.body);
@@ -57,7 +55,7 @@ class AppointmentBookingController extends GetxController {
         studentAppointments.clear();
       }
     } catch (e) {
-      print('Fetch Appointments Exception: $e'); // Debug
+
       Get.snackbar('Error', 'Error fetching appointments: $e');
       studentAppointments.clear();
     }
@@ -79,7 +77,7 @@ class AppointmentBookingController extends GetxController {
 
       final slotId = slot['slot_id'];
       if (slotId == null) {
-        print('Error: slot_id is null'); // Debug
+
         Get.snackbar('Error', 'Invalid slot ID');
         return;
       }
@@ -94,14 +92,10 @@ class AppointmentBookingController extends GetxController {
         'reason': reasonController.text,
       });
 
-      print('Booking Request URL: $url'); // Debug
-      print('Booking Request Body: $body'); // Debug
-      print('Booking Headers: $headers'); // Debug
+
 
       final response = await http.post(url, headers: headers, body: body);
 
-      print('Booking Response Status: ${response.statusCode}'); // Debug
-      print('Booking Response Body: ${response.body}'); // Debug
 
       if (response.statusCode == 201) {
         Get.snackbar('Success', 'Appointment booked successfully');
@@ -111,10 +105,10 @@ class AppointmentBookingController extends GetxController {
         Navigator.pop(context); // Return to TeacherAvailableSlotsScreen
         // Navigator.pop(context);
       } else {
-        Get.snackbar('Error', 'Failed to book appointment: ${response.statusCode}');
+        Get.snackbar('Error', 'Failed to book appointment, please enter reason for appointment ');
       }
     } catch (e) {
-      print('Booking Exception: $e'); // Debug
+
       Get.snackbar('Error', 'Error booking appointment: $e');
     } finally {
       isSubmitting.value = false;

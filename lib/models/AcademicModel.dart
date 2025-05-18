@@ -1,55 +1,73 @@
-class Academic {
-  final int id;
+class AcademicEvent {
   final String title;
   final String description;
-  final String date;
+  final String eventType; // 'EXAM' or 'HOLIDAY'
+  final String? examType;
+  final String? subject;
+  final String? holidayType;
+  final String startDate;
+  final String endDate;
+  final String? startTime;
+  final int? duration;
   final String? venue;
-  final String? examStartTime;
-  final String? examDuration;
-  final String? type;
-  final String createdAt;
-  final String updatedAt;
+  final String year;
+  final String semester;
 
-  Academic({
-    required this.id,
+  AcademicEvent({
     required this.title,
     required this.description,
-    required this.date,
+    required this.eventType,
+    this.examType,
+    this.subject,
+    this.holidayType,
+    required this.startDate,
+    required this.endDate,
+    this.startTime,
+    this.duration,
     this.venue,
-    this.examStartTime,
-    this.examDuration,
-    this.type,
-    required this.createdAt,
-    required this.updatedAt,
+    required this.year,
+    required this.semester,
   });
 
-  factory Academic.fromJson(Map<String, dynamic> json) {
-    return Academic(
-      id: json['id'] ?? 0,
+  factory AcademicEvent.fromJson(Map<String, dynamic> json) {
+    return AcademicEvent(
       title: json['title'] ?? '',
       description: json['description'] ?? '',
-      date: json['exam_date'] ?? '',
+      eventType: json['event_type'] ?? '',
+      examType: json['exam_type'],
+      subject: json['subject'],
+      holidayType: json['holiday_type'],
+      startDate: json['start_date'] ?? '',
+      endDate: json['end_date'] ?? '',
+      startTime: json['start_time'],
+      duration: json['duration'],
       venue: json['venue'],
-      examStartTime: json['exam_start_time'],
-      examDuration: json['exam_duration'],
-      type: json['type'],
-      createdAt: json['created_at'] ?? '',
-      updatedAt: json['updated_at'] ?? '',
+      year: json['year'] ?? '',
+      semester: json['semester'] ?? '',
     );
   }
 
   Map<String, dynamic> toJson() {
-    return {
-      'id': id,
+    final Map<String, dynamic> data = {
       'title': title,
       'description': description,
-      'exam_date': date,
-      'venue': venue,
-      'exam_start_time': examStartTime,
-      'exam_duration': examDuration,
-      'type': type,
-      'created_at': createdAt,
-      'updated_at': updatedAt,
+      'event_type': eventType,
+      'start_date': startDate,
+      'end_date': endDate,
+      'year': year,
+      'semester': semester,
     };
+    if (eventType == 'EXAM') {
+      data.addAll({
+        'exam_type': examType,
+        'subject': subject,
+        'start_time': startTime,
+        'duration': duration,
+        'venue': venue,
+      });
+    } else if (eventType == 'HOLIDAY') {
+      data['holiday_type'] = holidayType;
+    }
+    return data;
   }
 }

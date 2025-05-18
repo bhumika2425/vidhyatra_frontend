@@ -13,7 +13,6 @@ class PaymentHistoryController extends GetxController {
   @override
   void onInit() {
     super.onInit();
-    print('🔍 PaymentHistoryController: Initialized, calling fetchPaymentHistory');
     fetchPaymentHistory();
   }
 
@@ -21,13 +20,9 @@ class PaymentHistoryController extends GetxController {
     final LoginController loginController = Get.find<LoginController>();
     try {
       isLoading.value = true;
-      print('🔍 PaymentHistoryController: Starting fetchPaymentHistory');
-
       // Log the token and endpoint
       final token = loginController.token.value;
       final endpoint = '${ApiEndPoints.fetchPaymentHistory}'  ;
-      print('🔍 Request URL: $endpoint');
-      print('🔍 Authorization Token: ${token.isEmpty ? "Empty" : "Present"}');
 
       // Check if token is empty
       if (token.isEmpty) {
@@ -39,7 +34,6 @@ class PaymentHistoryController extends GetxController {
         'Authorization': 'Bearer $token',
         'Content-Type': 'application/json',
       };
-      print('🔍 Request Headers: $headers');
 
       // Make the HTTP request
       final response = await http.get(
@@ -47,38 +41,27 @@ class PaymentHistoryController extends GetxController {
         headers: headers,
       );
 
-      // Log response details
-      print('🔍 Response Status Code: ${response.statusCode}');
-      print('🔍 Response Body: ${response.body}');
-
       if (response.statusCode == 200) {
         final data = json.decode(response.body);
-        print('🔍 Parsed JSON Data: $data');
 
         if (data['success']) {
-          print('🔍 Processing payment history data');
           paymentHistory.value = (data['paymentHistory'] as List)
               .asMap()
               .entries
               .map((entry) {
             try {
               final item = entry.value;
-              print('🔍 Parsing item ${entry.key}: $item');
               return PaymentHistoryModel.fromJson(item);
             } catch (e) {
-              print('🔍 Error parsing item ${entry.key}: $e');
               throw Exception('Failed to parse payment history item: $e');
             }
           })
               .toList();
-          print('🔍 Payment History Updated: ${paymentHistory.length} items');
         } else {
           errorMessage.value = data['message'] ?? 'Failed to fetch payment history';
-          print('🔍 Server Error: ${errorMessage.value}');
         }
       } else if (response.statusCode == 404) {
         errorMessage.value = 'No payment history found';
-        print('🔍 404 Error: No payment history found');
       } else {
         // Handle specific status codes
         String errorDetail = 'Failed to load payment history';
@@ -94,10 +77,8 @@ class PaymentHistoryController extends GetxController {
       }
     } catch (e) {
       errorMessage.value = 'Error occurred while fetching payment history: $e';
-      print('🔍 Exception Caught: $e');
     } finally {
       isLoading.value = false;
-      print('🔍 PaymentHistoryController: fetchPaymentHistory completed, isLoading: ${isLoading.value}');
     }
   }
 }

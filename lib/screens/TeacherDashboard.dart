@@ -26,6 +26,11 @@ class DashboardView extends GetView<DashboardController> {
     return Scaffold(
       backgroundColor: Colors.grey[200],
       appBar: AppBar(
+        iconTheme: IconThemeData(color: Colors.white),
+        leading: IconButton(
+          icon: Icon(Icons.arrow_back),
+          onPressed: () => Get.back(),
+        ),
         title: Text(
           'Welcome, ${loginController.user.value?.name}',
           style: GoogleFonts.poppins(

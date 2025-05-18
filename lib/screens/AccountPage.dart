@@ -26,7 +26,7 @@ class Accountpage extends StatelessWidget {
               style: GoogleFonts.poppins(), // Use Poppins font
             ),
             onTap: () {
-              print('Navigating to Change Password');
+
               Get.toNamed("/changePassword");
             },
           ),

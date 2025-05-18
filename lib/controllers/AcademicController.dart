@@ -3,63 +3,47 @@ import 'package:http/http.dart' as http;
 import 'dart:convert';
 import '../constants/api_endpoints.dart';
 import '../models/AcademicModel.dart';
-import 'LoginController.dart'; // Assuming LoginController is located here
+import 'LoginController.dart';
 
 class AcademicController extends GetxController {
-  var academicEvents = <Academic>[].obs; // Observable list to store academic events
-  var isLoading = true.obs; // Observable for loading state
-  var errorMessage = ''.obs; // Observable for error messages
+  var academicEvents = <AcademicEvent>[].obs; // Use AcademicEvent instead of Academic
+  var isLoading = true.obs;
+  var errorMessage = ''.obs;
 
-  // Reference to LoginController to access the token
   final LoginController loginController = Get.find<LoginController>();
 
   @override
   void onInit() {
     super.onInit();
-    fetchAcademicEvents(); // Automatically fetch academic events when the controller is initialized
+    fetchAcademicEvents();
   }
 
-  // Method to fetch academic events
   Future<void> fetchAcademicEvents() async {
     try {
-      isLoading(true); // Set loading to true while fetching data
-      errorMessage.value = ''; // Reset error message
+      isLoading(true);
+      errorMessage.value = '';
 
-      // Parse the URL for academic events
-      Uri uri = Uri.parse(ApiEndPoints.getAcademic); // Ensure this URL is correct
+      Uri uri = Uri.parse(ApiEndPoints.getAcademic);
+      String token = loginController.token.value;
 
-      // Get the token from the LoginController
-      String token = loginController.token.value; // Access the token dynamically
-
-      // Define headers, including the Authorization header with Bearer token
       Map<String, String> headers = {
-        'Authorization': 'Bearer $token', // Pass the token in the Authorization header
+        'Authorization': 'Bearer $token',
         'Content-Type': 'application/json',
       };
 
-      // Debugging: Print request details
-      print("Fetching academic events from: $uri");
-      print("Headers: $headers");
-
-      final response = await http.get(uri, headers: headers); // Send GET request with headers
-
-      // Debugging: Print response status and body
-      print("Response Status Code: ${response.statusCode}");
-      print("Response Body: ${response.body}");
+      final response = await http.get(uri, headers: headers);
 
       if (response.statusCode == 200) {
+        print(response.body);
         List jsonResponse = json.decode(response.body);
-        academicEvents.value = jsonResponse.map((event) => Academic.fromJson(event)).toList();
-        print("Academic events fetched successfully: ${academicEvents.length} items");
+        academicEvents.value = jsonResponse.map((event) => AcademicEvent.fromJson(event)).toList();
       } else {
         errorMessage.value = 'Failed to load academic events: ${response.statusCode}';
-        print("Error: ${errorMessage.value}");
       }
     } catch (e) {
-      errorMessage.value = 'Error: $e'; // If an error occurs, show the error message
-      print("Exception occurred: $e");
+      errorMessage.value = 'Error: $e';
     } finally {
-      isLoading(false); // Set loading to false when done
+      isLoading(false);
     }
   }
 }

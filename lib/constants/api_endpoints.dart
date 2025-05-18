@@ -1,7 +1,7 @@
 class ApiEndPoints{
 
-  static const baseUrl = "http://10.0.2.2:3001";
-  // static const baseUrl = "http://172.25.5.116:3001";
+  // static const baseUrl = "http://10.0.2.2:3001";
+  static const baseUrl = "http://192.168.100.245:3001";
 
   // authentication
   static const login = "${baseUrl}/api/auth/login";
@@ -56,6 +56,6 @@ static const fetchPaymentHistory = "${baseUrl}/api/payFees/payment-history";
 
 
 static const getEvents = "${baseUrl}/api/eventCalender/getEvents";
-  static const getAcademic = "${baseUrl}/api/academic/getExams";
+  static const getAcademic = "${baseUrl}/api/academic/events";
 
 }
