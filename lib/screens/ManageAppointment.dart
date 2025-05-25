@@ -5,8 +5,8 @@ import 'package:intl/intl.dart';
 import '../controllers/AppointmentController.dart';
 
 // Main widget for TeacherAppointment
-class TeacherAppointment extends StatelessWidget {
-  const TeacherAppointment({super.key});
+class ManageAppointment extends StatelessWidget {
+  const ManageAppointment({super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -113,7 +113,7 @@ class TeacherAppointment extends StatelessWidget {
                       ),
                       subtitle: slot.isBooked
                           ? Text(
-                        'Booked by: ${slot.studentName ?? 'Unknown'}',
+                        'Booked by: ${slot.student?.name ?? 'Unknown'}',
                         style: GoogleFonts.poppins(color: Colors.black),
                       )
                           : Text(

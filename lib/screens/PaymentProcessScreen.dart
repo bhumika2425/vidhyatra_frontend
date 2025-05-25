@@ -7,8 +7,8 @@ import 'package:vidhyatra_flutter/controllers/PaymentController.dart';
 import '../controllers/ProfileController.dart';
 import '../models/user.dart';
 
-class PaidFeesDetails extends StatelessWidget {
-  const PaidFeesDetails({super.key});
+class PaymentProcess extends StatelessWidget {
+  const PaymentProcess({super.key});
 
   @override
   Widget build(BuildContext context) {

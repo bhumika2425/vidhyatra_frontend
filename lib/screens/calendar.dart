@@ -1,5 +1,4 @@
-// import 'dart:async';
-//
+// import 'package:flutter/foundation.dart';
 // import 'package:flutter/material.dart';
 // import 'package:get/get.dart';
 // import 'package:google_fonts/google_fonts.dart';
@@ -7,8 +6,8 @@
 // import 'package:table_calendar/table_calendar.dart';
 // import 'package:vidhyatra_flutter/controllers/EventController.dart';
 // import 'package:vidhyatra_flutter/controllers/AcademicController.dart';
+// import 'package:vidhyatra_flutter/models/AcademicModel.dart';
 // import '../models/EventsModel.dart';
-// import '../models/AcademicModel.dart';
 // import 'EventDetailsPage.dart';
 //
 // class Calendar extends StatefulWidget {
@@ -19,26 +18,16 @@
 // }
 //
 // class _CalendarState extends State<Calendar> {
-//   // State for the toggle buttons
 //   List<bool> _isSelected = [true, false];
-//
-//   // Selected date for each calendar
 //   DateTime _selectedAcademicDate = DateTime.now();
 //   DateTime _selectedEventDate = DateTime.now();
-//
-//   // Initialize the focused day for each calendar
 //   late DateTime _focusedAcademicDay;
 //   late DateTime _focusedEventDay;
-//
-//   // Define the first and last day for both calendars
 //   late DateTime _firstDay;
 //   late DateTime _lastDay;
-//
-//   // Store the list of available years (10 years before and after the current year)
 //   late List<int> _years;
 //   late int _selectedYear;
 //
-//   // Controllers
 //   final EventController eventController = Get.put(EventController());
 //   final AcademicController academicController = Get.put(AcademicController());
 //
@@ -47,17 +36,21 @@
 //     super.initState();
 //     _focusedAcademicDay = DateTime.now();
 //     _focusedEventDay = DateTime.now();
-//
-//     // Set the first and last days of the calendar
-//     _firstDay = DateTime(DateTime.now().year - 10, 1, 1); // 10 years ago
-//     _lastDay = DateTime(DateTime.now().year + 10, 12, 31); // 10 years from now
-//
-//     // Initialize years list and selected year (10 years before to 10 years after)
+//     _firstDay = DateTime(DateTime.now().year - 10, 1, 1);
+//     _lastDay = DateTime(DateTime.now().year + 10, 12, 31);
 //     _years = List.generate(21, (index) => DateTime.now().year - 10 + index);
 //     _selectedYear = DateTime.now().year;
+//
+//     // Only fetch eventController events, academicController fetches in onInit
+//     WidgetsBinding.instance.addPostFrameCallback((_) {
+//       eventController.fetchEvents();
+//     });
 //   }
 //
-//   // Format date to show only the date part (no time)
+//   bool isSameDay(DateTime a, DateTime b) {
+//     return a.year == b.year && a.month == b.month && a.day == b.day;
+//   }
+//
 //   String _formatDate(DateTime date) {
 //     return DateFormat('yyyy-MM-dd').format(date);
 //   }
@@ -73,7 +66,7 @@
 //         title: Text(
 //           _isSelected[0] ? 'Academic Calendar' : 'Event Calendar',
 //           style: GoogleFonts.poppins(
-//             // fontWeight: FontWeight.w600,
+//             fontWeight: FontWeight.w600,
 //             color: Colors.white,
 //             fontSize: 19,
 //           ),
@@ -90,7 +83,7 @@
 //             },
 //             borderRadius: BorderRadius.circular(12),
 //             selectedColor: Colors.white,
-//             fillColor: _isSelected[1] ? Colors.deepOrange : Colors.deepOrange,
+//             fillColor: Colors.deepOrange,
 //             color: Colors.white,
 //             constraints: const BoxConstraints(
 //               minHeight: 30.0,
@@ -119,7 +112,6 @@
 //         padding: const EdgeInsets.all(16.0),
 //         child: Column(
 //           children: [
-//             // Year Selection Card
 //             Container(
 //               margin: const EdgeInsets.only(bottom: 16),
 //               padding: const EdgeInsets.symmetric(vertical: 0, horizontal: 20),
@@ -146,7 +138,8 @@
 //                     ),
 //                   ),
 //                   Container(
-//                     padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+//                     padding:
+//                         const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
 //                     decoration: BoxDecoration(
 //                       color: _isSelected[0]
 //                           ? const Color(0xFF186CAC).withOpacity(0.1)
@@ -164,15 +157,19 @@
 //                         value: _selectedYear,
 //                         icon: Icon(
 //                           Icons.keyboard_arrow_down,
-//                           color: _isSelected[0] ? const Color(0xFF186CAC) : Colors.deepOrange,
+//                           color: _isSelected[0]
+//                               ? const Color(0xFF186CAC)
+//                               : Colors.deepOrange,
 //                         ),
 //                         onChanged: (int? newValue) {
 //                           setState(() {
 //                             _selectedYear = newValue!;
 //                             _focusedAcademicDay = DateTime(
-//                                 _selectedYear, _focusedAcademicDay.month, _focusedAcademicDay.day);
-//                             _focusedEventDay = DateTime(
-//                                 _selectedYear, _focusedEventDay.month, _focusedEventDay.day);
+//                                 _selectedYear,
+//                                 _focusedAcademicDay.month,
+//                                 _focusedAcademicDay.day);
+//                             _focusedEventDay = DateTime(_selectedYear,
+//                                 _focusedEventDay.month, _focusedEventDay.day);
 //                           });
 //                         },
 //                         items: _years.map<DropdownMenuItem<int>>((int year) {
@@ -193,9 +190,10 @@
 //                 ],
 //               ),
 //             ),
-//             // Display the selected calendar
 //             Expanded(
-//               child: _isSelected[0] ? _buildAcademicCalendar() : _buildEventCalendar(),
+//               child: _isSelected[0]
+//                   ? _buildAcademicCalendar()
+//                   : _buildEventCalendar(),
 //             ),
 //           ],
 //         ),
@@ -243,8 +241,10 @@
 //                 fontSize: 18,
 //                 color: Color(0xFF186CAC),
 //               ),
-//               leftChevronIcon: Icon(Icons.chevron_left, color: Color(0xFF186CAC)),
-//               rightChevronIcon: Icon(Icons.chevron_right, color: Color(0xFF186CAC)),
+//               leftChevronIcon:
+//                   Icon(Icons.chevron_left, color: Color(0xFF186CAC)),
+//               rightChevronIcon:
+//                   Icon(Icons.chevron_right, color: Color(0xFF186CAC)),
 //             ),
 //             calendarStyle: CalendarStyle(
 //               todayDecoration: BoxDecoration(
@@ -264,7 +264,6 @@
 //                 shape: BoxShape.circle,
 //               ),
 //               markerDecoration: BoxDecoration(
-//                 color: Color(0xFF186CAC),
 //                 shape: BoxShape.circle,
 //               ),
 //               selectedTextStyle: GoogleFonts.poppins(
@@ -295,11 +294,90 @@
 //                 color: Colors.deepOrange,
 //               ),
 //             ),
+//             calendarBuilders: CalendarBuilders(
+//               markerBuilder: (context, date, events) {
+//                 final examEvents =
+//                     academicController.academicEvents.where((event) {
+//                   try {
+//                     DateTime startDate =
+//                         DateTime.parse(event.startDate).toUtc();
+//                     DateTime endDate = DateTime.parse(event.endDate).toUtc();
+//                     return event.eventType == 'EXAM' &&
+//                         date.isAfter(startDate.subtract(Duration(days: 1))) &&
+//                         date.isBefore(endDate.add(Duration(days: 1)));
+//                   } catch (e) {
+//                     print('Error parsing dates for marker ${event.title}: $e');
+//                     return false;
+//                   }
+//                 }).toList();
+//
+//                 final holidayEvents =
+//                     academicController.academicEvents.where((event) {
+//                   try {
+//                     DateTime startDate =
+//                         DateTime.parse(event.startDate).toUtc();
+//                     DateTime endDate = DateTime.parse(event.endDate).toUtc();
+//                     return event.eventType == 'HOLIDAY' &&
+//                         date.isAfter(startDate.subtract(Duration(days: 1))) &&
+//                         date.isBefore(endDate.add(Duration(days: 1)));
+//                   } catch (e) {
+//                     print('Error parsing dates for marker ${event.title}: $e');
+//                     return false;
+//                   }
+//                 }).toList();
+//
+//                 if (examEvents.isNotEmpty || holidayEvents.isNotEmpty) {
+//                   return Row(
+//                     mainAxisAlignment: MainAxisAlignment.center,
+//                     children: [
+//                       if (examEvents.isNotEmpty)
+//                         Container(
+//                           margin: EdgeInsets.symmetric(horizontal: 1.5),
+//                           width: 6,
+//                           height: 6,
+//                           decoration: BoxDecoration(
+//                             color: Colors.orange,
+//                             shape: BoxShape.circle,
+//                           ),
+//                         ),
+//                       if (holidayEvents.isNotEmpty)
+//                         Container(
+//                           margin: EdgeInsets.symmetric(horizontal: 1.5),
+//                           width: 6,
+//                           height: 6,
+//                           decoration: BoxDecoration(
+//                             color: Colors.red,
+//                             shape: BoxShape.circle,
+//                           ),
+//                         ),
+//                     ],
+//                   );
+//                 }
+//                 return null;
+//               },
+//             ),
 //             eventLoader: (day) {
-//               List<Academic> eventsForDay = academicController.academicEvents.where((event) {
-//                 DateTime eventDate = DateTime.parse(event.date);
-//                 return isSameDay(eventDate, day);
+//               List<AcademicEvent> eventsForDay =
+//                   academicController.academicEvents.where((event) {
+//                 try {
+//                   DateTime startDate = DateTime.parse(event.startDate).toUtc();
+//                   DateTime endDate = DateTime.parse(event.endDate).toUtc();
+//                   bool isInRange =
+//                       day.isAfter(startDate.subtract(Duration(days: 1))) &&
+//                           day.isBefore(endDate.add(Duration(days: 1)));
+//                   bool isSame = isSameDay(startDate, day) ||
+//                       isSameDay(endDate, day) ||
+//                       isInRange;
+//                   print(
+//                       'Calendar: Checking event ${event.title} from ${event.startDate} to ${event.endDate} for day $day - isInRange: $isInRange');
+//                   return isInRange;
+//                 } catch (e) {
+//                   print(
+//                       'Calendar: Error parsing dates for event ${event.title}: $e');
+//                   return false;
+//                 }
 //               }).toList();
+//               print('Calendar: Found ${eventsForDay.length} events for $day');
 //               return eventsForDay.isNotEmpty ? [''] : [];
 //             },
 //           ),
@@ -310,7 +388,7 @@
 //           child: Align(
 //             alignment: Alignment.centerLeft,
 //             child: Text(
-//               "Upcoming Exams",
+//               "Upcoming Academic Events",
 //               style: GoogleFonts.poppins(
 //                 fontWeight: FontWeight.w700,
 //                 fontSize: 19,
@@ -321,6 +399,15 @@
 //         ),
 //         Expanded(
 //           child: Obx(() {
+//             if (kDebugMode) {
+//               print(
+//                   'Calendar: Academic events count: ${academicController.academicEvents.length}');
+//               print(
+//                   'Calendar: Is loading: ${academicController.isLoading.value}');
+//               print(
+//                   'Calendar: Error message: ${academicController.errorMessage.value}');
+//             }
+//
 //             if (academicController.isLoading.value) {
 //               return Center(
 //                 child: CircularProgressIndicator(color: Color(0xFF186CAC)),
@@ -336,10 +423,31 @@
 //                 ),
 //               );
 //             } else {
-//               List<Academic> upcomingEvents = academicController.academicEvents.where((event) {
-//                 DateTime eventDate = DateTime.parse(event.date);
-//                 return eventDate.isAfter(DateTime.now());
+//               List<AcademicEvent> upcomingEvents =
+//                   academicController.academicEvents.where((event) {
+//                 try {
+//                   DateTime eventDate = DateTime.parse(event.startDate).toUtc();
+//                   DateTime now = DateTime.now().toUtc();
+//                   bool isUpcoming =
+//                       eventDate.isAfter(now) || isSameDay(eventDate, now);
+//                   if (kDebugMode) {
+//                     print(
+//                         'Calendar: Event ${event.title} on ${event.startDate} parsed as $eventDate, now: $now, isUpcoming: $isUpcoming');
+//                   }
+//                   return isUpcoming;
+//                 } catch (e) {
+//                   if (kDebugMode) {
+//                     print(
+//                         'Calendar: Error parsing date for event ${event.title}: $e');
+//                   }
+//                   return false;
+//                 }
 //               }).toList();
+//
+//               if (kDebugMode) {
+//                 print(
+//                     'Calendar: Upcoming events count: ${upcomingEvents.length}');
+//               }
 //
 //               if (upcomingEvents.isEmpty) {
 //                 return Center(
@@ -368,7 +476,11 @@
 //                   shrinkWrap: true,
 //                   itemCount: upcomingEvents.length,
 //                   itemBuilder: (context, index) {
-//                     Academic event = upcomingEvents[index];
+//                     AcademicEvent event = upcomingEvents[index];
+//                     if (kDebugMode) {
+//                       print(
+//                           'Calendar: Rendering event ${event.title} at index $index');
+//                     }
 //                     return Container(
 //                       margin: EdgeInsets.symmetric(vertical: 6),
 //                       decoration: BoxDecoration(
@@ -383,7 +495,8 @@
 //                         ],
 //                       ),
 //                       child: ListTile(
-//                         contentPadding: EdgeInsets.symmetric(horizontal: 20, vertical: 12),
+//                         contentPadding:
+//                             EdgeInsets.symmetric(horizontal: 20, vertical: 12),
 //                         title: Text(
 //                           event.title,
 //                           style: GoogleFonts.poppins(
@@ -407,14 +520,14 @@
 //                             ),
 //                             SizedBox(height: 6),
 //                             Container(
-//                               padding: EdgeInsets.symmetric(horizontal: 10, vertical: 4),
+//                               padding: EdgeInsets.symmetric(
+//                                   horizontal: 10, vertical: 4),
 //                               decoration: BoxDecoration(
 //                                 color: Color(0xFF186CAC).withOpacity(0.1),
 //                                 borderRadius: BorderRadius.circular(20),
 //                               ),
-//                               // child: Text: false,
 //                               child: Text(
-//                                 'Date: ${event.date}',
+//                                 'Date: ${event.startDate}',
 //                                 style: GoogleFonts.poppins(
 //                                   fontSize: 12,
 //                                   color: Color(0xFF186CAC),
@@ -422,16 +535,38 @@
 //                                 ),
 //                               ),
 //                             ),
-//                             if (event.type != null) ...[
+//                             if (event.eventType == 'EXAM' &&
+//                                 event.examType != null) ...[
 //                               SizedBox(height: 6),
 //                               Container(
-//                                 padding: EdgeInsets.symmetric(horizontal: 10, vertical: 4),
+//                                 padding: EdgeInsets.symmetric(
+//                                     horizontal: 10, vertical: 4),
 //                                 decoration: BoxDecoration(
 //                                   color: Color(0xFF186CAC).withOpacity(0.1),
 //                                   borderRadius: BorderRadius.circular(20),
 //                                 ),
 //                                 child: Text(
-//                                   'Type: ${event.type}',
+//                                   'Exam Type: ${event.examType}',
+//                                   style: GoogleFonts.poppins(
+//                                     fontSize: 12,
+//                                     color: Color(0xFF186CAC),
+//                                     fontWeight: FontWeight.w500,
+//                                   ),
+//                                 ),
+//                               ),
+//                             ],
+//                             if (event.eventType == 'HOLIDAY' &&
+//                                 event.holidayType != null) ...[
+//                               SizedBox(height: 6),
+//                               Container(
+//                                 padding: EdgeInsets.symmetric(
+//                                     horizontal: 10, vertical: 4),
+//                                 decoration: BoxDecoration(
+//                                   color: Color(0xFF186CAC).withOpacity(0.1),
+//                                   borderRadius: BorderRadius.circular(20),
+//                                 ),
+//                                 child: Text(
+//                                   'Holiday Type: ${event.holidayType}',
 //                                   style: GoogleFonts.poppins(
 //                                     fontSize: 12,
 //                                     color: Color(0xFF186CAC),
@@ -454,7 +589,15 @@
 //                           ),
 //                         ),
 //                         onTap: () {
-//                           _showAcademicEventDetailsDialog(DateTime.parse(event.date));
+//                           try {
+//                             _showAcademicEventDetailsDialog(
+//                                 DateTime.parse(event.startDate));
+//                           } catch (e) {
+//                             if (kDebugMode) {
+//                               print(
+//                                   'Calendar: Error parsing date for dialog ${event.title}: $e');
+//                             }
+//                           }
 //                         },
 //                       ),
 //                     );
@@ -507,8 +650,10 @@
 //                 fontSize: 18,
 //                 color: Colors.deepOrange,
 //               ),
-//               leftChevronIcon: Icon(Icons.chevron_left, color: Colors.deepOrange),
-//               rightChevronIcon: Icon(Icons.chevron_right, color: Colors.deepOrange),
+//               leftChevronIcon:
+//                   Icon(Icons.chevron_left, color: Colors.deepOrange),
+//               rightChevronIcon:
+//                   Icon(Icons.chevron_right, color: Colors.deepOrange),
 //             ),
 //             calendarStyle: CalendarStyle(
 //               todayDecoration: BoxDecoration(
@@ -561,8 +706,16 @@
 //             ),
 //             eventLoader: (day) {
 //               List<Event> eventsForDay = eventController.events.where((event) {
-//                 DateTime eventDate = DateTime.parse(event.eventDate);
-//                 return isSameDay(eventDate, day);
+//                 try {
+//                   DateTime eventDate = DateTime.parse(event.eventDate).toUtc();
+//                   return isSameDay(eventDate, day);
+//                 } catch (e) {
+//                   if (kDebugMode) {
+//                     print(
+//                         'Calendar: Error parsing date for event ${event.title}: $e');
+//                   }
+//                   return false;
+//                 }
 //               }).toList();
 //               return eventsForDay.isNotEmpty ? [''] : [];
 //             },
@@ -602,9 +755,19 @@
 //                 ),
 //               );
 //             } else {
-//               List<Event> upcomingEvents = eventController.events.where((event) {
-//                 DateTime eventDate = DateTime.parse(event.eventDate);
-//                 return eventDate.isAfter(DateTime.now());
+//               List<Event> upcomingEvents =
+//                   eventController.events.where((event) {
+//                 try {
+//                   DateTime eventDate = DateTime.parse(event.eventDate).toUtc();
+//                   DateTime now = DateTime.now().toUtc();
+//                   return eventDate.isAfter(now) || isSameDay(eventDate, now);
+//                 } catch (e) {
+//                   if (kDebugMode) {
+//                     print(
+//                         'Calendar: Error parsing date for event ${event.title}: $e');
+//                   }
+//                   return false;
+//                 }
 //               }).toList();
 //               if (upcomingEvents.isEmpty) {
 //                 return Center(
@@ -648,7 +811,8 @@
 //                         ],
 //                       ),
 //                       child: ListTile(
-//                         contentPadding: EdgeInsets.symmetric(horizontal: 20, vertical: 12),
+//                         contentPadding:
+//                             EdgeInsets.symmetric(horizontal: 20, vertical: 12),
 //                         title: Text(
 //                           event.title,
 //                           style: GoogleFonts.poppins(
@@ -672,7 +836,8 @@
 //                             ),
 //                             SizedBox(height: 6),
 //                             Container(
-//                               padding: EdgeInsets.symmetric(horizontal: 10, vertical: 4),
+//                               padding: EdgeInsets.symmetric(
+//                                   horizontal: 10, vertical: 4),
 //                               decoration: BoxDecoration(
 //                                 color: Colors.deepOrange.withOpacity(0.1),
 //                                 borderRadius: BorderRadius.circular(20),
@@ -716,8 +881,15 @@
 //
 //   void _showEventDetailsDialog(DateTime selectedDay) {
 //     List<Event> eventsForSelectedDay = eventController.events.where((event) {
-//       DateTime eventDate = DateTime.parse(event.eventDate);
-//       return isSameDay(eventDate, selectedDay);
+//       try {
+//         DateTime eventDate = DateTime.parse(event.eventDate).toUtc();
+//         return isSameDay(eventDate, selectedDay);
+//       } catch (e) {
+//         if (kDebugMode) {
+//           print('Calendar: Error parsing date for event ${event.title}: $e');
+//         }
+//         return false;
+//       }
 //     }).toList();
 //     String formattedDate = DateFormat('EEEE, MMMM d, yyyy').format(selectedDay);
 //     showDialog(
@@ -750,75 +922,75 @@
 //                 Expanded(
 //                   child: eventsForSelectedDay.isEmpty
 //                       ? Center(
-//                     child: Column(
-//                       mainAxisAlignment: MainAxisAlignment.center,
-//                       children: [
-//                         Icon(
-//                           Icons.event_busy,
-//                           size: 48,
-//                           color: Colors.grey,
-//                         ),
-//                         SizedBox(height: 16),
-//                         Text(
-//                           'No events for this date.',
-//                           style: GoogleFonts.poppins(
-//                             fontSize: 16,
-//                             color: Colors.grey[600],
-//                           ),
-//                         ),
-//                       ],
-//                     ),
-//                   )
-//                       : SingleChildScrollView(
-//                     child: Column(
-//                       crossAxisAlignment: CrossAxisAlignment.start,
-//                       children: eventsForSelectedDay.map((event) {
-//                         return Container(
-//                           margin: EdgeInsets.only(bottom: 16),
-//                           padding: EdgeInsets.all(16),
-//                           decoration: BoxDecoration(
-//                             color: Colors.grey[50],
-//                             borderRadius: BorderRadius.circular(12),
-//                             border: Border.all(
-//                               color: Colors.grey[200]!,
-//                               width: 1,
-//                             ),
-//                           ),
 //                           child: Column(
-//                             crossAxisAlignment: CrossAxisAlignment.start,
+//                             mainAxisAlignment: MainAxisAlignment.center,
 //                             children: [
+//                               Icon(
+//                                 Icons.event_busy,
+//                                 size: 48,
+//                                 color: Colors.grey,
+//                               ),
+//                               SizedBox(height: 16),
 //                               Text(
-//                                 event.title,
+//                                 'No events for this date.',
 //                                 style: GoogleFonts.poppins(
-//                                   fontWeight: FontWeight.w600,
 //                                   fontSize: 16,
-//                                   color: Colors.black87,
+//                                   color: Colors.grey[600],
 //                                 ),
-//                               ),
-//                               SizedBox(height: 12),
-//                               _buildEventDetailRow(
-//                                 Icons.description,
-//                                 'Description:',
-//                                 event.description,
-//                               ),
-//                               SizedBox(height: 8),
-//                               _buildEventDetailRow(
-//                                 Icons.location_on,
-//                                 'Venue:',
-//                                 event.venue,
-//                               ),
-//                               SizedBox(height: 8),
-//                               _buildEventDetailRow(
-//                                 Icons.access_time,
-//                                 'Start Time:',
-//                                 event.eventStartTime ?? 'TBA',
 //                               ),
 //                             ],
 //                           ),
-//                         );
-//                       }).toList(),
-//                     ),
-//                   ),
+//                         )
+//                       : SingleChildScrollView(
+//                           child: Column(
+//                             crossAxisAlignment: CrossAxisAlignment.start,
+//                             children: eventsForSelectedDay.map((event) {
+//                               return Container(
+//                                 margin: EdgeInsets.only(bottom: 16),
+//                                 padding: EdgeInsets.all(16),
+//                                 decoration: BoxDecoration(
+//                                   color: Colors.grey[50],
+//                                   borderRadius: BorderRadius.circular(12),
+//                                   border: Border.all(
+//                                     color: Colors.grey[200]!,
+//                                     width: 1,
+//                                   ),
+//                                 ),
+//                                 child: Column(
+//                                   crossAxisAlignment: CrossAxisAlignment.start,
+//                                   children: [
+//                                     Text(
+//                                       event.title,
+//                                       style: GoogleFonts.poppins(
+//                                         fontWeight: FontWeight.w600,
+//                                         fontSize: 16,
+//                                         color: Colors.black87,
+//                                       ),
+//                                     ),
+//                                     SizedBox(height: 12),
+//                                     _buildEventDetailRow(
+//                                       Icons.description,
+//                                       'Description:',
+//                                       event.description,
+//                                     ),
+//                                     SizedBox(height: 8),
+//                                     _buildEventDetailRow(
+//                                       Icons.location_on,
+//                                       'Venue:',
+//                                       event.venue,
+//                                     ),
+//                                     SizedBox(height: 8),
+//                                     _buildEventDetailRow(
+//                                       Icons.access_time,
+//                                       'Start Time:',
+//                                       event.eventStartTime ?? 'TBA',
+//                                     ),
+//                                   ],
+//                                 ),
+//                               );
+//                             }).toList(),
+//                           ),
+//                         ),
 //                 ),
 //                 SizedBox(height: 16),
 //                 ElevatedButton(
@@ -850,9 +1022,19 @@
 //   }
 //
 //   void _showAcademicEventDetailsDialog(DateTime selectedDay) {
-//     List<Academic> eventsForSelectedDay = academicController.academicEvents.where((event) {
-//       DateTime eventDate = DateTime.parse(event.date);
-//       return isSameDay(eventDate, selectedDay);
+//     List<AcademicEvent> eventsForSelectedDay =
+//         academicController.academicEvents.where((event) {
+//       try {
+//         DateTime startDate = DateTime.parse(event.startDate).toUtc();
+//         DateTime endDate = DateTime.parse(event.endDate).toUtc();
+//         return selectedDay.isAfter(startDate.subtract(Duration(days: 1))) &&
+//             selectedDay.isBefore(endDate.add(Duration(days: 1)));
+//       } catch (e) {
+//         if (kDebugMode) {
+//           print('Calendar: Error parsing date for event ${event.title}: $e');
+//         }
+//         return false;
+//       }
 //     }).toList();
 //     String formattedDate = DateFormat('EEEE, MMMM d, yyyy').format(selectedDay);
 //     showDialog(
@@ -885,71 +1067,132 @@
 //                 Expanded(
 //                   child: eventsForSelectedDay.isEmpty
 //                       ? Center(
-//                     child: Column(
-//                       mainAxisAlignment: MainAxisAlignment.center,
-//                       children: [
-//                         Icon(
-//                           Icons.event_busy,
-//                           size: 48,
-//                           color: Colors.grey,
-//                         ),
-//                         SizedBox(height: 16),
-//                         Text(
-//                           'No academic events for this date.',
-//                           style: GoogleFonts.poppins(
-//                             fontSize: 16,
-//                             color: Colors.grey[600],
-//                           ),
-//                         ),
-//                       ],
-//                     ),
-//                   )
-//                       : SingleChildScrollView(
-//                     child: Column(
-//                       crossAxisAlignment: CrossAxisAlignment.start,
-//                       children: eventsForSelectedDay.map((event) {
-//                         return Container(
-//                           margin: EdgeInsets.only(bottom: 16),
-//                           padding: EdgeInsets.all(16),
-//                           decoration: BoxDecoration(
-//                             color: Colors.grey[50],
-//                             borderRadius: BorderRadius.circular(12),
-//                             border: Border.all(
-//                               color: Colors.grey[200]!,
-//                               width: 1,
-//                             ),
-//                           ),
 //                           child: Column(
-//                             crossAxisAlignment: CrossAxisAlignment.start,
+//                             mainAxisAlignment: MainAxisAlignment.center,
 //                             children: [
+//                               Icon(
+//                                 Icons.event_busy,
+//                                 size: 48,
+//                                 color: Colors.grey,
+//                               ),
+//                               SizedBox(height: 16),
 //                               Text(
-//                                 event.title,
+//                                 'No academic events for this date.',
 //                                 style: GoogleFonts.poppins(
-//                                   fontWeight: FontWeight.w600,
 //                                   fontSize: 16,
-//                                   color: Colors.black87,
+//                                   color: Colors.grey[600],
 //                                 ),
 //                               ),
-//                               SizedBox(height: 12),
-//                               _buildEventDetailRow(
-//                                 Icons.description,
-//                                 'Description:',
-//                                 event.description,
-//                               ),
-//                               if (event.type != null) ...[
-//                                 SizedBox(height: 8),
-//                                 _buildEventDetailRow(
-//                                   Icons.category,
-//                                   'Type:',
-//                                   event.type!,
-//                                 ),
-//                               ],
 //                             ],
 //                           ),
-//                         );
-//                       }).toList(),
-//                     ),
-//                   ),
+//                         )
+//                       : SingleChildScrollView(
+//                           child: Column(
+//                             crossAxisAlignment: CrossAxisAlignment.start,
+//                             children: eventsForSelectedDay.map((event) {
+//                               return Container(
+//                                 margin: EdgeInsets.only(bottom: 16),
+//                                 padding: EdgeInsets.all(16),
+//                                 decoration: BoxDecoration(
+//                                   color: Colors.grey[50],
+//                                   borderRadius: BorderRadius.circular(12),
+//                                   border: Border.all(
+//                                     color: Colors.grey[200]!,
+//                                     width: 1,
+//                                   ),
+//                                 ),
+//                                 child: Column(
+//                                   crossAxisAlignment: CrossAxisAlignment.start,
+//                                   children: [
+//                                     Text(
+//                                       event.title,
+//                                       style: GoogleFonts.poppins(
+//                                         fontWeight: FontWeight.w600,
+//                                         fontSize: 16,
+//                                         color: Colors.black87,
+//                                       ),
+//                                     ),
+//                                     SizedBox(height: 12),
+//                                     _buildEventDetailRow(
+//                                       Icons.description,
+//                                       'Description:',
+//                                       event.description,
+//                                     ),
+//                                     SizedBox(height: 8),
+//                                     _buildEventDetailRow(
+//                                       Icons.category,
+//                                       'Event Type:',
+//                                       event.eventType,
+//                                     ),
+//                                     if (event.eventType == 'EXAM') ...[
+//                                       if (event.examType != null) ...[
+//                                         SizedBox(height: 8),
+//                                         _buildEventDetailRow(
+//                                           Icons.book,
+//                                           'Exam Type:',
+//                                           event.examType!,
+//                                         ),
+//                                       ],
+//                                       if (event.subject != null) ...[
+//                                         SizedBox(height: 8),
+//                                         _buildEventDetailRow(
+//                                           Icons.subject,
+//                                           'Subject:',
+//                                           event.subject!,
+//                                         ),
+//                                       ],
+//                                       if (event.venue != null) ...[
+//                                         SizedBox(height: 8),
+//                                         _buildEventDetailRow(
+//                                           Icons.location_on,
+//                                           'Venue:',
+//                                           event.venue!,
+//                                         ),
+//                                       ],
+//                                       if (event.startTime != null) ...[
+//                                         SizedBox(height: 8),
+//                                         _buildEventDetailRow(
+//                                           Icons.access_time,
+//                                           'Start Time:',
+//                                           event.startTime!,
+//                                         ),
+//                                       ],
+//                                       if (event.duration != null) ...[
+//                                         SizedBox(height: 8),
+//                                         _buildEventDetailRow(
+//                                           Icons.timer,
+//                                           'Duration:',
+//                                           '${event.duration} minutes',
+//                                         ),
+//                                       ],
+//                                     ],
+//                                     if (event.eventType == 'HOLIDAY' &&
+//                                         event.holidayType != null) ...[
+//                                       SizedBox(height: 8),
+//                                       _buildEventDetailRow(
+//                                         Icons.celebration,
+//                                         'Holiday Type:',
+//                                         event.holidayType!,
+//                                       ),
+//                                     ],
+//                                     SizedBox(height: 8),
+//                                     _buildEventDetailRow(
+//                                       Icons.school,
+//                                       'Year:',
+//                                       event.year,
+//                                     ),
+//                                     SizedBox(height: 8),
+//                                     _buildEventDetailRow(
+//                                       Icons.calendar_today,
+//                                       'Semester:',
+//                                       event.semester,
+//                                     ),
+//                                   ],
+//                                 ),
+//                               );
+//                             }).toList(),
+//                           ),
+//                         ),
 //                 ),
 //                 SizedBox(height: 16),
 //                 ElevatedButton(
@@ -1018,6 +1261,8 @@
 //   }
 // }
 
+
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:google_fonts/google_fonts.dart';
@@ -1060,11 +1305,14 @@ class _CalendarState extends State<Calendar> {
     _years = List.generate(21, (index) => DateTime.now().year - 10 + index);
     _selectedYear = DateTime.now().year;
 
-    // Defer fetching events until after the build phase
     WidgetsBinding.instance.addPostFrameCallback((_) {
-      academicController.fetchAcademicEvents();
       eventController.fetchEvents();
+      //Schedules a callback after the first frame is rendered to call fetchEvents() on eventController, ensuring the UI is ready before fetching data
     });
+  }
+
+  bool isSameDay(DateTime a, DateTime b) {
+    return a.year == b.year && a.month == b.month && a.day == b.day;
   }
 
   String _formatDate(DateTime date) {
@@ -1115,8 +1363,6 @@ class _CalendarState extends State<Calendar> {
                 child: Icon(Icons.event),
               ),
             ],
-            splashColor: Colors.grey.withOpacity(0.2),
-            highlightColor: Colors.transparent,
             renderBorder: true,
             borderWidth: 1.0,
             borderColor: Colors.white.withOpacity(0.3),
@@ -1271,7 +1517,6 @@ class _CalendarState extends State<Calendar> {
                 shape: BoxShape.circle,
               ),
               markerDecoration: BoxDecoration(
-                color: Color(0xFF186CAC),
                 shape: BoxShape.circle,
               ),
               selectedTextStyle: GoogleFonts.poppins(
@@ -1302,11 +1547,94 @@ class _CalendarState extends State<Calendar> {
                 color: Colors.deepOrange,
               ),
             ),
+            calendarBuilders: CalendarBuilders(
+              markerBuilder: (context, date, events) {
+                final examEvents = academicController.academicEvents.where((event) {
+                  if (event.startDate.isEmpty || event.endDate.isEmpty) return false;
+                  try {
+                    DateTime startDate = DateTime.parse(event.startDate).toUtc();
+                    DateTime endDate = DateTime.parse(event.endDate).toUtc();
+                    return event.eventType == 'EXAM' &&
+                        date.isAfter(startDate.subtract(Duration(days: 1))) &&
+                        date.isBefore(endDate.add(Duration(days: 1)));
+                  } catch (e) {
+                    if (kDebugMode) {
+                      print('Error parsing dates for marker ${event.title}: $e');
+                    }
+                    return false;
+                  }
+                }).toList();
+
+                final holidayEvents = academicController.academicEvents.where((event) {
+                  if (event.startDate.isEmpty || event.endDate.isEmpty) return false;
+                  try {
+                    DateTime startDate = DateTime.parse(event.startDate).toUtc();
+                    DateTime endDate = DateTime.parse(event.endDate).toUtc();
+                    return event.eventType == 'HOLIDAY' &&
+                        date.isAfter(startDate.subtract(Duration(days: 1))) &&
+                        date.isBefore(endDate.add(Duration(days: 1)));
+                  } catch (e) {
+                    if (kDebugMode) {
+                      print('Error parsing dates for marker ${event.title}: $e');
+                    }
+                    return false;
+                  }
+                }).toList();
+
+                if (examEvents.isNotEmpty || holidayEvents.isNotEmpty) {
+                  return Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      if (examEvents.isNotEmpty)
+                        Container(
+                          margin: EdgeInsets.symmetric(horizontal: 1.5),
+                          width: 6,
+                          height: 6,
+                          decoration: BoxDecoration(
+                            color: Colors.orange,
+                            shape: BoxShape.circle,
+                          ),
+                        ),
+                      if (holidayEvents.isNotEmpty)
+                        Container(
+                          margin: EdgeInsets.symmetric(horizontal: 1.5),
+                          width: 6,
+                          height: 6,
+                          decoration: BoxDecoration(
+                            color: Colors.red,
+                            shape: BoxShape.circle,
+                          ),
+                        ),
+                    ],
+                  );
+                }
+                return null;
+              },
+            ),
             eventLoader: (day) {
               List<AcademicEvent> eventsForDay = academicController.academicEvents.where((event) {
-                DateTime eventDate = DateTime.parse(event.startDate);
-                return isSameDay(eventDate, day);
+                if (event.startDate.isEmpty || event.endDate.isEmpty) return false;
+                try {
+                  DateTime startDate = DateTime.parse(event.startDate).toUtc();
+                  DateTime endDate = DateTime.parse(event.endDate).toUtc();
+                  bool isInRange = day.isAfter(startDate.subtract(Duration(days: 1))) &&
+                      day.isBefore(endDate.add(Duration(days: 1)));
+                  bool isSame = isSameDay(startDate, day) || isSameDay(endDate, day) || isInRange;
+                  if (kDebugMode) {
+                    print(
+                        'Calendar: Checking event ${event.title} from ${event.startDate} to ${event.endDate} for day $day - isInRange: $isInRange');
+                  }
+                  return isInRange;
+                } catch (e) {
+                  if (kDebugMode) {
+                    print('Calendar: Error parsing dates for event ${event.title}: $e');
+                  }
+                  return false;
+                }
               }).toList();
+              if (kDebugMode) {
+                print('Calendar: Found ${eventsForDay.length} events for $day');
+              }
               return eventsForDay.isNotEmpty ? [''] : [];
             },
           ),
@@ -1328,6 +1656,12 @@ class _CalendarState extends State<Calendar> {
         ),
         Expanded(
           child: Obx(() {
+            if (kDebugMode) {
+              print('Calendar: Academic events count: ${academicController.academicEvents.length}');
+              print('Calendar: Is loading: ${academicController.isLoading.value}');
+              print('Calendar: Error message: ${academicController.errorMessage.value}');
+            }
+
             if (academicController.isLoading.value) {
               return Center(
                 child: CircularProgressIndicator(color: Color(0xFF186CAC)),
@@ -1343,10 +1677,29 @@ class _CalendarState extends State<Calendar> {
                 ),
               );
             } else {
+              //Filters academic events to show only upcoming events (on or after today)
               List<AcademicEvent> upcomingEvents = academicController.academicEvents.where((event) {
-                DateTime eventDate = DateTime.parse(event.startDate);
-                return eventDate.isAfter(DateTime.now()) || isSameDay(eventDate, DateTime.now());
+                if (event.startDate.isEmpty) return false;
+                try {
+                  DateTime eventDate = DateTime.parse(event.startDate).toUtc();
+                  DateTime now = DateTime.now().toUtc();
+                  bool isUpcoming = eventDate.isAfter(now) || isSameDay(eventDate, now);
+                  if (kDebugMode) {
+                    print(
+                        'Calendar: Event ${event.title} on ${event.startDate} parsed as $eventDate, now: $now, isUpcoming: $isUpcoming');
+                  }
+                  return isUpcoming;
+                } catch (e) {
+                  if (kDebugMode) {
+                    print('Calendar: Error parsing date for event ${event.title}: $e');
+                  }
+                  return false;
+                }
               }).toList();
+
+              if (kDebugMode) {
+                print('Calendar: Upcoming events count: ${upcomingEvents.length}');
+              }
 
               if (upcomingEvents.isEmpty) {
                 return Center(
@@ -1376,6 +1729,9 @@ class _CalendarState extends State<Calendar> {
                   itemCount: upcomingEvents.length,
                   itemBuilder: (context, index) {
                     AcademicEvent event = upcomingEvents[index];
+                    if (kDebugMode) {
+                      print('Calendar: Rendering event ${event.title} at index $index');
+                    }
                     return Container(
                       margin: EdgeInsets.symmetric(vertical: 6),
                       decoration: BoxDecoration(
@@ -1478,7 +1834,15 @@ class _CalendarState extends State<Calendar> {
                           ),
                         ),
                         onTap: () {
-                          _showAcademicEventDetailsDialog(DateTime.parse(event.startDate));
+                          if (event.startDate.isNotEmpty) {
+                            try {
+                              _showAcademicEventDetailsDialog(DateTime.parse(event.startDate));
+                            } catch (e) {
+                              if (kDebugMode) {
+                                print('Calendar: Error parsing date for dialog ${event.title}: $e');
+                              }
+                            }
+                          }
                         },
                       ),
                     );
@@ -1583,10 +1947,19 @@ class _CalendarState extends State<Calendar> {
                 color: Colors.deepOrange,
               ),
             ),
+            // Loads events for a given day, checking if the event date matches the day
             eventLoader: (day) {
               List<Event> eventsForDay = eventController.events.where((event) {
-                DateTime eventDate = DateTime.parse(event.eventDate);
-                return isSameDay(eventDate, day);
+                if (event.eventDate.isEmpty) return false;
+                try {
+                  DateTime eventDate = DateTime.parse(event.eventDate).toUtc();
+                  return isSameDay(eventDate, day);
+                } catch (e) {
+                  if (kDebugMode) {
+                    print('Calendar: Error parsing date for event ${event.title}: $e');
+                  }
+                  return false;
+                }
               }).toList();
               return eventsForDay.isNotEmpty ? [''] : [];
             },
@@ -1627,8 +2000,17 @@ class _CalendarState extends State<Calendar> {
               );
             } else {
               List<Event> upcomingEvents = eventController.events.where((event) {
-                DateTime eventDate = DateTime.parse(event.eventDate);
-                return eventDate.isAfter(DateTime.now()) || isSameDay(eventDate, DateTime.now());
+                if (event.eventDate.isEmpty) return false;
+                try {
+                  DateTime eventDate = DateTime.parse(event.eventDate).toUtc();
+                  DateTime now = DateTime.now().toUtc();
+                  return eventDate.isAfter(now) || isSameDay(eventDate, now);
+                } catch (e) {
+                  if (kDebugMode) {
+                    print('Calendar: Error parsing date for event ${event.title}: $e');
+                  }
+                  return false;
+                }
               }).toList();
               if (upcomingEvents.isEmpty) {
                 return Center(
@@ -1740,8 +2122,16 @@ class _CalendarState extends State<Calendar> {
 
   void _showEventDetailsDialog(DateTime selectedDay) {
     List<Event> eventsForSelectedDay = eventController.events.where((event) {
-      DateTime eventDate = DateTime.parse(event.eventDate);
-      return isSameDay(eventDate, selectedDay);
+      if (event.eventDate.isEmpty) return false;
+      try {
+        DateTime eventDate = DateTime.parse(event.eventDate).toUtc();
+        return isSameDay(eventDate, selectedDay);
+      } catch (e) {
+        if (kDebugMode) {
+          print('Calendar: Error parsing date for event ${event.title}: $e');
+        }
+        return false;
+      }
     }).toList();
     String formattedDate = DateFormat('EEEE, MMMM d, yyyy').format(selectedDay);
     showDialog(
@@ -1875,8 +2265,18 @@ class _CalendarState extends State<Calendar> {
 
   void _showAcademicEventDetailsDialog(DateTime selectedDay) {
     List<AcademicEvent> eventsForSelectedDay = academicController.academicEvents.where((event) {
-      DateTime eventDate = DateTime.parse(event.startDate);
-      return isSameDay(eventDate, selectedDay);
+      if (event.startDate.isEmpty || event.endDate.isEmpty) return false;
+      try {
+        DateTime startDate = DateTime.parse(event.startDate).toUtc();
+        DateTime endDate = DateTime.parse(event.endDate).toUtc();
+        return selectedDay.isAfter(startDate.subtract(Duration(days: 1))) &&
+            selectedDay.isBefore(endDate.add(Duration(days: 1)));
+      } catch (e) {
+        if (kDebugMode) {
+          print('Calendar: Error parsing date for event ${event.title}: $e');
+        }
+        return false;
+      }
     }).toList();
     String formattedDate = DateFormat('EEEE, MMMM d, yyyy').format(selectedDay);
     showDialog(

@@ -109,7 +109,7 @@ class LostAndFoundView extends StatelessWidget {
 
 class LostFoundItemCard extends StatelessWidget {
   final LostFoundItem item;
-
+//Declares a stateless widget that takes a required LostFoundItem object as a parameter
   const LostFoundItemCard({required this.item});
 
   void _openImageViewer(BuildContext context, String imageUrl, int initialIndex) {
@@ -175,197 +175,198 @@ class LostFoundItemCard extends StatelessWidget {
     final exactTime = "${item.createdAt.day}/${item.createdAt.month}/${item.createdAt.year} "
         "${item.createdAt.hour}:${item.createdAt.minute.toString().padLeft(2, '0')}";
 
-    return AnimatedContainer(
-      duration: const Duration(milliseconds: 300),
-      curve: Curves.easeInOut,
-      margin: const EdgeInsets.symmetric(vertical: 8, horizontal: 4),
-      child: Card(
-        color: Colors.white,
-        elevation: 4,
-        shape: RoundedRectangleBorder(
+    return Card(
+      color: Colors.white,
+      elevation: 4,
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(16),
+      ),
+      child: Container(
+        decoration: BoxDecoration(
           borderRadius: BorderRadius.circular(16),
-        ),
-        child: Container(
-          decoration: BoxDecoration(
-            borderRadius: BorderRadius.circular(16),
-            gradient: LinearGradient(
-              colors: [Colors.white, Colors.grey[50]!],
-              begin: Alignment.topLeft,
-              end: Alignment.bottomRight,
-            ),
+          gradient: LinearGradient(
+            colors: [Colors.white, Colors.grey[50]!],
+            begin: Alignment.topLeft,
+            end: Alignment.bottomRight,
           ),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              ListTile(
-                contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-                title: Row(
-                  crossAxisAlignment: CrossAxisAlignment.center,
-                  children: [
-                    CircleAvatar(
-                      radius: 20,
-                      backgroundColor: Colors.grey[200],
-                      backgroundImage: item.profileImageUrl != null
-                          ? NetworkImage(item.profileImageUrl!)
-                          : null,
-                      child: item.profileImageUrl == null
-                          ? const Icon(Icons.person, color: Colors.grey, size: 24)
-                          : null,
-                    ),
-                    const SizedBox(width: 12),
-                    Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Text(
-                          item.fullName ?? 'Unknown ',
-                          style: GoogleFonts.poppins(
-                            fontSize: 16,
-                            fontWeight: FontWeight.w600,
-                            color: Colors.black,
-                          ),
+        ),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            ListTile(
+              contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+              title: Row(
+                crossAxisAlignment: CrossAxisAlignment.center,
+                children: [
+                  CircleAvatar(
+                    radius: 20,
+                    backgroundColor: Colors.grey[200],
+                    backgroundImage: item.profileImageUrl != null
+                        ? NetworkImage(item.profileImageUrl!)
+                        : null,
+                    child: item.profileImageUrl == null
+                        ? const Icon(Icons.person, color: Colors.grey, size: 24)
+                        : null,
+                  ),
+                  const SizedBox(width: 12),
+                  Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        item.fullName ?? 'Unknown ',
+                        style: GoogleFonts.poppins(
+                          fontSize: 16,
+                          fontWeight: FontWeight.w600,
+                          color: Colors.black,
                         ),
-                        Text(
-                          relativeTime,
-                          style: GoogleFonts.poppins(
-                            fontSize: 12,
-                            fontWeight: FontWeight.w400,
-                            color: Colors.grey[600],
-
-                          ),
-                        ),
-                      ],
-                    ),
-                    const Spacer(),
-                    Chip(
-                      label: Text(
-                        item.status,
+                      ),
+                      Text(
+                        relativeTime,
                         style: GoogleFonts.poppins(
                           fontSize: 12,
-                          fontWeight: FontWeight.w500,
-                          color: Colors.white,
+                          fontWeight: FontWeight.w400,
+                          color: Colors.grey[600],
+
                         ),
                       ),
-                      backgroundColor: item.status.toLowerCase() == 'lost'
-                          ? Colors.red
-                          : Colors.green,
-                      padding: const EdgeInsets.symmetric(horizontal: 8),
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(12),
-                      ),
-                    ),
-                  ],
-                ),
-                subtitle: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    const SizedBox(height: 8),
-                    Text(
-                      'Item: ${item.itemType}',
+                    ],
+                  ),
+                  const Spacer(),
+                  Chip(
+                    label: Text(
+                      item.status,
                       style: GoogleFonts.poppins(
-                        fontSize: 14,
-                        fontWeight: FontWeight.w600,
-                        color: Colors.grey[800],
+                        fontSize: 12,
+                        fontWeight: FontWeight.w500,
+                        color: Colors.white,
                       ),
                     ),
-                    const SizedBox(height: 4),
-                    Text(
-                      'Description: ${item.description}',
-                      style: GoogleFonts.poppins(
-                        fontSize: 14,
-                        fontWeight: FontWeight.w400,
-                        color: Colors.grey[600],
-                      ),
+                    backgroundColor: item.status.toLowerCase() == 'lost'
+                        ? Colors.red
+                        : Colors.green,
+                    padding: const EdgeInsets.symmetric(horizontal: 8),
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(12),
                     ),
-                    const SizedBox(height: 8),
-                    Text(
-                      'Location: ${item.location}',
-                      style: GoogleFonts.poppins(
-                        fontSize: 14,
-                        fontWeight: FontWeight.w400,
-                        color: Colors.grey[700],
-                      ),
-                    ),
-                    const SizedBox(height: 8),
-
-                  ],
-                ),
+                  ),
+                ],
               ),
-              if (item.imageUrls.isNotEmpty)
-                Container(
-                  height: (Get.width - 30) / 2 + 16,
-                  padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-                  child: ListView.builder(
-                    scrollDirection: Axis.horizontal,
-                    itemCount: item.imageUrls.length > 2 ? 3 : item.imageUrls.length,
-                    itemBuilder: (context, index) {
-                      if (index == 2 && item.imageUrls.length > 2) {
-                        return GestureDetector(
-                          onTap: () => _openImageGallery(context, item.imageUrls, 0),
-                          child: Container(
-                            width: 120,
-                            height: 120,
-                            decoration: BoxDecoration(
-                              color: Colors.grey[300],
-                              borderRadius: BorderRadius.circular(8),
-                            ),
-                            child: Center(
-                              child: Text(
-                                '+${item.imageUrls.length - 2}',
-                                style: GoogleFonts.poppins(
-                                  fontSize: 20,
-                                  fontWeight: FontWeight.w600,
-                                  color: Colors.grey[800],
-                                ),
-                              ),
-                            ),
+              subtitle: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  const SizedBox(height: 8),
+                  Text(
+                    'Item: ${item.itemType}',
+                    style: GoogleFonts.poppins(
+                      fontSize: 14,
+                      fontWeight: FontWeight.w600,
+                      color: Colors.grey[800],
+                    ),
+                  ),
+                  const SizedBox(height: 4),
+                  Text(
+                    'Description: ${item.description}',
+                    style: GoogleFonts.poppins(
+                      fontSize: 14,
+                      fontWeight: FontWeight.w400,
+                      color: Colors.grey[600],
+                    ),
+                  ),
+                  const SizedBox(height: 8),
+                  Text(
+                    'Location: ${item.location}',
+                    style: GoogleFonts.poppins(
+                      fontSize: 14,
+                      fontWeight: FontWeight.w400,
+                      color: Colors.grey[700],
+                    ),
+                  ),
+                  const SizedBox(height: 8),
+
+                ],
+              ),
+            ),
+            if (item.imageUrls.isNotEmpty)
+              Container(
+                height: (Get.width - 30) / 2 + 16,
+                padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+                child: ListView.builder(
+                  scrollDirection: Axis.horizontal,
+                  itemCount: item.imageUrls.length > 2 ? 3 : item.imageUrls.length,
+                  itemBuilder: (context, index) {
+                    if (index == 2 && item.imageUrls.length > 2) {
+                      return GestureDetector(
+                        onTap: () => _openImageGallery(
+                          context,
+                          item.imageUrls, // Show all images
+                          1,
+                        ),
+                        child: Container(
+                          width: 120,
+                          height: 120,
+                          decoration: BoxDecoration(
+                            color: Colors.grey[300],
+                            borderRadius: BorderRadius.circular(8),
                           ),
-                        );
-                      }
-                      return Padding(
-                        padding: const EdgeInsets.only(right: 8),
-                        child: GestureDetector(
-                          onTap: () => _openImageViewer(context, item.imageUrls[index], index),
-                          child: AspectRatio(
-                            aspectRatio: 1, // Square images
-                            child: ClipRRect(
-                              borderRadius: BorderRadius.circular(8),
-                              child: Image.network(
-                                item.imageUrls[index],
-                                fit: BoxFit.cover,
-                                errorBuilder: (context, error, stackTrace) {
-                                  return Container(
-                                    color: Colors.grey[200],
-                                    child: const Center(
-                                      child: Icon(
-                                        Icons.broken_image,
-                                        color: Colors.grey,
-                                        size: 40,
-                                      ),
-                                    ),
-                                  );
-                                },
-                                loadingBuilder: (context, child, loadingProgress) {
-                                  if (loadingProgress == null) return child;
-                                  return Container(
-                                    color: Colors.grey[200],
-                                    child: const Center(
-                                      child: CircularProgressIndicator(
-                                        valueColor: AlwaysStoppedAnimation<Color>(Color(0xFF186CAC)),
-                                      ),
-                                    ),
-                                  );
-                                },
+                          child: Center(
+                            child: Text(
+                              '+${item.imageUrls.length - 2}',
+                              style: GoogleFonts.poppins(
+                                fontSize: 20,
+                                fontWeight: FontWeight.w600,
+                                color: Colors.grey[800],
                               ),
                             ),
                           ),
                         ),
                       );
-                    },
-                  ),
+                    }
+
+                    return Padding(
+                      padding: const EdgeInsets.only(right: 8),
+                      child: GestureDetector(
+                        onTap: () => _openImageViewer(context, item.imageUrls[index], index),
+                        child: AspectRatio(
+                          aspectRatio: 1, // Square images
+                          child: ClipRRect(
+                            borderRadius: BorderRadius.circular(8),
+                            child: Image.network(
+                              item.imageUrls[index],
+                              fit: BoxFit.cover,
+                              errorBuilder: (context, error, stackTrace) {
+                                return Container(
+                                  color: Colors.grey[200],
+                                  child: const Center(
+                                    child: Icon(
+                                      Icons.broken_image,
+                                      color: Colors.grey,
+                                      size: 40,
+                                    ),
+                                  ),
+                                );
+                              },
+                              loadingBuilder: (context, child, loadingProgress) {
+                                if (loadingProgress == null) return child;
+                                return Container(
+                                  color: Colors.grey[200],
+                                  child: const Center(
+                                    child: CircularProgressIndicator(
+                                      valueColor: AlwaysStoppedAnimation<Color>(Color(0xFF186CAC)),
+                                    ),
+                                  ),
+                                );
+                              },
+                            ),
+                          ),
+                        ),
+                      ),
+                    );
+                  },
                 ),
-              const SizedBox(height: 8),
-            ],
-          ),
+              ),
+
+            const SizedBox(height: 8),
+          ],
         ),
       ),
     );

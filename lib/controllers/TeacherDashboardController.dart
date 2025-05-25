@@ -6,15 +6,10 @@ import 'package:get/get.dart';
 import 'package:intl/intl.dart';
 
 
-class DashboardController extends GetxController {
-  final currentTeacherId = 'teacher123'.obs;
+class TeacherDashboardController extends GetxController {
   final appointments = <Appointment>[].obs;
   final messages = <Message>[].obs;
-  final deadlines = <Deadline>[].obs;
 
-  final teacherName = 'Dr. Emily Johnson'.obs;
-  final teacherEmail = 'emily.johnson@university.edu'.obs;
-  final teacherDepartment = 'Department of Computer Science'.obs;
 
   // Status cards counts
   final todayClassesCount = 3.obs;
@@ -26,84 +21,6 @@ class DashboardController extends GetxController {
   @override
   void onInit() {
     super.onInit();
-    fetchRecentAppointments();
-    fetchRecentMessages();
-    fetchUpcomingDeadlines();
-  }
-
-  void fetchRecentAppointments() {
-    // Mocked data fetch - in a real app, you'd call an API
-    appointments.value = [
-      Appointment(
-        id: 'app1',
-        title: 'Office Hours',
-        date: DateTime.now().add(Duration(days: 1)),
-        startTime: '10:00 AM',
-        endTime: '11:00 AM',
-        location: 'Room 203',
-        availableForStudentIds: ['student1', 'student2'],
-        teacherId: 'teacher123',
-        status: 'available',
-      ),
-      Appointment(
-        id: 'app2',
-        title: 'Project Discussion',
-        date: DateTime.now().add(Duration(days: 2)),
-        startTime: '2:00 PM',
-        endTime: '3:00 PM',
-        location: 'Lab 101',
-        availableForStudentIds: ['student3', 'student4'],
-        teacherId: 'teacher123',
-        bookedByStudentId: 'student3',
-        status: 'booked',
-      ),
-    ];
-  }
-
-  void fetchRecentMessages() {
-    // Mocked data fetch
-    messages.value = [
-      Message(
-        id: 'msg1',
-        senderId: 'student1',
-        receiverId: 'teacher123',
-        content: 'Hello Professor, I have a question about today\'s lecture.',
-        timestamp: DateTime.now().subtract(Duration(hours: 2)),
-        isRead: true,
-      ),
-      Message(
-        id: 'msg2',
-        senderId: 'teacher123',
-        receiverId: 'student1',
-        content: 'Sure, what can I help you with?',
-        timestamp: DateTime.now().subtract(Duration(hours: 1)),
-        isRead: false,
-      ),
-    ];
-  }
-
-  void fetchUpcomingDeadlines() {
-    // Mocked data fetch
-    deadlines.value = [
-      Deadline(
-        id: 'dl1',
-        title: 'Midterm Papers',
-        description: 'Submit your research papers for midterm evaluation.',
-        dueDate: DateTime.now().add(Duration(days: 5)),
-        subjectId: 'subj1',
-        teacherId: 'teacher123',
-        forStudentIds: ['student1', 'student2', 'student3'],
-      ),
-      Deadline(
-        id: 'dl2',
-        title: 'Group Project Milestone',
-        description: 'First draft of group project due.',
-        dueDate: DateTime.now().add(Duration(days: 7)),
-        subjectId: 'subj1',
-        teacherId: 'teacher123',
-        forStudentIds: ['student1', 'student2', 'student3', 'student4'],
-      ),
-    ];
   }
 }
 

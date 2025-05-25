@@ -3,12 +3,12 @@ import 'package:get/get.dart';
 import 'package:google_fonts/google_fonts.dart';
 
 import '../controllers/TeacherAvailableSlotController.dart';
-import 'AppointmentBookingScreen.dart';
+import 'ConfirmBooking.dart';
 
-class TeacherAvailableSlotsScreen extends StatelessWidget {
-  final Map<String, dynamic> teacher;
+class BookWithScreen extends StatelessWidget {
+  final Map<String, dynamic> teacher; //variable inside the widget that will hold information about a teacher
 
-  const TeacherAvailableSlotsScreen({Key? key, required this.teacher}) : super(key: key);
+  const BookWithScreen({Key? key, required this.teacher}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
@@ -51,6 +51,7 @@ class TeacherAvailableSlotsScreen extends StatelessWidget {
 
 
   Widget _buildErrorWidget(TeacherAvailableSlotsController controller, Color themeColor) {
+    //using controller to get error info and retry action
     return Center(
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
@@ -264,7 +265,7 @@ class TeacherAvailableSlotsScreen extends StatelessWidget {
         final timeSlot = '$startTime - $endTime';
 
         return GestureDetector(
-          onTap: () => Get.to(() => AppointmentBookingScreen(teacher: teacher, slot: slot)),
+          onTap: () => Get.to(() => ConfirmBooking(teacher: teacher, slot: slot)),
           child: Container(
             decoration: BoxDecoration(
               color: Color(0xFF186CAC).withOpacity(0.1),

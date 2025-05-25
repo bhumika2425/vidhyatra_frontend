@@ -7,7 +7,7 @@ import 'package:vidhyatra_flutter/controllers/LoginController.dart';
 import '../models/TimeslotModel.dart';
 
 class AppointmentController extends GetxController {
-  static const String baseUrl = '${ApiEndPoints.baseUrl}'; // Replace with your backend URL
+  static const String baseUrl = '${ApiEndPoints.baseUrl}';
   var selectedDate = DateTime.now().obs;
   var dateTimeSlots = <String, List<TimeSlot>>{}.obs;
   var isLoading = true.obs;
@@ -15,14 +15,14 @@ class AppointmentController extends GetxController {
   @override
   void onInit() {
     super.onInit();
-    print('AppointmentController initialized, fetching time slots...');
+
     fetchTimeSlots();
   }
 
   // Select a date and fetch slots
   void selectDate(DateTime date) {
     selectedDate.value = date;
-    print('Selected date: ${DateFormat('yyyy-MM-dd').format(date)}');
+
     fetchTimeSlots();
   }
 
@@ -36,55 +36,46 @@ class AppointmentController extends GetxController {
       final formattedDate = DateFormat('yyyy-MM-dd').format(selectedDate.value);
       final url = Uri.parse('$baseUrl/api/timeSlots/teacher');
       final headers = {
-        'Authorization': 'Bearer ${token}',
+        'Authorization': 'Bearer $token',
         'Content-Type': 'application/json',
       };
 
-      print('Fetching time slots from: $url');
-      print('Headers: $headers');
-      print('Token: ${token}');
+
 
       final response = await http.get(url, headers: headers);
 
-      print('Response status: ${response.statusCode}');
-      print('Response headers: ${response.headers}');
-      print('Raw response body: ${response.body}');
 
       if (response.statusCode == 200) {
-        print('Decoding JSON response...');
+
         final List<dynamic> slotData = json.decode(response.body);
 
-        print('Decoded response: $slotData');
 
         if (slotData.isNotEmpty) {
-          print('Found ${slotData.length} time slots in response');
+
 
           final slotsForSelectedDate = slotData
               .map((slot) => TimeSlot.fromJson(slot))
-              .where((slot) =>
-          DateFormat('yyyy-MM-dd').format(slot.startTime) == formattedDate)
+              .where((slot) => DateFormat('yyyy-MM-dd').format(slot.startTime) == formattedDate)
               .toList();
 
           dateTimeSlots[formattedDate] = slotsForSelectedDate;
 
-          print('Filtered and stored ${slotsForSelectedDate.length} slots for $formattedDate');
+
         } else {
-          print('No time slots found for $formattedDate');
+
           dateTimeSlots[formattedDate] = [];
           Get.snackbar('Info', 'No time slots found for selected date');
         }
-
-
       } else {
-        print('Failed to fetch time slots - Status: ${response.statusCode}');
+
         Get.snackbar('Error', 'Failed to fetch time slots: ${response.statusCode} - ${response.body}');
       }
     } catch (e) {
-      print('Exception in fetchTimeSlots: $e');
+
       Get.snackbar('Error', 'An error occurred while fetching time slots: $e');
     } finally {
       isLoading.value = false;
-      print('fetchTimeSlots completed, isLoading: ${isLoading.value}');
+
     }
   }
 
@@ -92,6 +83,7 @@ class AppointmentController extends GetxController {
   Future<void> addTimeSlot(DateTime startTime, DateTime endTime) async {
     final LoginController loginController = Get.find();
     final token = loginController.token.value;
+    final teacherId = loginController.user.value?.userId ?? '';
 
     try {
       isLoading.value = true;
@@ -99,14 +91,14 @@ class AppointmentController extends GetxController {
       final slotCount = dateTimeSlots[formattedDate]?.length ?? 0;
 
       if (slotCount >= 10) {
-        print('addTimeSlot: Maximum 10 slots reached for $formattedDate');
+
         Get.snackbar('Maximum Reached', 'Maximum 10 time slots allowed per day');
         return;
       }
 
       final url = Uri.parse('$baseUrl/api/timeSlots/create');
       final headers = {
-        'Authorization': 'Bearer ${token}',
+        'Authorization': 'Bearer $token',
         'Content-Type': 'application/json',
       };
       final body = {
@@ -115,9 +107,7 @@ class AppointmentController extends GetxController {
         'end_time': DateFormat('HH:mm:ss').format(endTime),
       };
 
-      print('Posting time slot to: $url');
-      print('Headers: $headers');
-      print('Body: $body');
+
 
       final response = await http.post(
         url,
@@ -125,14 +115,25 @@ class AppointmentController extends GetxController {
         body: jsonEncode(body),
       );
 
-      print('Response status: ${response.statusCode}');
-      print('Response headers: ${response.headers}');
-      print('Raw response body: ${response.body}');
 
       if (response.statusCode == 201) {
-        print('Decoding JSON response...');
-        final newSlot = TimeSlot.fromJson(jsonDecode(response.body));
-        print('New slot added: ${newSlot.toJson()}');
+        if (response.body.isEmpty) {
+
+          Get.snackbar('Error', 'Failed to add time slot: Empty response from server');
+          return;
+        }
+
+        final jsonResponse = jsonDecode(response.body);
+        if (jsonResponse == null || jsonResponse is! Map<String, dynamic>) {
+
+          Get.snackbar('Error', 'Failed to add time slot: Invalid response format');
+          return;
+        }
+
+        // Add teacherId to the response JSON since backend doesn't include teacher object
+        jsonResponse['teacher_id'] = jsonResponse['teacher_id'] ?? teacherId;
+        final newSlot = TimeSlot.fromJson(jsonResponse);
+
 
         dateTimeSlots.update(
           formattedDate,
@@ -141,15 +142,18 @@ class AppointmentController extends GetxController {
         );
         Get.snackbar('Success', 'Time slot added successfully!');
       } else {
+        final errorMessage = response.body.isNotEmpty
+            ? (jsonDecode(response.body)['message'] ?? 'Failed to add time slot')
+            : 'Failed to add time slot, possibly due to overlapping slots';
 
-        Get.snackbar('Error', 'Failed to add time slot, the slot overlaps the existing slot');
+        Get.snackbar('Error', errorMessage);
       }
     } catch (e) {
-      print('Exception in addTimeSlot: $e');
+
       Get.snackbar('Error', 'Error adding time slot: $e');
     } finally {
       isLoading.value = false;
-      print('addTimeSlot completed, isLoading: ${isLoading.value}');
+
     }
   }
 
@@ -161,37 +165,33 @@ class AppointmentController extends GetxController {
       isLoading.value = true;
       final url = Uri.parse('$baseUrl/time-slots/delete/$id');
       final headers = {
-        'Authorization': 'Bearer ${token}',
+        'Authorization': 'Bearer $token',
         'Content-Type': 'application/json',
       };
 
-      print('Deleting time slot at: $url');
-      print('Headers: $headers');
-      print('Token: ${token}');
+
 
       final response = await http.delete(url, headers: headers);
 
-      print('Response status: ${response.statusCode}');
-      print('Response headers: ${response.headers}');
-      print('Raw response body: ${response.body}');
+
 
       if (response.statusCode == 200) {
-        print('Time slot $id deleted successfully');
+
         dateTimeSlots.update(
           formattedDate,
               (slots) => slots.where((slot) => slot.id != id).toList(),
         );
         Get.snackbar('Success', 'Time slot deleted successfully!');
       } else {
-        print('Failed to delete time slot - Status: ${response.statusCode}');
+
         Get.snackbar('Error', 'Failed to delete time slot: ${response.statusCode} - ${response.body}');
       }
     } catch (e) {
-      print('Exception in deleteTimeSlot: $e');
+
       Get.snackbar('Error', 'Error deleting time slot: $e');
     } finally {
       isLoading.value = false;
-      print('deleteTimeSlot completed, isLoading: ${isLoading.value}');
+
     }
   }
 }

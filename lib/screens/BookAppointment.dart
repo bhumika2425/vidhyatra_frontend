@@ -4,10 +4,10 @@ import 'package:intl/intl.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:vidhyatra_flutter/controllers/AppointmentBookingController.dart';
 import 'package:vidhyatra_flutter/controllers/TeacherListController.dart';
-import 'TeacherAvailableSlotScreen.dart';
+import 'BookWithScreen.dart';
 
-class TeacherListScreen extends StatelessWidget {
-  const TeacherListScreen({Key? key}) : super(key: key);
+class BookAppointment extends StatelessWidget {
+  const BookAppointment({Key? key}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
@@ -15,7 +15,7 @@ class TeacherListScreen extends StatelessWidget {
     final AppointmentBookingController appointmentController = Get.put(AppointmentBookingController());
     final TextEditingController searchController = TextEditingController();
 
-    // Sync searchController with controller.searchQuery
+    // When searchQuery changes, update the text field if it's different
     ever(controller.searchQuery, (String query) {
       if (searchController.text != query) {
         searchController.text = query;
@@ -337,7 +337,7 @@ class TeacherListScreen extends StatelessWidget {
                                       context,
                                       MaterialPageRoute(
                                         builder: (context) =>
-                                            TeacherAvailableSlotsScreen(
+                                            BookWithScreen(
                                                 teacher: teacher),
                                       ),
                                     );

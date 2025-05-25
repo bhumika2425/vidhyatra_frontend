@@ -1,3 +1,5 @@
+import 'package:intl/intl.dart';
+
 class AcademicEvent {
   final String title;
   final String description;
@@ -30,16 +32,28 @@ class AcademicEvent {
   });
 
   factory AcademicEvent.fromJson(Map<String, dynamic> json) {
+    // Helper to parse and normalize dates to yyyy-MM-dd
+    String parseDate(String? dateStr) {
+      if (dateStr == null || dateStr.isEmpty) return '';
+      try {
+        final date = DateTime.parse(dateStr);
+        return DateFormat('yyyy-MM-dd').format(date);
+      } catch (e) {
+        print('Error parsing date $dateStr: $e');
+        return '';
+      }
+    }
+
     return AcademicEvent(
       title: json['title'] ?? '',
       description: json['description'] ?? '',
-      eventType: json['event_type'] ?? '',
-      examType: json['exam_type'],
+      eventType: json['eventType'] ?? '', // Use camelCase
+      examType: json['examType'],
       subject: json['subject'],
-      holidayType: json['holiday_type'],
-      startDate: json['start_date'] ?? '',
-      endDate: json['end_date'] ?? '',
-      startTime: json['start_time'],
+      holidayType: json['holidayType'],
+      startDate: parseDate(json['startDate']), // Use camelCase
+      endDate: parseDate(json['endDate']), // Use camelCase
+      startTime: json['startTime'],
       duration: json['duration'],
       venue: json['venue'],
       year: json['year'] ?? '',
@@ -51,22 +65,22 @@ class AcademicEvent {
     final Map<String, dynamic> data = {
       'title': title,
       'description': description,
-      'event_type': eventType,
-      'start_date': startDate,
-      'end_date': endDate,
+      'eventType': eventType, // Use camelCase
+      'startDate': startDate, // Use camelCase
+      'endDate': endDate, // Use camelCase
       'year': year,
       'semester': semester,
     };
     if (eventType == 'EXAM') {
       data.addAll({
-        'exam_type': examType,
+        'examType': examType,
         'subject': subject,
-        'start_time': startTime,
+        'startTime': startTime,
         'duration': duration,
         'venue': venue,
       });
     } else if (eventType == 'HOLIDAY') {
-      data['holiday_type'] = holidayType;
+      data['holidayType'] = holidayType;
     }
     return data;
   }

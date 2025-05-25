@@ -9,7 +9,7 @@ class Routine extends StatelessWidget {
   final RoutineController routineController = Get.find<RoutineController>();
 
   Routine({super.key});
-
+//key helps Flutter identify and manage widget trees more efficiently
   @override
   Widget build(BuildContext context) {
     final days = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday','Saturday'];

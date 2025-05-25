@@ -5,11 +5,11 @@ import 'package:intl/intl.dart';
 
 import '../controllers/AppointmentBookingController.dart';
 
-class AppointmentBookingScreen extends StatelessWidget {
+class ConfirmBooking extends StatelessWidget {
   final Map<String, dynamic> teacher;
   final Map<String, dynamic> slot;
 
-  AppointmentBookingScreen({
+  ConfirmBooking({
     Key? key,
     required this.teacher,
     required this.slot,
@@ -68,7 +68,7 @@ class AppointmentBookingScreen extends StatelessWidget {
                     _buildDetailRow(Icons.person, 'Teacher', teacher['name']),
                     _buildDetailRow(Icons.calendar_today, 'Date', formattedDate),
                     _buildDetailRow(Icons.access_time, 'Time', '$startTime - $endTime'),
-                    _buildDetailRow(Icons.confirmation_number, 'Slot ID', '${slot['slot_id']}'),
+                    // _buildDetailRow(Icons.confirmation_number, 'Slot ID', '${slot['slot_id']}'),
                   ],
                 ),
               ),

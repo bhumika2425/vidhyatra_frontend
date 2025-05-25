@@ -6,7 +6,7 @@ import '../models/AcademicModel.dart';
 import 'LoginController.dart';
 
 class AcademicController extends GetxController {
-  var academicEvents = <AcademicEvent>[].obs; // Use AcademicEvent instead of Academic
+  var academicEvents = <AcademicEvent>[].obs;
   var isLoading = true.obs;
   var errorMessage = ''.obs;
 
@@ -33,15 +33,24 @@ class AcademicController extends GetxController {
 
       final response = await http.get(uri, headers: headers);
 
+
       if (response.statusCode == 200) {
-        print(response.body);
-        List jsonResponse = json.decode(response.body);
-        academicEvents.value = jsonResponse.map((event) => AcademicEvent.fromJson(event)).toList();
+        final jsonResponse = json.decode(response.body);
+        if (jsonResponse is Map && jsonResponse.containsKey('events')) {
+          List events = jsonResponse['events'];
+          academicEvents.value = events.map((event) => AcademicEvent.fromJson(event)).toList();
+
+        } else {
+          errorMessage.value = 'Invalid JSON structure: Expected "events" array';
+
+        }
       } else {
         errorMessage.value = 'Failed to load academic events: ${response.statusCode}';
+
       }
     } catch (e) {
-      errorMessage.value = 'Error: $e';
+      errorMessage.value = 'Error fetching academic events: $e';
+
     } finally {
       isLoading(false);
     }

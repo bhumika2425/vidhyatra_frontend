@@ -1,7 +1,7 @@
 
 import 'package:get/get.dart';
 import 'package:url_launcher/url_launcher.dart';
-import 'package:vidhyatra_flutter/screens/PaidFeesDetails.dart';
+import 'package:vidhyatra_flutter/screens/PaymentProcessScreen.dart';
 import 'package:vidhyatra_flutter/services/PaymentService.dart';
 import 'package:http/http.dart' as http;
 
@@ -37,7 +37,7 @@ class PaymentController extends GetxController {
       paymentData.value = data['payment'];
       paidFeesData.value = data['paidFeesData'];
 
-      Get.to(() => PaidFeesDetails());
+      Get.to(() => PaymentProcess());
     } catch (e) {
       print('error initializing payment: $e');
     } finally {

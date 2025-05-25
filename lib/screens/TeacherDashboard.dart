@@ -1,23 +1,18 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:google_fonts/google_fonts.dart';
-import 'package:intl/intl.dart';
-import 'package:shared_preferences/shared_preferences.dart';
-import 'package:timeago/timeago.dart';
 import 'package:vidhyatra_flutter/controllers/LoginController.dart';
-import 'package:vidhyatra_flutter/screens/TeacherAppointment.dart';
+import 'package:vidhyatra_flutter/screens/ManageAppointment.dart';
 import 'package:vidhyatra_flutter/screens/Calendar.dart';
 import 'package:vidhyatra_flutter/screens/DashboardTabs.dart';
-import 'package:vidhyatra_flutter/screens/TeacherDeadlinePosting.dart';
-import 'package:vidhyatra_flutter/screens/login.dart';
-import '../controllers/tryController.dart';
+import '../controllers/TeacherDashboardController.dart';
 import '../controllers/BlogController.dart';
-import 'package:timeago/timeago.dart' as timeago;
+
 
 import 'blog_posting_page.dart';
 
-class DashboardView extends GetView<DashboardController> {
-  final DashboardController controller = Get.put(DashboardController());
+class DashboardView extends GetView<TeacherDashboardController> {
+  final TeacherDashboardController controller = Get.put(TeacherDashboardController());
   final BlogController blogController = Get.put(BlogController());
   final LoginController loginController = Get.find();
 
@@ -91,7 +86,7 @@ class DashboardView extends GetView<DashboardController> {
           'Appointments',
           Icons.calendar_today,
           Color(0xFF186CAC),
-              () => Get.to(() => TeacherAppointment()),
+              () => Get.to(() => ManageAppointment()),
           'Set appointment slots for students',
           constraints,
         ),
@@ -113,15 +108,15 @@ class DashboardView extends GetView<DashboardController> {
           'Chat with students and colleagues',
           constraints,
         ),
-        _buildFeatureCard(
-          context,
-          'Deadlines',
-          Icons.assignment_late,
-          Colors.deepOrange,
-              () => Get.to(() => DeadlineHomePage()), // Update to appropriate page later
-          'Manage assignment deadlines',
-          constraints,
-        ),
+        // _buildFeatureCard(
+        //   context,
+        //   'Deadlines',
+        //   Icons.assignment_late,
+        //   Colors.deepOrange,
+        //       // () => Get.to(() => DeadlineHomePage()), // Update to appropriate page later
+        //   'Manage assignment deadlines',
+        //   constraints,
+        // ),
       ],
     );
   }

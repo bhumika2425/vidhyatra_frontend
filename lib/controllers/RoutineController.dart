@@ -65,10 +65,10 @@
 //     return routineByDay.value!.routinesByDay[dayName] ?? [];
 //   }
 // }
+import 'dart:convert';
 import 'package:get/get.dart';
 import 'package:http/http.dart' as http;
 import 'package:vidhyatra_flutter/constants/api_endpoints.dart';
-import 'dart:convert';
 import 'package:vidhyatra_flutter/controllers/LoginController.dart';
 import '../models/RoutineModel.dart';
 
@@ -84,7 +84,7 @@ class RoutineController extends GetxController {
     fetchRoutines();
   }
 
-  Future<void> fetchRoutines() async {
+  Future<void> fetchRoutines() async { //Defines an asynchronous method to fetch routine data
     try {
       isLoading(true);
       errorMessage('');
@@ -100,6 +100,7 @@ class RoutineController extends GetxController {
         headers: {
           'Authorization': 'Bearer $token',
           'Content-Type': 'application/json',
+          //Sends a GET request to the routine API with the token in the Authorization header
         },
       );
 
@@ -134,7 +135,7 @@ class RoutineController extends GetxController {
       'Thursday',
       'Friday',
       'Sunday',
-    ][today % 6]; // Adjust for Sunday as index 6
+    ][today % 6]; // Handles saturday separately
     return routineByDay.value!.routinesByDay[dayName] ?? [];
   }
 }

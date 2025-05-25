@@ -37,27 +37,27 @@ class EventController extends GetxController {
         'Content-Type': 'application/json',
       };
 
-      // Debugging: Print request details
-      print("Fetching events from: $uri");
-      print("Headers: $headers");
+      // // Debugging: Print request details
+      // print("Fetching events from: $uri");
+      // print("Headers: $headers");
 
       final response = await http.get(uri, headers: headers); // Send GET request with headers
 
-      // Debugging: Print response status and body
-      print("Response Status Code: ${response.statusCode}");
-      print("Response Body: ${response.body}");
+      // // Debugging: Print response status and body
+      // print("Response Status Code: ${response.statusCode}");
+      // print("Response Body: ${response.body}");
 
       if (response.statusCode == 200) {
         List jsonResponse = json.decode(response.body);
         events.value = jsonResponse.map((event) => Event.fromJson(event)).toList(); // Update the fees list
-        print("Events fetched successfully: ${events.length} items");
+        // print("Events fetched successfully: ${events.length} items");
       } else {
         errorMessage.value = 'Failed to load events: ${response.statusCode}';
-        print("Error: ${errorMessage.value}");
+        // print("Error: ${errorMessage.value}");
       }
     } catch (e) {
       errorMessage.value = 'Error: $e'; // If an error occurs, show the error message
-      print("Exception occurred: $e");
+      // print("Exception occurred: $e");
     } finally {
       isLoading(false); // Set loading to false when done
     }
