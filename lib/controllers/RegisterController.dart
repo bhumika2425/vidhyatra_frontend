@@ -10,10 +10,9 @@ class RegisterController extends GetxController {
 
   Future<void> registerUser({
     required String collegeId,
-    required String name,
     required String email,
     required String password,
-    required String role,
+    required String confirmPassword,
   }) async {
     try {
       isLoading.value = true;
@@ -24,10 +23,9 @@ class RegisterController extends GetxController {
         headers: {'Content-Type': 'application/json'},
         body: jsonEncode({
           'collegeId': collegeId,
-          'name': name,
           'email': email,
           'password': password,
-          'role': role,
+          'confirm_password': confirmPassword,
         }),
       );
 
@@ -37,9 +35,10 @@ class RegisterController extends GetxController {
 
       switch (response.statusCode) {
         case 201:
+          final userData = responseData['user'];
           Get.offNamed('/login');
           _showSuccessMessage('Registration Successful',
-              'You have been registered successfully. Please login to continue.');
+              'Welcome ${userData['name']}! You have been registered as ${userData['role']}. Please login to continue.');
           break;
 
         case 400:

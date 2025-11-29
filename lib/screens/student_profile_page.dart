@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:intl/intl.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:vidhyatra_flutter/screens/student_profile_update.dart';
+import '../constants/app_themes.dart';
 import '../controllers/LoginController.dart';
 import '../controllers/ProfileController.dart';
 
@@ -17,22 +17,23 @@ class StudentProfilePage extends StatelessWidget {
     final imageHeight = screenHeight * 0.3; // Slightly reduced for better balance
 
     return Scaffold(
-      backgroundColor: Colors.grey[200], // Updated background color
+      backgroundColor: AppThemes.secondaryBackgroundColor, // Updated background color
       appBar: AppBar(
-        iconTheme: const IconThemeData(color: Colors.white),
+        iconTheme: const IconThemeData(color: AppThemes.appBarTextColor),
         title: Text(
-          'Student Profile',
+          'Your Profile',
           style: GoogleFonts.poppins(
             // fontWeight: FontWeight.bold,
             fontSize: 19,
-            color: Colors.white,
+            color: AppThemes.appBarTextColor,
           ),
         ),
-        backgroundColor: const Color(0xFF186CAC), // Match dashboard's AppBar color
+        centerTitle: false,
+        backgroundColor: AppThemes.appBarColor, // Match dashboard's AppBar color
         elevation: 0,
         actions: [
           IconButton(
-            icon: const Icon(Icons.edit, color: Colors.white),
+            icon: const Icon(Icons.edit, color: AppThemes.appBarTextColor),
             onPressed: () {
               Get.to(() => StudentProfileUpdatePage());
             },
@@ -42,7 +43,7 @@ class StudentProfilePage extends StatelessWidget {
       body: Obx(() {
         if (profileController.isLoading.value) {
           return const Center(
-            child: CircularProgressIndicator(color: Color(0xFF186CAC)),
+            child: CircularProgressIndicator(color: AppThemes.darkMaroon),
           );
         }
         if (profileController.profile.value != null) {
@@ -77,29 +78,21 @@ class StudentProfilePage extends StatelessWidget {
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
                             Text(
-                              profile.fullname ?? 'John Doe',
+                              profile.fullname.isNotEmpty ? profile.fullname : 'John Doe',
                               style: GoogleFonts.poppins(
                                 fontSize: 28,
                                 fontWeight: FontWeight.bold,
-                                color: Color(0xFF186CAC),
+                                color: AppThemes.darkMaroon,
                               ),
                             ),
                             const SizedBox(height: 5),
                             Row(
                               children: [
                                 Text(
-                                  profile.department ?? 'Computer Science',
+                                  profile.department,
                                   style: GoogleFonts.poppins(
                                     fontSize: 16,
-                                    color: Colors.deepOrange,
-                                  ),
-                                ),
-                                SizedBox(width: 5,),
-                                Text(
-                                 '(${ profile.section})',
-                                  style: GoogleFonts.poppins(
-                                    fontSize: 16,
-                                    color: Colors.deepOrange,
+                                    color: AppThemes.darkMaroon,
                                   ),
                                 ),
                               ],
@@ -118,96 +111,24 @@ class StudentProfilePage extends StatelessWidget {
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       // Bio Section
-                      _buildSectionTitle('Bio'),
-                      _buildInfoCard([
-                        profile.bio != null
-                            ? Text(
-                          profile.bio!,
-                          style: GoogleFonts.poppins(
-                            fontSize: 15,
-                            color: Colors.grey[800],
-                          ),
-                        )
-                            : Text(
-                          'Describe Yourself',
-                          style: GoogleFonts.poppins(
-                            fontSize: 15,
-                            color: Colors.grey[600],
-                          ),
-                        ),
-                      ]),
+                      _buildModernSectionTitle('About', Icons.person_outline),
+                      _buildModernBioCard(profile.bio),
+                      const SizedBox(height: 24),
+
+                      // Academic Information Section
+                      _buildModernSectionTitle('Academic Information', Icons.school_outlined),
+                      _buildAcademicInfoCard(profile),
+                      const SizedBox(height: 24),
+
+                      // Personal Information Section
+                      _buildModernSectionTitle('Personal Information', Icons.info_outline),
+                      _buildPersonalInfoCard(profile),
+                      const SizedBox(height: 24),
+
+                      // Interests Section
+                      _buildModernSectionTitle('Interests & Hobbies', Icons.favorite_outline),
+                      _buildInterestsCard(profile.interest),
                       const SizedBox(height: 20),
-
-                      // Personal Details Section
-                      _buildSectionTitle('Personal Details'),
-                      _buildInfoCard([
-                        Row(
-                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                          children: [
-                            Expanded(
-                              child: _buildInfoRow(
-                                FontAwesomeIcons.calendar,
-                                'Date of Birth',
-                                profile.dateOfBirth != null
-                                    ? DateFormat('yyyy-MM-dd')
-                                    .format(profile.dateOfBirth!)
-                                    : '1998-05-15',
-                              ),
-                            ),
-                            const SizedBox(width: 16),
-                            Expanded(
-                              child: _buildInfoRow(
-                                FontAwesomeIcons.mapMarkerAlt,
-                                'Location',
-                                profile.location ?? 'New York, USA',
-                              ),
-                            ),
-                          ],
-                        ),
-                        const SizedBox(height: 10),
-                        Row(
-                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                          children: [
-                            Expanded(
-                              child: _buildInfoRow(
-                                FontAwesomeIcons.graduationCap,
-                                'Year',
-                                profile.year ?? '3rd Year',
-                              ),
-                            ),
-                            const SizedBox(width: 16),
-                            Expanded(
-                              child: _buildInfoRow(
-                                FontAwesomeIcons.book,
-                                'Semester',
-                                profile.semester ?? '6th Semester',
-                              ),
-                            ),
-                          ],
-                        ),
-                      ]),
-
-                      const SizedBox(height: 20),
-
-                      // Interests Section - MODIFIED to remove chips
-                      _buildSectionTitle('Interests'),
-                      _buildInfoCard([
-                        profile.interest != null
-                            ? Text(
-                          profile.interest!,
-                          style: GoogleFonts.poppins(
-                            fontSize: 15,
-                            color: Colors.grey[800],
-                          ),
-                        )
-                            : Text(
-                          'Let others know you',
-                          style: GoogleFonts.poppins(
-                            fontSize: 15,
-                            color: Colors.grey[600],
-                          ),
-                        ),
-                      ]),
                     ],
                   ),
                 ),
@@ -229,73 +150,31 @@ class StudentProfilePage extends StatelessWidget {
     );
   }
 
-  Widget _buildSectionTitle(String title) {
+  // Modern Section Title with Icon
+  Widget _buildModernSectionTitle(String title, IconData icon) {
     return Padding(
-      padding: const EdgeInsets.only(bottom: 10),
-      child: Text(
-        title,
-        style: GoogleFonts.poppins(
-          fontSize: 20,
-          fontWeight: FontWeight.bold,
-          color: Colors.black, // Use primary blue for section titles
-        ),
-      ),
-    );
-  }
-
-  Widget _buildInfoCard(List<Widget> children) {
-    return Container(
-      width: double.infinity,
-      padding: const EdgeInsets.all(15),
-      decoration: BoxDecoration(
-        color: Colors.white,
-        borderRadius: BorderRadius.circular(12),
-        boxShadow: [
-          BoxShadow(
-            color: Colors.black.withOpacity(0.05),
-            blurRadius: 8,
-            offset: const Offset(0, 2),
-          ),
-        ],
-      ),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: children,
-      ),
-    );
-  }
-
-  Widget _buildInfoRow(IconData icon, String label, String value) {
-    return Padding(
-      padding: const EdgeInsets.symmetric(vertical: 8),
+      padding: const EdgeInsets.only(bottom: 16),
       child: Row(
         children: [
-          FaIcon(
-            icon,
-            size: 20,
-            color: const Color(0xFF186CAC), // Use primary blue for icons
+          Container(
+            padding: const EdgeInsets.all(8),
+            decoration: BoxDecoration(
+              color: AppThemes.darkMaroon.withOpacity(0.1),
+              borderRadius: BorderRadius.circular(8),
+            ),
+            child: Icon(
+              icon,
+              size: 20,
+              color: AppThemes.darkMaroon,
+            ),
           ),
-          const SizedBox(width: 15),
-          Expanded(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(
-                  label,
-                  style: GoogleFonts.poppins(
-                    fontSize: 14,
-                    color: Colors.grey[600],
-                  ),
-                ),
-                Text(
-                  value,
-                  style: GoogleFonts.poppins(
-                    fontSize: 16,
-                    color: Colors.black87,
-                    fontWeight: FontWeight.w500,
-                  ),
-                ),
-              ],
+          const SizedBox(width: 12),
+          Text(
+            title,
+            style: GoogleFonts.poppins(
+              fontSize: 18,
+              fontWeight: FontWeight.w600,
+              color: AppThemes.primaryTextColor,
             ),
           ),
         ],
@@ -303,5 +182,260 @@ class StudentProfilePage extends StatelessWidget {
     );
   }
 
-// Removed the _buildInterestChip method as it's no longer needed
+  // Modern Bio Card
+  Widget _buildModernBioCard(String? bio) {
+    return Container(
+      width: double.infinity,
+      padding: const EdgeInsets.all(20),
+      decoration: BoxDecoration(
+        color: AppThemes.white,
+        borderRadius: BorderRadius.circular(16),
+        border: Border.all(color: AppThemes.lightGrey.withOpacity(0.3)),
+        boxShadow: [
+          BoxShadow(
+            color: AppThemes.darkMaroon.withOpacity(0.04),
+            blurRadius: 10,
+            offset: const Offset(0, 2),
+          ),
+        ],
+      ),
+      child: bio != null && bio.isNotEmpty
+          ? Text(
+              bio,
+              style: GoogleFonts.poppins(
+                fontSize: 15,
+                height: 1.6,
+                color: AppThemes.secondaryTextColor,
+              ),
+            )
+          : Text(
+              'Tell others about yourself...',
+              style: GoogleFonts.poppins(
+                fontSize: 15,
+                color: AppThemes.hintTextColor,
+                fontStyle: FontStyle.italic,
+              ),
+            ),
+    );
+  }
+
+  // Academic Information Card
+  Widget _buildAcademicInfoCard(dynamic profile) {
+    return Container(
+      width: double.infinity,
+      padding: const EdgeInsets.all(20),
+      decoration: BoxDecoration(
+        color: AppThemes.white,
+        borderRadius: BorderRadius.circular(16),
+        border: Border.all(color: AppThemes.lightGrey.withOpacity(0.3)),
+        boxShadow: [
+          BoxShadow(
+            color: AppThemes.darkMaroon.withOpacity(0.04),
+            blurRadius: 10,
+            offset: const Offset(0, 2),
+          ),
+        ],
+      ),
+      child: Column(
+        children: [
+          Row(
+            children: [
+              Expanded(
+                child: _buildModernInfoItem(
+                  Icons.badge_outlined,
+                  'College ID',
+                  profile.collegeId?.toString() ?? 'Not specified',
+                ),
+              ),
+
+            ],
+          ),
+          const SizedBox(height: 16),
+          _buildModernInfoItem(
+            Icons.email_outlined,
+            'College Email',
+            profile.email ?? 'Not provided',
+            isFullWidth: true,
+          ),
+          const SizedBox(height: 16),
+          Row(
+            children: [
+              Expanded(
+                child: _buildModernInfoItem(
+                  Icons.calendar_today_outlined,
+                  'Year',
+                  profile.year ?? 'Not specified',
+                ),
+              ),
+              const SizedBox(width: 16),
+              Expanded(
+                child: _buildModernInfoItem(
+                  Icons.book_outlined,
+                  'Semester',
+                  profile.semester ?? 'Not specified',
+                ),
+              ),
+            ],
+          ),
+          const SizedBox(height: 16),
+          Row(
+            children: [
+              Expanded(
+                child: _buildModernInfoItem(
+                  Icons.group_outlined,
+                  'Section',
+                  profile.section ?? 'Not specified',
+                ),
+              ),
+              const SizedBox(width: 16),
+              Expanded(
+                child: _buildModernInfoItem(
+                  Icons.school_outlined,
+                  'Department',
+                  profile.department ?? 'Not specified',
+                ),
+              ),
+            ],
+          ),
+        ],
+      ),
+    );
+  }
+
+  // Personal Information Card
+  Widget _buildPersonalInfoCard(dynamic profile) {
+    return Container(
+      width: double.infinity,
+      padding: const EdgeInsets.all(20),
+      decoration: BoxDecoration(
+        color: AppThemes.white,
+        borderRadius: BorderRadius.circular(16),
+        border: Border.all(color: AppThemes.lightGrey.withOpacity(0.3)),
+        boxShadow: [
+          BoxShadow(
+            color: AppThemes.darkMaroon.withOpacity(0.04),
+            blurRadius: 10,
+            offset: const Offset(0, 2),
+          ),
+        ],
+      ),
+      child: Column(
+        children: [
+          Row(
+            children: [
+              Expanded(
+                child: _buildModernInfoItem(
+                  Icons.phone_outlined,
+                  'Phone',
+                  profile.phoneNumber ?? 'Not provided',
+                ),
+              ),
+              const SizedBox(width: 16),
+              Expanded(
+                child: _buildModernInfoItem(
+                  Icons.cake_outlined,
+                  'Birthday',
+                  profile.dateOfBirth != null
+                      ? DateFormat('MMM dd, yyyy').format(profile.dateOfBirth!)
+                      : 'Not provided',
+                ),
+              ),
+            ],
+          ),
+          const SizedBox(height: 16),
+          _buildModernInfoItem(
+            Icons.location_on_outlined,
+            'Location',
+            profile.location ?? 'Not provided',
+            isFullWidth: true,
+          ),
+        ],
+      ),
+    );
+  }
+
+  // Interests Card
+  Widget _buildInterestsCard(String? interests) {
+    return Container(
+      width: double.infinity,
+      padding: const EdgeInsets.all(20),
+      decoration: BoxDecoration(
+        color: AppThemes.white,
+        borderRadius: BorderRadius.circular(16),
+        border: Border.all(color: AppThemes.lightGrey.withOpacity(0.3)),
+        boxShadow: [
+          BoxShadow(
+            color: AppThemes.darkMaroon.withOpacity(0.04),
+            blurRadius: 10,
+            offset: const Offset(0, 2),
+          ),
+        ],
+      ),
+      child: interests != null && interests.isNotEmpty
+          ? Text(
+              interests,
+              style: GoogleFonts.poppins(
+                fontSize: 15,
+                height: 1.6,
+                color: AppThemes.secondaryTextColor,
+              ),
+            )
+          : Text(
+              'Share your interests and hobbies...',
+              style: GoogleFonts.poppins(
+                fontSize: 15,
+                color: AppThemes.hintTextColor,
+                fontStyle: FontStyle.italic,
+              ),
+            ),
+    );
+  }
+
+  // Modern Info Item
+  Widget _buildModernInfoItem(
+    IconData icon,
+    String label,
+    String value, {
+    bool isFullWidth = false,
+  }) {
+    return Container(
+      width: isFullWidth ? double.infinity : null,
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Row(
+            children: [
+              Icon(
+                icon,
+                size: 16,
+                color: AppThemes.darkMaroon,
+              ),
+              const SizedBox(width: 8),
+              Text(
+                label,
+                style: GoogleFonts.poppins(
+                  fontSize: 12,
+                  fontWeight: FontWeight.w500,
+                  color: AppThemes.darkMaroon,
+                  letterSpacing: 0.5,
+                ),
+              ),
+            ],
+          ),
+          const SizedBox(height: 6),
+          Padding(
+            padding: const EdgeInsets.only(left: 24),
+            child: Text(
+              value,
+              style: GoogleFonts.poppins(
+                fontSize: 15,
+                fontWeight: FontWeight.w400,
+                color: AppThemes.primaryTextColor,
+              ),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
 }

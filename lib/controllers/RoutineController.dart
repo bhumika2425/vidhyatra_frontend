@@ -107,16 +107,20 @@ class RoutineController extends GetxController {
 
       if (response.statusCode == 200) {
         final data = jsonDecode(response.body);
-        routineByDay.value = RoutineByDay.fromJson(data);
+        
+        // Check if there's a message indicating no routine yet
+        if (data['message'] != null && data['message'].toString().contains('not created yet')) {
+          errorMessage(data['message']);
+          routineByDay.value = null;
+        } else if (data['message'] != null && data['message'].toString().contains('not available yet')) {
+          errorMessage(data['message']);
+          routineByDay.value = null;
+        } else {
+          routineByDay.value = RoutineByDay.fromJson(data);
+        }
       } else {
         final errorData = jsonDecode(response.body);
-        // Check for specific error message indicating missing profile
-        if (errorData['message']?.contains('profile') == true ||
-            errorData['error']?.contains('profile') == true) {
-          errorMessage('Please create your profile to access your routine.');
-        } else {
-          errorMessage('Failed to fetch routine: ${errorData['message'] ?? response.statusCode}');
-        }
+        errorMessage('Failed to fetch routine: ${errorData['message'] ?? response.statusCode}');
       }
     } catch (e) {
       errorMessage('Error fetching routine: $e');
@@ -127,15 +131,39 @@ class RoutineController extends GetxController {
 
   List<RoutineEntry> getTodayRoutine() {
     if (routineByDay.value == null) return [];
-    final today = DateTime.now().weekday;
-    final dayName = [
-      'Monday',
-      'Tuesday',
-      'Wednesday',
-      'Thursday',
-      'Friday',
-      'Sunday',
-    ][today % 6]; // Handles saturday separately
+    
+    final today = DateTime.now().weekday; // 1=Monday, 7=Sunday
+    
+    // Map weekday to day name
+    String dayName;
+    switch (today) {
+      case 1:
+        dayName = 'Monday';
+        break;
+      case 2:
+        dayName = 'Tuesday';
+        break;
+      case 3:
+        dayName = 'Wednesday';
+        break;
+      case 4:
+        dayName = 'Thursday';
+        break;
+      case 5:
+        dayName = 'Friday';
+        break;
+      case 6:
+        dayName = 'Saturday';
+        break;
+      case 7:
+        dayName = 'Sunday';
+        break;
+      default:
+        dayName = 'Monday';
+    }
+    
+    print('🔍 getTodayRoutine: today=$today, dayName=$dayName');
+    
     return routineByDay.value!.routinesByDay[dayName] ?? [];
   }
 }

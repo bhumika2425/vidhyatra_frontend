@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:intl/intl.dart';
+import '../constants/app_themes.dart';
 import '../controllers/RoutineController.dart';
 
 class Routine extends StatelessWidget {
@@ -15,42 +16,85 @@ class Routine extends StatelessWidget {
     final days = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday','Saturday'];
 
     return Scaffold(
-      backgroundColor: Colors.grey[200],
+      backgroundColor: AppThemes.secondaryBackgroundColor,
       appBar: AppBar(
-        backgroundColor: const Color(0xFF186CAC),
+        backgroundColor: AppThemes.appBarColor,
         title: Text(
           'Weekly Timetable',
           style: GoogleFonts.poppins(
-            color: Colors.white,
+            color: AppThemes.appBarTextColor,
             fontSize: 19,
             // fontWeight: FontWeight.bold,
           ),
         ),
         leading: IconButton(
-          icon: const Icon(Icons.arrow_back, color: Colors.white),
+          icon: const Icon(Icons.arrow_back, color: AppThemes.appBarTextColor),
           onPressed: () => Get.back(),
         ),
       ),
       body: Obx(() {
         if (routineController.isLoading.value) {
-          return const Center(child: CircularProgressIndicator(color: Color(0xFF186CAC)));
+          return const Center(child: CircularProgressIndicator(color: AppThemes.darkMaroon));
         }
         if (routineController.errorMessage.isNotEmpty) {
           return Center(
-            child: Column(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                Text(
-                  routineController.errorMessage.value,
-                  style: GoogleFonts.poppins(
-                    color: Colors.deepOrange,
-                    fontSize: 16,
-                    fontWeight: FontWeight.w500,
+            child: Padding(
+              padding: const EdgeInsets.all(24.0),
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  Icon(
+                    Icons.schedule_outlined,
+                    size: 80,
+                    color: AppThemes.darkMaroon.withOpacity(0.5),
                   ),
-                  textAlign: TextAlign.center,
-                ),
-
-              ],
+                  const SizedBox(height: 20),
+                  Text(
+                    'No Routine Yet',
+                    style: GoogleFonts.poppins(
+                      fontSize: 20,
+                      fontWeight: FontWeight.bold,
+                      color: AppThemes.primaryTextColor,
+                    ),
+                  ),
+                  const SizedBox(height: 12),
+                  Text(
+                    routineController.errorMessage.value,
+                    style: GoogleFonts.poppins(
+                      color: AppThemes.secondaryTextColor,
+                      fontSize: 14,
+                    ),
+                    textAlign: TextAlign.center,
+                  ),
+                  const SizedBox(height: 24),
+                  Container(
+                    padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+                    decoration: BoxDecoration(
+                      color: AppThemes.darkMaroon.withOpacity(0.1),
+                      borderRadius: BorderRadius.circular(8),
+                    ),
+                    child: Row(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        Icon(
+                          Icons.notifications_active_outlined,
+                          size: 20,
+                          color: AppThemes.darkMaroon,
+                        ),
+                        const SizedBox(width: 8),
+                        Text(
+                          'You\'ll be notified once it\'s ready',
+                          style: GoogleFonts.poppins(
+                            fontSize: 12,
+                            color: AppThemes.darkMaroon,
+                            fontWeight: FontWeight.w500,
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                ],
+              ),
             ),
           );
         }
@@ -58,7 +102,10 @@ class Routine extends StatelessWidget {
           return Center(
             child: Text(
               'No routine available',
-              style: GoogleFonts.poppins(fontSize: 16),
+              style: GoogleFonts.poppins(
+                fontSize: 16,
+                color: AppThemes.secondaryTextColor,
+              ),
             ),
           );
         }
@@ -70,9 +117,9 @@ class Routine extends StatelessWidget {
             children: [
               TabBar(
                 isScrollable: true,
-                labelColor: const Color(0xFF186CAC),
-                unselectedLabelColor: Colors.grey,
-                indicatorColor: const Color(0xFF186CAC),
+                labelColor: AppThemes.darkMaroon,
+                unselectedLabelColor: AppThemes.mediumGrey,
+                indicatorColor: AppThemes.darkMaroon,
                 tabs: days.map((day) => Tab(text: day)).toList(),
                 labelStyle: GoogleFonts.poppins(fontSize: 14),
               ),
@@ -100,7 +147,10 @@ class Routine extends StatelessWidget {
       return Center(
         child: Text(
           'No classes scheduled for $day',
-          style: GoogleFonts.poppins(fontSize: 16),
+          style: GoogleFonts.poppins(
+            fontSize: 16,
+            color: AppThemes.secondaryTextColor,
+          ),
         ),
       );
     }
@@ -116,9 +166,11 @@ class Routine extends StatelessWidget {
         return Card(
           margin: const EdgeInsets.symmetric(vertical: 8),
           shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+          color: AppThemes.cardColor,
+          elevation: 2,
           child: Container(
             decoration: BoxDecoration(
-              color: const Color(0x33186CAC),
+              color: AppThemes.darkMaroon.withOpacity(0.1),
               borderRadius: BorderRadius.circular(12),
             ),
             child: Padding(
@@ -128,30 +180,37 @@ class Routine extends StatelessWidget {
                 children: [
                   Row(
                     children: [
-                      const Icon(CupertinoIcons.time, size: 15, color: Colors.black87),
+                      const Icon(CupertinoIcons.time, size: 15, color: AppThemes.primaryTextColor),
                       const SizedBox(width: 5),
                       Text(
                         '${DateFormat('hh:mm a').format(startTime)} - ${DateFormat('hh:mm a').format(endTime)}',
-                        style: GoogleFonts.poppins(color: Colors.black87),
+                        style: GoogleFonts.poppins(color: AppThemes.primaryTextColor),
                       ),
                       const SizedBox(width: 15),
-                      const Icon(Icons.room_outlined, size: 15, color: Colors.black87),
+                      const Icon(Icons.room_outlined, size: 15, color: AppThemes.primaryTextColor),
                       const SizedBox(width: 5),
                       Text(
                         entry.room,
-                        style: GoogleFonts.poppins(color: Colors.black87),
+                        style: GoogleFonts.poppins(color: AppThemes.primaryTextColor),
                       ),
                     ],
                   ),
                   const SizedBox(height: 10),
                   Text(
                     entry.subject,
-                    style: GoogleFonts.poppins(fontSize: 16, color: Colors.black),
+                    style: GoogleFonts.poppins(
+                      fontSize: 16, 
+                      color: AppThemes.primaryTextColor,
+                      fontWeight: FontWeight.w600,
+                    ),
                   ),
                   const SizedBox(height: 5),
                   Text(
                     'By ${entry.teacher}',
-                    style: GoogleFonts.poppins(fontSize: 14, color: Colors.black54),
+                    style: GoogleFonts.poppins(
+                      fontSize: 14, 
+                      color: AppThemes.secondaryTextColor,
+                    ),
                   ),
                 ],
               ),

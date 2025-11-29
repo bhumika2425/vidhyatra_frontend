@@ -64,24 +64,55 @@ class ProfileController extends GetxController {
     errorMessage('');
 
     try {
+      print('🔍 ProfileController: Fetching profile data...');
+      print('🔑 Token: ${token.substring(0, 20)}...');
+      
       final response = await http.get(
         Uri.parse(ApiEndPoints.fetchProfileData),
         headers: {'Authorization': 'Bearer $token'},
       );
 
+      print('📡 Response Status Code: ${response.statusCode}');
+      print('📦 Response Body: ${response.body}');
+
       if (response.statusCode == 200) {
         final data = json.decode(response.body);
+        print('📋 Parsed Data: $data');
 
-        if (data['profile'] != null) {
-          profile.value = Profile.fromJson(data['profile']);
-          isNewUser.value = false;
+        // Check if the API returns exists field and profile data
+        if (data['exists'] == true && data['profile'] != null) {
+          print('✅ Profile exists, parsing profile data...');
+          try {
+            profile.value = Profile.fromJson(data['profile']);
+            isNewUser.value = false;
+            print('👤 Profile loaded successfully: ${profile.value?.fullname}');
+            print('📧 Email: ${profile.value?.email}');
+            print('🎓 Department: ${profile.value?.department}');
+          } catch (parseError) {
+            print('❌ Profile parsing error: $parseError');
+            print('🔍 Profile data: ${data['profile']}');
+            throw parseError;
+          }
+        } else if (data['profile'] != null) {
+          // Fallback for old API structure
+          print('✅ Profile found (fallback structure), parsing...');
+          try {
+            profile.value = Profile.fromJson(data['profile']);
+            isNewUser.value = false;
+            print('👤 Profile loaded (fallback): ${profile.value?.fullname}');
+          } catch (parseError) {
+            print('❌ Profile parsing error (fallback): $parseError');
+            throw parseError;
+          }
         } else {
           // No profile data found - this is likely a new user
+          print('❌ No profile data found - new user detected');
           profile.value = null;
           isNewUser.value = true;
         }
       } else if (response.statusCode == 404) {
         // User doesn't have a profile yet - this is normal for new users
+        print('👤 404 - User profile not found (new user)');
         profile.value = null;
         isNewUser.value = true;
       } else {
@@ -92,10 +123,12 @@ class ProfileController extends GetxController {
         } catch (e) {
           message = 'Failed to load profile data';
         }
+        print('❌ Error: $message');
         errorMessage(message);
         throw Exception(message);
       }
     } catch (e) {
+      print('🚨 Exception caught: $e');
       if (!e.toString().contains('404')) {
         // Only show snackbar for real errors, not for "profile not found"
         Get.snackbar("Error", "Unable to connect to the server",
@@ -104,6 +137,7 @@ class ProfileController extends GetxController {
       }
     } finally {
       isLoading.value = false; // Set loading to false after data is fetched
+      print('🏁 ProfileController: Fetch complete. isNewUser: ${isNewUser.value}');
     }
   }
 }

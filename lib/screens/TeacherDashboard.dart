@@ -54,9 +54,7 @@ class DashboardView extends GetView<TeacherDashboardController> {
           return SingleChildScrollView(
             child: Padding(
               padding: EdgeInsets.all(constraints.maxWidth * 0.04),
-              child: DashboardTabs(
-                homeTabContent: _buildFeaturesGrid(context, constraints),
-              ),
+              child: _buildFeaturesGrid(context, constraints)
             ),
           );
         },

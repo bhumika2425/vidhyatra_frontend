@@ -2,7 +2,9 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:google_fonts/google_fonts.dart';
+import '../constants/app_themes.dart';
 import '../controllers/LoginController.dart';
+import '../widgets/themed_button.dart';
 
 class LoginPage extends StatelessWidget {
   final LoginController loginController = Get.put(LoginController());
@@ -14,7 +16,7 @@ class LoginPage extends StatelessWidget {
     final screenWidth = MediaQuery.of(context).size.width;
 
     return Scaffold(
-      backgroundColor: Colors.grey[200],
+      backgroundColor: AppThemes.secondaryBackgroundColor,
       body: SafeArea( // Ensures content respects system UI (notch, status bar)
         child: SingleChildScrollView(
           child: Padding(
@@ -33,7 +35,7 @@ class LoginPage extends StatelessWidget {
                         style: GoogleFonts.poppins(
                           fontSize: screenWidth * 0.07, // 7% of screen width
                           fontWeight: FontWeight.bold,
-                          color: Colors.black,
+                          color: AppThemes.primaryTextColor,
                         ),
                       ),
                     ),
@@ -56,7 +58,7 @@ class LoginPage extends StatelessWidget {
                       'College ID or Email',
                       style: GoogleFonts.poppins(
                         fontSize: screenWidth * 0.04, // 4.5% of screen width
-                        color: Colors.grey[600],
+                        color: AppThemes.secondaryTextColor,
                       ),
                     ),
                     // SizedBox(height: screenHeight * 0.01), // 1% of screen height
@@ -64,11 +66,11 @@ class LoginPage extends StatelessWidget {
                       decoration: InputDecoration(
                         hintText: 'Enter College ID or Email',
                         hintStyle: TextStyle(
-                          color: Colors.grey[400],
+                          color: AppThemes.hintTextColor,
                           fontFamily: GoogleFonts.poppins().fontFamily,
                         ),
                         filled: true,
-                        fillColor: Colors.white,
+                        fillColor: AppThemes.inputFillColor,
                         contentPadding: EdgeInsets.symmetric(
                           vertical: screenHeight * 0.02, // 2% of screen height
                           horizontal: screenWidth * 0.05, // 5% of screen width
@@ -84,17 +86,17 @@ class LoginPage extends StatelessWidget {
                         focusedBorder: OutlineInputBorder(
                           borderRadius: BorderRadius.circular(12),
                           borderSide: BorderSide(
-                            color: Color(0xFF186CAC),
+                            color: AppThemes.inputFocusedBorderColor,
                             width: 2,
                           ),
                         ),
                         prefixIcon: Icon(
                           Icons.person_outline,
-                          color: Colors.grey[400],
+                          color: AppThemes.mediumGrey,
                           size: screenWidth * 0.06, // 6% of screen width
                         ),
                       ),
-                      cursorColor: Color(0xFF186CAC),
+                      cursorColor: AppThemes.inputFocusedBorderColor,
                       onChanged: (value) => loginController.emailOrID.value = value,
                     ),
                     SizedBox(height: screenHeight * 0.015), // 1.5% of screen height
@@ -102,7 +104,7 @@ class LoginPage extends StatelessWidget {
                       'Password',
                       style: GoogleFonts.poppins(
                         fontSize: screenWidth * 0.04, // 4.5% of screen width
-                        color: Colors.grey[600],
+                        color: AppThemes.secondaryTextColor,
                       ),
                     ),
                     // SizedBox(height: screenHeight * 0.01), // 1% of screen height
@@ -111,11 +113,11 @@ class LoginPage extends StatelessWidget {
                       decoration: InputDecoration(
                         hintText: 'Enter Password',
                         hintStyle: TextStyle(
-                          color: Colors.grey[400],
+                          color: AppThemes.hintTextColor,
                           fontFamily: GoogleFonts.poppins().fontFamily,
                         ),
                         filled: true,
-                        fillColor: Colors.white,
+                        fillColor: AppThemes.inputFillColor,
                         contentPadding: EdgeInsets.symmetric(
                           vertical: screenHeight * 0.02, // 2% of screen height
                           horizontal: screenWidth * 0.05, // 5% of screen width
@@ -131,13 +133,13 @@ class LoginPage extends StatelessWidget {
                         focusedBorder: OutlineInputBorder(
                           borderRadius: BorderRadius.circular(12),
                           borderSide: BorderSide(
-                            color: Color(0xFF186CAC),
+                            color: AppThemes.inputFocusedBorderColor,
                             width: 2,
                           ),
                         ),
                         prefixIcon: Icon(
                           Icons.lock_outline,
-                          color: Colors.grey[400],
+                          color: AppThemes.mediumGrey,
                           size: screenWidth * 0.06, // 6% of screen width
                         ),
                         suffixIcon: IconButton(
@@ -145,7 +147,7 @@ class LoginPage extends StatelessWidget {
                             loginController.isPasswordVisible.value
                                 ? Icons.visibility
                                 : Icons.visibility_off,
-                            color: Colors.grey[600],
+                            color: AppThemes.mediumGrey,
                             size: screenWidth * 0.06, // 6% of screen width
                           ),
                           onPressed: () {
@@ -153,56 +155,53 @@ class LoginPage extends StatelessWidget {
                           },
                         ),
                       ),
-                      cursorColor: Color(0xFF186CAC),
+                      cursorColor: AppThemes.inputFocusedBorderColor,
                       onChanged: (value) => loginController.password.value = value,
                     )),
                   ],
                 ),
-                SizedBox(height: screenHeight * 0.03), // 3% of screen height
+                SizedBox(height: screenHeight * 0.02), // 2% of screen height
+                
+                // Keep me logged in checkbox
+                Obx(() => Row(
+                  mainAxisAlignment: MainAxisAlignment.start,
+                  children: [
+                    Checkbox(
+                      value: loginController.keepMeLoggedIn.value,
+                      onChanged: (value) => loginController.toggleKeepMeLoggedIn(),
+                      activeColor: AppThemes.darkMaroon,
+                    ),
+                    GestureDetector(
+                      onTap: () => loginController.toggleKeepMeLoggedIn(),
+                      child: Text(
+                        'Keep me logged in',
+                        style: GoogleFonts.poppins(
+                          fontSize: screenWidth * 0.04, // 4% of screen width
+                          color: AppThemes.primaryTextColor,
+                        ),
+                      ),
+                    ),
+                  ],
+                )),
+                
+                SizedBox(height: screenHeight * 0.02), // 2% of screen height
                 Center(
                   child: Column(
                     children: [
-                      Obx(
-                            () => SizedBox(
-                          width: screenWidth * 0.3, // 40% of screen width
-                          child: InkWell(
-                            onTap: loginController.isLoading.value
-                                ? null
-                                : () => loginController.loginUser(),
-                            borderRadius: BorderRadius.circular(30),
-                            child: Container(
-                              padding: EdgeInsets.symmetric(
-                                vertical: screenHeight * 0.02, // 2% of screen height
-                              ),
-                              decoration: BoxDecoration(
-                                color:Color(0xFF186CAC),
-                                borderRadius: BorderRadius.circular(15),
-                              ),
-                              child: Center(
-                                child: Row(
-                                  mainAxisAlignment: MainAxisAlignment.center,
-                                  children: [
-                                    Text(
-                                      'Login',
-                                      style: GoogleFonts.poppins(
-                                        fontSize: screenWidth * 0.05, // 5% of screen width
-                                        color: Colors.white,
-                                        // fontWeight: FontWeight.bold,
-                                      ),
-                                    ),
-                                    SizedBox(width: screenWidth * 0.015),
-                                    // Icon(
-                                    //   CupertinoIcons.right_chevron,
-                                    //   color: Colors.white,
-                                    //   size: screenWidth * 0.06, // 6% of screen width
-                                    // ),
-                                  ],
-                                ),
-                              ),
-                            ),
-                          ),
-                        ),
-                      ),
+                      // Modern themed login button
+                      Obx(() => ThemedButton(
+                        text: 'Login',
+                        onPressed: loginController.isLoading.value
+                            ? null
+                            : () => loginController.loginUser(),
+                        isLoading: loginController.isLoading.value,
+                        variant: ButtonVariant.primary,
+                        size: ButtonSize.large,
+                        // icon: Icons.login,
+                        customWidth: screenWidth * 0.4,
+                        borderRadius: 15.0,
+                        elevation: 3.0,
+                      )),
                       SizedBox(height: screenHeight * 0.05), // 5% of screen height
                       GestureDetector(
                         onTap: () => Get.toNamed('/forgot_password'),
@@ -210,7 +209,7 @@ class LoginPage extends StatelessWidget {
                           'Forgot Password?',
                           style: GoogleFonts.poppins(
                             fontSize: screenWidth * 0.04, // 4% of screen width
-                            color: Colors.deepOrange,
+                            color: AppThemes.darkMaroon,
                           ),
                         ),
                       ),
@@ -219,10 +218,10 @@ class LoginPage extends StatelessWidget {
                         mainAxisAlignment: MainAxisAlignment.center,
                         children: [
                           Text(
-                            'Don’t have an account? ',
+                            'Don\'t have an account? ',
                             style: GoogleFonts.poppins(
                               fontSize: screenWidth * 0.04, // 4% of screen width
-                              color: Colors.black,
+                              color: AppThemes.primaryTextColor,
                             ),
                           ),
                           GestureDetector(
@@ -231,7 +230,7 @@ class LoginPage extends StatelessWidget {
                               'Register Now',
                               style: GoogleFonts.poppins(
                                 fontSize: screenWidth * 0.04, // 4% of screen width
-                                color: Colors.deepOrange,
+                                color: AppThemes.darkMaroon,
                                 fontWeight: FontWeight.bold,
                               ),
                             ),

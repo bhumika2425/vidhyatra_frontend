@@ -3,19 +3,22 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:intl/intl.dart';
+import 'package:vidhyatra_flutter/screens/ExamSeatPlanningHomeScreen.dart';
 import 'package:vidhyatra_flutter/screens/FeesScreen.dart';
 import 'package:vidhyatra_flutter/screens/LostAndFound.dart';
 import 'package:vidhyatra_flutter/screens/SettingsScreen.dart';
 import 'package:vidhyatra_flutter/screens/BookAppointment.dart';
-import 'package:vidhyatra_flutter/screens/blog_posting_page.dart';
 import 'package:vidhyatra_flutter/screens/feedback_form.dart';
 import 'package:vidhyatra_flutter/screens/profile_creation.dart';
-import 'package:vidhyatra_flutter/screens/DashboardTabs.dart';
+import 'package:vidhyatra_flutter/screens/AnnouncementsScreen.dart';
+import '../constants/app_themes.dart';
 import '../controllers/BlogController.dart';
 import '../controllers/EventController.dart';
 import '../controllers/LoginController.dart';
+import '../controllers/NotificationController.dart';
 import '../controllers/ProfileController.dart';
 import '../controllers/RoutineController.dart';
+import '../controllers/AnnouncementController.dart';
 import '../controllers/deadline_controller.dart';
 import '../models/EventsModel.dart';
 import 'EventDetailsPage.dart';
@@ -34,6 +37,7 @@ class _DashboardState extends State<Dashboard> {
   final LoginController loginController = Get.find<LoginController>();
   final DeadlineController deadlineController = Get.put(DeadlineController());
   final RoutineController routineController = Get.put(RoutineController());
+  final AnnouncementController announcementController = Get.find<AnnouncementController>();
   bool _isSearching = false;
   final TextEditingController _searchController = TextEditingController();
   bool _isLoading = true;
@@ -53,11 +57,28 @@ class _DashboardState extends State<Dashboard> {
         deadlineController.fetchDeadlines(),
       ]);
       setState(() => _isLoading = false);
+      
+      // Check for announcements after dashboard loads
+      _checkAndShowAnnouncements();
     } catch (e) {
       setState(() {
         _isLoading = false;
         _errorMessage = 'Failed to load dashboard: $e';
       });
+    }
+  }
+
+  Future<void> _checkAndShowAnnouncements() async {
+    try {
+      // Check if there are new announcements to show
+      final hasAnnouncements = await announcementController.checkAndShowAnnouncements();
+      
+      if (hasAnnouncements && mounted) {
+        // Navigate to announcements screen
+        Get.to(() => const AnnouncementsScreen());
+      }
+    } catch (e) {
+      print('❌ Error checking announcements: $e');
     }
   }
 
@@ -74,16 +95,16 @@ class _DashboardState extends State<Dashboard> {
     final String today = DateFormat('EEEE, MMMM d').format(now);
 
     return Scaffold(
-      backgroundColor: Colors.grey[200],
+      backgroundColor: AppThemes.secondaryBackgroundColor,
       appBar: _buildAppBar(),
-      drawer: _buildDrawer(context),
+      // drawer: _buildDrawer(context),
       body: _isLoading
           ? const Center(
-              child: CircularProgressIndicator(color: Color(0xFF186CAC)))
+              child: CircularProgressIndicator(color: AppThemes.darkMaroon))
           : _errorMessage != null
               ? Center(
                   child: Text(_errorMessage!,
-                      style: GoogleFonts.poppins(color: Colors.red)))
+                      style: GoogleFonts.poppins(color: AppThemes.errorColor)))
               : RefreshIndicator(
                   // onRefresh: _refreshDashboard,
                   onRefresh: () async {
@@ -101,51 +122,87 @@ class _DashboardState extends State<Dashboard> {
                   child: SingleChildScrollView(
                     child: Padding(
                       padding: const EdgeInsets.all(15.0),
-                      child: DashboardTabs(
-                        homeTabContent: _buildHomeTab(today),
-                      ),
+                      child: _buildHomeTab(today),
                     ),
                   ),
                 ),
-      bottomNavigationBar: _buildBottomNavBar(),
-      floatingActionButton: FloatingActionButton(
-        onPressed: () => Get.to(() => BlogPostPage()), // Updated navigation
-        backgroundColor: Color(0xFF186CAC),
-        child: Icon(Icons.edit, color: Colors.white),
-        elevation: 4,
-      ),
+      floatingActionButton: _buildAnnouncementFAB(),
       floatingActionButtonLocation: FloatingActionButtonLocation.endFloat,
+      bottomNavigationBar: _buildBottomNavBar(),
     );
   }
 
   PreferredSizeWidget _buildAppBar() {
     return AppBar(
-      backgroundColor: _isSearching ? Colors.white : const Color(0xFF186CAC),
+      backgroundColor: _isSearching ? AppThemes.white : AppThemes.appBarColor,
       elevation: 0,
       leading: _isSearching
           ? IconButton(
-              icon: const Icon(Icons.arrow_back, color: Colors.black),
+              icon: const Icon(Icons.arrow_back, color: AppThemes.primaryTextColor),
               onPressed: () => setState(() {
                 _isSearching = false;
                 _searchController.clear();
               }),
             )
-          : Builder(
+          : /*
+          Builder(
               builder: (context) => IconButton(
-                icon: const Icon(Icons.menu, color: Colors.white),
+                icon: const Icon(Icons.menu, color: AppThemes.appBarTextColor),
                 onPressed: () => Scaffold.of(context).openDrawer(),
               ),
             ),
+          */ null,
       title: Text(
               "Vidhyatra",
               style: GoogleFonts.poppins(
-                color: Colors.white,
+                color: AppThemes.appBarTextColor,
                 fontSize: 19,
               ),
             ),
       actions: _isSearching
           ? []
           : [
+            Stack(
+              children: [
+                IconButton(
+                  onPressed: (){
+                    Get.toNamed('/notifications');
+                  }, 
+                  icon: Icon(Icons.notifications_outlined), 
+                  color: AppThemes.appBarTextColor, 
+                  iconSize: 30,
+                ),
+                Obx(() {
+                  final notificationController = Get.find<NotificationController>();
+                  final count = notificationController.unreadCount.value;
+                  if (count == 0) return SizedBox.shrink();
+                  return Positioned(
+                    right: 8,
+                    top: 8,
+                    child: Container(
+                      padding: EdgeInsets.all(4),
+                      decoration: BoxDecoration(
+                        color: Colors.red,
+                        shape: BoxShape.circle,
+                      ),
+                      constraints: BoxConstraints(
+                        minWidth: 16,
+                        minHeight: 16,
+                      ),
+                      child: Text(
+                        count > 99 ? '99+' : count.toString(),
+                        style: GoogleFonts.poppins(
+                          color: Colors.white,
+                          fontSize: 10,
+                          fontWeight: FontWeight.bold,
+                        ),
+                        textAlign: TextAlign.center,
+                      ),
+                    ),
+                  );
+                }),
+              ],
+            ),
               GestureDetector(
                 onTap: () => _checkAndNavigateToProfile(context),
                 child: Padding(
@@ -172,7 +229,7 @@ class _DashboardState extends State<Dashboard> {
         padding: EdgeInsets.zero,
         children: [
           DrawerHeader(
-            decoration: const BoxDecoration(color: Color(0xFF186CAC)),
+            decoration: const BoxDecoration(color: AppThemes.appBarColor),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
@@ -189,13 +246,13 @@ class _DashboardState extends State<Dashboard> {
                 Text(
                     profileController.profile.value?.fullname ?? 'Student Name',
                     style: GoogleFonts.poppins(
-                        color: Colors.white,
+                        color: AppThemes.appBarTextColor,
                         fontSize: 18,
                         fontWeight: FontWeight.bold)),
                 Text(
                     profileController.profile.value?.department ?? 'Department',
                     style: GoogleFonts.poppins(
-                        color: Colors.white70, fontSize: 14)),
+                        color: AppThemes.appBarTextColor.withOpacity(0.7), fontSize: 14)),
               ],
             ),
           ),
@@ -223,6 +280,14 @@ class _DashboardState extends State<Dashboard> {
             },
           ),
           _buildDrawerItem(
+            Icons.event_seat,
+            'Exam Seat Planning',
+            onTap: () {
+              Navigator.pop(context);
+              Get.toNamed('/exam-seat-planning');
+            },
+          ),
+          _buildDrawerItem(
             Icons.settings,
             'Settings',
             onTap: () {
@@ -233,7 +298,7 @@ class _DashboardState extends State<Dashboard> {
           _buildDrawerItem(
             Icons.logout,
             'Logout',
-            color: Colors.red,
+            color: AppThemes.errorColor,
             onTap: () {
               Navigator.pop(context);
               Get.defaultDialog(
@@ -248,16 +313,16 @@ class _DashboardState extends State<Dashboard> {
                     loginController.logout();
                   },
                   child:
-                      Text('Yes', style: TextStyle(color: Color(0xFF186CAC))),
+                      Text('Yes', style: TextStyle(color: AppThemes.darkMaroon)),
                 ),
                 cancel: ElevatedButton(
                   style: ElevatedButton.styleFrom(
-                    backgroundColor: Color(0xFF186CAC), // No button color
+                    backgroundColor: AppThemes.darkMaroon, // No button color
                   ),
                   onPressed: () {
                     Get.back(); // Just close the dialog
                   },
-                  child: Text('No', style: TextStyle(color: Colors.white)),
+                  child: Text('No', style: TextStyle(color: AppThemes.white)),
                 ),
               );
             },
@@ -268,7 +333,7 @@ class _DashboardState extends State<Dashboard> {
   }
 
   Widget _buildDrawerItem(IconData icon, String title,
-      {Color color = const Color(0xFF186CAC), VoidCallback? onTap}) {
+      {Color color = AppThemes.darkMaroon, VoidCallback? onTap}) {
     return ListTile(
       leading: Icon(icon, color: color),
       title: Text(title, style: GoogleFonts.poppins()),
@@ -289,7 +354,7 @@ class _DashboardState extends State<Dashboard> {
         _buildUpcomingDeadlines(),
         const SizedBox(height: 20),
         _buildLatestAnnouncements(),
-        const SizedBox(height: 90),
+        const SizedBox(height: 20),
       ],
     );
   }
@@ -298,10 +363,24 @@ class _DashboardState extends State<Dashboard> {
     return Obx(() {
       if (routineController.isLoading.value) {
         return const Center(
-            child: CircularProgressIndicator(color: Color(0xFF186CAC)));
+            child: CircularProgressIndicator(color: AppThemes.darkMaroon));
       }
 
       final todayRoutine = routineController.getTodayRoutine();
+      //
+      // // Debug prints
+      // print('🔍 _buildTodaySchedule Debug:');
+      // print('📅 Current Day: ${DateFormat('EEEE').format(DateTime.now())}');
+      // print('📊 Total routines fetched: ${todayRoutine.length}');
+      // print('🗂️ All routines by day: ${routineController.routineByDay}');
+      // if (todayRoutine.isEmpty) {
+      //   print('⚠️ No routines found for today');
+      // } else {
+      //   print('✅ Today\'s routines:');
+      //   for (var i = 0; i < todayRoutine.length; i++) {
+      //     print('   ${i + 1}. ${todayRoutine[i].subject} (${todayRoutine[i].startTime} - ${todayRoutine[i].endTime})');
+      //   }
+      // }
 
       return Column(
         children: [
@@ -317,7 +396,7 @@ class _DashboardState extends State<Dashboard> {
                 onPressed: () => Get.to(() => Routine()),
                 child: Text(
                   "View Full Schedule",
-                  style: GoogleFonts.poppins(color: const Color(0xFF186CAC)),
+                  style: GoogleFonts.poppins(color: AppThemes.darkMaroon),
                 ),
               ),
             ],
@@ -345,13 +424,13 @@ class _DashboardState extends State<Dashboard> {
                       if (currentTime.isAfter(classStart) &&
                           currentTime.isBefore(classEnd)) {
                         status = 'ONGOING CLASS';
-                        statusColor = Colors.green;
+                        statusColor = AppThemes.successColor;
                       } else if (currentTime.isBefore(classStart)) {
                         status = 'UPCOMING CLASS';
-                        statusColor = Colors.orange;
+                        statusColor = AppThemes.darkMaroon;
                       } else {
                         status = 'COMPLETED CLASS';
-                        statusColor = Colors.red;
+                        statusColor = AppThemes.errorColor;
                       }
 
                       return _buildTimelineCard(
@@ -378,7 +457,7 @@ class _DashboardState extends State<Dashboard> {
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
       child: Container(
         decoration: BoxDecoration(
-          color: const Color(0x33186CAC),
+          color: AppThemes.darkMaroon.withOpacity(0.1),
           borderRadius: BorderRadius.circular(12),
         ),
         child: Padding(
@@ -389,26 +468,26 @@ class _DashboardState extends State<Dashboard> {
               Row(
                 children: [
                   const Icon(CupertinoIcons.time,
-                      size: 15, color: Colors.black87),
+                      size: 15, color: AppThemes.primaryTextColor),
                   const SizedBox(width: 5),
-                  Text(time, style: GoogleFonts.poppins(color: Colors.black87)),
+                  Text(time, style: GoogleFonts.poppins(color: AppThemes.primaryTextColor)),
                   const SizedBox(width: 15),
                   const Icon(Icons.room_outlined,
-                      size: 15, color: Colors.black87),
+                      size: 15, color: AppThemes.primaryTextColor),
                   const SizedBox(width: 5),
                   Text(location,
-                      style: GoogleFonts.poppins(color: Colors.black87)),
+                      style: GoogleFonts.poppins(color: AppThemes.primaryTextColor)),
                 ],
               ),
               const SizedBox(height: 5),
               Text(
                 course,
-                style: GoogleFonts.poppins(fontSize: 16, color: Colors.black),
+                style: GoogleFonts.poppins(fontSize: 16, color: AppThemes.primaryTextColor),
               ),
               const SizedBox(height: 5),
               Text(
                 'By $teacher',
-                style: GoogleFonts.poppins(fontSize: 14, color: Colors.black),
+                style: GoogleFonts.poppins(fontSize: 14, color: AppThemes.secondaryTextColor),
               ),
               const SizedBox(height: 5),
               Text(
@@ -424,7 +503,6 @@ class _DashboardState extends State<Dashboard> {
 
   Widget _buildLatestAnnouncements() {
     return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Row(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -434,7 +512,7 @@ class _DashboardState extends State<Dashboard> {
               style: GoogleFonts.poppins(
                 fontSize: 18,
                 fontWeight: FontWeight.bold,
-                color: Colors.black87,
+                color: AppThemes.primaryTextColor,
               ),
             ),
             TextButton(
@@ -443,7 +521,7 @@ class _DashboardState extends State<Dashboard> {
                 "View All",
                 style: GoogleFonts.poppins(
                   fontSize: 14,
-                  color: const Color(0xFF186CAC),
+                  color: AppThemes.darkMaroon,
                 ),
               ),
             ),
@@ -479,7 +557,7 @@ class _DashboardState extends State<Dashboard> {
                           style: GoogleFonts.poppins(
                             fontSize: 16,
                             fontWeight: FontWeight.bold,
-                            color: Color(0xFF186CAC),
+                            color: AppThemes.darkMaroon,
                           ),
                         ),
                         subtitle: Column(
@@ -493,7 +571,7 @@ class _DashboardState extends State<Dashboard> {
                               'Date: ${event.eventDate}',
                               style: GoogleFonts.poppins(
                                 fontSize: 12,
-                                color: Colors.deepOrange,
+                                color: AppThemes.darkMaroon,
                               ),
                             ),
                           ],
@@ -540,7 +618,7 @@ class _DashboardState extends State<Dashboard> {
                         deadlineController.showAll.value
                             ? 'View Less'
                             : 'View All',
-                        style: const TextStyle(color: Color(0xFF186CAC)),
+                        style: const TextStyle(color: AppThemes.darkMaroon),
                       ),
                     ),
                   ),
@@ -548,7 +626,7 @@ class _DashboardState extends State<Dashboard> {
             ),
             deadlineController.isLoading.value
                 ? const Center(
-                    child: CircularProgressIndicator(color: Color(0xFF186CAC)))
+                    child: CircularProgressIndicator(color: AppThemes.darkMaroon))
                 : deadlineController.deadlines
                         .where((deadline) =>
                             deadline.deadline.isAfter(DateTime.now()) ||
@@ -596,15 +674,16 @@ class _DashboardState extends State<Dashboard> {
                                   ? '${timeLeft.inHours} hours left'
                                   : '${timeLeft.inMinutes} mins left';
 
-                          Color urgencyColor = Colors.green;
+                          Color urgencyColor = AppThemes.successColor;
                           if (timeLeft.inDays < 1) {
-                            urgencyColor = Colors.red;
+                            urgencyColor = AppThemes.errorColor;
                           } else if (timeLeft.inDays < 3) {
-                            urgencyColor = Color(0xFF186CAC);
+                            urgencyColor = AppThemes.darkMaroon;
                           }
 
                           return Card(
                             margin: const EdgeInsets.only(bottom: 8),
+                            color: Colors.white,
                             child: ListTile(
                               leading: Container(
                                 padding: const EdgeInsets.all(8),
@@ -656,10 +735,10 @@ class _DashboardState extends State<Dashboard> {
       width: double.infinity,
       decoration: BoxDecoration(
         borderRadius: BorderRadius.circular(15),
-        color: Colors.white,
+        color: AppThemes.cardColor,
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withOpacity(0.1),
+            color: AppThemes.cardShadowColor,
             spreadRadius: 2,
             blurRadius: 8,
             offset: Offset(0, 4),
@@ -672,13 +751,13 @@ class _DashboardState extends State<Dashboard> {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Text(greeting,
-                style: GoogleFonts.poppins(fontSize: 16, color: Colors.grey)),
+                style: GoogleFonts.poppins(fontSize: 16, color: AppThemes.secondaryTextColor)),
             Text(displayName,
                 style: GoogleFonts.poppins(
                     fontSize: 23, fontWeight: FontWeight.bold)),
             const SizedBox(height: 6),
             Text(today,
-                style: GoogleFonts.poppins(fontSize: 14, color: Colors.grey)),
+                style: GoogleFonts.poppins(fontSize: 14, color: AppThemes.secondaryTextColor)),
             const SizedBox(height: 10),
             profileController.isNewUser.value
                 ? Row(
@@ -744,7 +823,7 @@ class _DashboardState extends State<Dashboard> {
           style: GoogleFonts.poppins(
             fontSize: 18,
             fontWeight: FontWeight.bold,
-            color: Colors.black87,
+            color: AppThemes.primaryTextColor,
           ),
         ),
         const SizedBox(height: 10),
@@ -768,12 +847,12 @@ class _DashboardState extends State<Dashboard> {
                   Container(
                     padding: const EdgeInsets.all(10),
                     decoration: BoxDecoration(
-                      color: const Color(0xFF186CAC).withOpacity(0.1),
+                      color:  AppThemes.darkMaroon.withOpacity(0.1),
                       shape: BoxShape.circle,
                     ),
                     child: Icon(
                       item['icon'],
-                      color: const Color(0xFF186CAC),
+                      color: AppThemes.darkMaroon,
                       size: 24,
                     ),
                   ),
@@ -818,9 +897,9 @@ class _DashboardState extends State<Dashboard> {
         ],
       ),
       child: BottomNavigationBar(
-        backgroundColor: Colors.white,
-        selectedItemColor: Color(0xFF186CAC),
-        unselectedItemColor: Colors.grey,
+        backgroundColor: AppThemes.white,
+        selectedItemColor: AppThemes.darkMaroon,
+        unselectedItemColor: AppThemes.mediumGrey,
         type: BottomNavigationBarType.fixed,
         showSelectedLabels: true,
         showUnselectedLabels: true,
@@ -834,12 +913,16 @@ class _DashboardState extends State<Dashboard> {
             label: 'Calendar',
           ),
           BottomNavigationBarItem(
-            icon: Icon(Icons.settings),
-            label: 'Settings',
+            icon: Icon(Icons.help),
+            label: 'Feedback',
           ),
           BottomNavigationBarItem(
-            icon: Icon(Icons.person),
-            label: 'Profile',
+            icon: Icon(Icons.event_seat_outlined),
+            label: 'Exam Seat',
+          ),
+          BottomNavigationBarItem(
+            icon: Icon(Icons.settings),
+            label: 'Settings',
           ),
         ],
         currentIndex: 0,
@@ -851,10 +934,13 @@ class _DashboardState extends State<Dashboard> {
               Get.toNamed('/calendar');
               break;
             case 2:
-              Get.toNamed('/settings');
+              Get.to(() => FeedbackForm());
               break;
             case 3:
-              _checkAndNavigateToProfile(context);
+              Get.toNamed('exam-seat-planning');
+              break;
+            case 4:
+              Get.toNamed('/settings');
               break;
           }
         },
@@ -907,6 +993,23 @@ class _DashboardState extends State<Dashboard> {
   }
 
   Widget _buildEmptyRoutineState() {
+    final today = DateTime.now();
+    final isSaturday = today.weekday == DateTime.saturday;
+    
+    String title;
+    String message;
+    IconData icon;
+    
+    if (isSaturday) {
+      title = "It's Saturday! 🎉";
+      message = "No classes today. Relax, recharge, and enjoy your weekend!";
+      icon = Icons.celebration_outlined;
+    } else {
+      title = "Free Day! ☀️";
+      message = "No classes scheduled for today. Make the most of your time!";
+      icon = Icons.wb_sunny_outlined;
+    }
+    
     return Container(
       padding: EdgeInsets.symmetric(vertical: 16, horizontal: 78),
       decoration: BoxDecoration(
@@ -924,13 +1027,13 @@ class _DashboardState extends State<Dashboard> {
       child: Column(
         children: [
           Icon(
-            Icons.calendar_today,
+            icon,
             size: 50,
-            color: Color(0xFFC0C0C0),
+            color: AppThemes.darkMaroon,
           ),
           SizedBox(height: 10),
           Text(
-            "Daily Schedule",
+            title,
             style: GoogleFonts.poppins(
               fontSize: 16,
               fontWeight: FontWeight.bold,
@@ -938,11 +1041,11 @@ class _DashboardState extends State<Dashboard> {
           ),
           SizedBox(height: 5),
           Text(
-            "Your daily schedule will appear here",
+            message,
             textAlign: TextAlign.center,
             style: GoogleFonts.poppins(
               fontSize: 14,
-              color: Colors.deepOrange,
+              color: AppThemes.darkMaroon,
             ),
           ),
         ],
@@ -952,6 +1055,7 @@ class _DashboardState extends State<Dashboard> {
 
   Widget _buildEmptyAnnouncementsState() {
     return Container(
+      width: double.infinity,
       padding: EdgeInsets.symmetric(vertical: 6, horizontal: 45),
       decoration: BoxDecoration(
         color: Colors.white,
@@ -966,7 +1070,7 @@ class _DashboardState extends State<Dashboard> {
           ),
           SizedBox(height: 10),
           Text(
-            "No Announcements",
+            "No events",
             style: GoogleFonts.poppins(
               fontSize: 16,
               fontWeight: FontWeight.bold,
@@ -974,7 +1078,7 @@ class _DashboardState extends State<Dashboard> {
           ),
           SizedBox(height: 5),
           Text(
-            "Stay tuned for important announcements",
+            "Stay tuned for important events",
             textAlign: TextAlign.center,
             style: GoogleFonts.poppins(
               fontSize: 14,
@@ -984,5 +1088,82 @@ class _DashboardState extends State<Dashboard> {
         ],
       ),
     );
+  }
+
+  Widget _buildAnnouncementFAB() {
+    return Obx(() {
+      final hasActiveAnnouncements = announcementController.announcements.isNotEmpty;
+      final fabColor = hasActiveAnnouncements ? AppThemes.darkMaroon : AppThemes.grey;
+      final iconColor = hasActiveAnnouncements ? Colors.white : Colors.grey[300]!;
+      final shadowOpacity = hasActiveAnnouncements ? 0.4 : 0.2;
+
+      return TweenAnimationBuilder(
+        tween: Tween<double>(begin: 0, end: 1),
+        duration: Duration(milliseconds: 800),
+        curve: Curves.elasticOut,
+        builder: (context, double value, child) {
+          return Transform.scale(
+            scale: value,
+            child: Container(
+              decoration: BoxDecoration(
+                shape: BoxShape.circle,
+                boxShadow: [
+                  BoxShadow(
+                    color: fabColor.withOpacity(shadowOpacity),
+                    blurRadius: 16,
+                    spreadRadius: 2,
+                    offset: Offset(0, 4),
+                  ),
+                ],
+              ),
+              child: FloatingActionButton(
+                onPressed: hasActiveAnnouncements
+                    ? () {
+                        Get.to(
+                          () => AnnouncementsScreen(),
+                          transition: Transition.rightToLeftWithFade,
+                          duration: Duration(milliseconds: 300),
+                        );
+                      }
+                    : null,
+                backgroundColor: fabColor,
+                elevation: 6,
+                disabledElevation: 2,
+                child: hasActiveAnnouncements
+                    ? TweenAnimationBuilder(
+                        tween: Tween<double>(begin: 0, end: 1),
+                        duration: Duration(milliseconds: 1500),
+                        curve: Curves.easeInOut,
+                        builder: (context, double pulseValue, child) {
+                          return Transform.scale(
+                            scale: 1 + (pulseValue * 0.2),
+                            child: Icon(
+                              Icons.campaign_rounded,
+                              color: iconColor,
+                              size: 28,
+                            ),
+                          );
+                        },
+                        onEnd: () {
+                          // Restart animation for pulsing effect
+                          Future.delayed(Duration(milliseconds: 100), () {
+                            if (mounted) {
+                              setState(() {});
+                            }
+                          });
+                        },
+                      )
+                    : Icon(
+                        Icons.campaign_rounded,
+                        color: iconColor,
+                        size: 28,
+                      ),
+                heroTag: 'announcementFAB',
+              ),
+            ),
+          );
+        },
+      );
+    });
   }
 }

@@ -6,11 +6,12 @@ plugins {
 }
 
 android {
-    namespace = "com.example.vidhyatra_flutter"
-    compileSdk = flutter.compileSdkVersion
+    namespace = "com.vidhyatra.app"
+    compileSdk = 35  // Updated for Firebase
     ndkVersion = flutter.ndkVersion
 
     compileOptions {
+        coreLibraryDesugaringEnabled true
         sourceCompatibility = JavaVersion.VERSION_1_8
         targetCompatibility = JavaVersion.VERSION_1_8
     }
@@ -21,11 +22,11 @@ android {
 
     defaultConfig {
         // TODO: Specify your own unique Application ID (https://developer.android.com/studio/build/application-id.html).
-        applicationId = "com.example.vidhyatra_flutter"
+        applicationId = "com.vidhyatra.app"
         // You can update the following values to match your application needs.
         // For more information, see: https://flutter.dev/to/review-gradle-config.
-        minSdk = flutter.minSdkVersion
-        targetSdk = flutter.targetSdkVersion
+        minSdk = 23  // Updated for Firebase (was flutter.minSdkVersion)
+        targetSdk = 34  // Updated for Firebase
         versionCode = flutter.versionCode
         versionName = flutter.versionName
     }
@@ -42,3 +43,14 @@ android {
 flutter {
     source = "../.."
 }
+
+dependencies {
+    implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk7:$kotlin_version"
+    coreLibraryDesugaring 'com.android.tools:desugar_jdk_libs:2.1.5'
+    // Firebase dependencies
+    implementation platform('com.google.firebase:firebase-bom:32.7.0')
+    implementation 'com.google.firebase:firebase-messaging'
+}
+
+// Add Google Services plugin (must be at the bottom)
+apply plugin: 'com.google.gms.google-services'
